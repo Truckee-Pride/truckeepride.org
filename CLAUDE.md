@@ -8,7 +8,7 @@ This file guides Claude's behavior when working on the Truckee Pride website. Re
 
 Truckee Pride is a 501(c)3 nonprofit serving the LGBTQ+ community in Truckee, CA. This is a Next.js 15 web app hosted on Vercel with a Neon PostgreSQL database. The primary feature is an events calendar with user-submitted events and admin approval.
 
-**Repo structure:** Turborepo monorepo with `apps/web` (Next.js) and `packages/db` (Drizzle schema + client).
+**Repo structure:** Plain Next.js app (no monorepo). Schema, validators, and types all live in `src/`. See `ARCHITECTURE.md` for full structure, schema, and access control details.
 
 ---
 
@@ -25,7 +25,7 @@ Write code that is **simple, clear, and easy to delete**. Prefer boring solution
 
 ## Tech Stack
 
-Always use the **latest stable versions** of all packages. Do not hardcode specific version numbers in `package.json` — use `"latest"` for frequently-updated packages like Drizzle, or caret ranges (`"^15"`) for major frameworks. Run `pnpm update` regularly.
+Use `"latest"` for frequently-updated packages (Drizzle), caret ranges (`"^15"`) for frameworks. Never hardcode versions. Run `pnpm update` regularly.
 
 | Layer | Choice |
 |---|---|
@@ -38,7 +38,7 @@ Always use the **latest stable versions** of all packages. Do not hardcode speci
 | Email | Resend + React Email |
 | File storage | Vercel Blob |
 | Validation | Zod |
-| Monorepo | Turborepo + pnpm |
+| Package manager | pnpm |
 
 ---
 
@@ -58,8 +58,8 @@ Always use the **latest stable versions** of all packages. Do not hardcode speci
 
 ## Next.js App Router Conventions
 
-- **Server Components are the default.** Only add `"use client"` when you actually need browser APIs, event handlers, or React state.
-- **Server Actions** for all form mutations. No separate API routes for UI-driven data mutations.
+- **Server Components are the default.** Only add `"use client"` when you actually need browser APIs, event handlers, or React state. Never use `useEffect` + `useState` to fetch data — use Server Components instead.
+- **Server Actions** for all form mutations — no separate API routes for UI-driven data mutations. Every Server Action file must start with `"use server"`.
 - **Route handlers** (`route.ts`) only for external integrations (webhooks, RSS, etc.).
 - Keep Server Components as thin data-fetching shells; pass data down to smaller Client Components for interactivity.
 - Use `loading.tsx` and `error.tsx` at the route segment level rather than inline loading states.
@@ -73,26 +73,30 @@ app/
       page.tsx
       [slug]/
         page.tsx
-  (admin)/            # Admin-only routes
+  (dashboard)/        # Authenticated area
     dashboard/
       page.tsx
     events/
-      [id]/
-        edit/
-          page.tsx
+      new/page.tsx
+      [id]/edit/page.tsx
+    admin/            # Admin-only routes
+      events/page.tsx
+      users/page.tsx
+  (auth)/
+    sign-in/page.tsx
+    verify/page.tsx
   api/
     auth/[...nextauth]/route.ts
-    webhooks/...
 ```
 
 ---
 
 ## Data Layer (Drizzle + Neon)
 
-- Schema lives in `packages/db/src/schema/`. One file per domain (e.g., `events.ts`, `users.ts`, `audit.ts`).
+- Schema lives in `src/db/schema/`. One file per domain (e.g., `events.ts`, `users.ts`, `audit.ts`).
 - Always write explicit column names; don't rely on Drizzle inference for column naming.
 - Use `drizzle-kit generate` → `drizzle-kit migrate` workflow. Never edit migration files manually.
-- Wrap multi-step mutations in a transaction.
+- Wrap multi-step mutations in a transaction. Call `revalidatePath()` or `revalidateTag()` after mutations to invalidate cached pages.
 - Prefer `db.query.*` (relational queries) over raw SQL for readability.
 
 ---
@@ -110,12 +114,9 @@ app/
 
 - Use Tailwind utility classes directly. Don't create CSS files except for global base styles.
 - Use CSS variables for design tokens (colors, fonts, spacing scale) in `globals.css`.
-- **Design system tokens** (Truckee Pride brand):
-  - Display font: `Fraunces` (variable)
-  - Body font: `Nunito Sans`
-  - Accent/mono: `IBM Plex Mono`
-- Avoid arbitrary Tailwind values (`[42px]`) — extend the theme in `tailwind.config.ts` if a value is needed repeatedly.
-- Keep component class lists readable. If a single element has more than ~8 utility classes, extract to a component.
+- **Placeholder phase** uses system sans-serif. Brand fonts (Fraunces, Nunito Sans, IBM Plex Mono) loaded via `next/font` in the design system phase.
+- Tailwind v4 is CSS-first: extend the theme using `@theme` in `globals.css`, not `tailwind.config.ts`.
+- Avoid arbitrary Tailwind values (`[42px]`). Keep component class lists readable — if a single element has more than ~8 utility classes, extract to a component.
 
 ---
 
@@ -132,20 +133,22 @@ app/
 ## Auth & Authorization
 
 - Auth.js v5 with email magic link (Resend) as the only auth method.
+- During early dev, `src/lib/auth-stub.ts` provides a fake admin session — replace with `auth()` in Phase 3.
 - Use `auth()` server-side to get the session in Server Components and Server Actions.
-- Define roles: `admin`, `moderator` (event owners), `user`.
+- Two roles only: `admin` (full access) and `user` (submit/edit own events).
+- Event ownership: creator is `ownerId`. Admins can add additional owners via `event_owners` table. A user can edit an event if they are an admin, the owner, or an additional owner.
 - Check permissions in Server Actions, not just in UI. Never trust client-supplied role claims.
-- Use middleware (`middleware.ts`) to protect `/admin/*` routes at the edge.
+- Use middleware (`middleware.ts`) to protect `/dashboard/*` and `/admin/*` routes at the edge.
 
 ---
 
 ## Audit Logging
 
-All mutations to events (create, update, status change, delete) must write an audit log entry:
+All mutations to events (create, update, status change, delete) must write an audit log entry in the same transaction:
 ```ts
-{ userId, action, entityType, entityId, diff, createdAt }
+{ action, userId, targetType, targetId, createdAt }
 ```
-Write the audit entry in the same transaction as the mutation.
+Simple action log — no field-level diffs. Use Drizzle Studio to investigate details if needed.
 
 ---
 
@@ -153,7 +156,7 @@ Write the audit entry in the same transaction as the mutation.
 
 - Use Next.js `error.tsx` boundaries to catch unexpected errors; show a friendly message without exposing stack traces.
 - Distinguish between **user errors** (validation failures — show inline) and **system errors** (DB failures — show toast/error boundary).
-- Never `console.log` sensitive data. Use structured logging with log levels.
+- Never `console.log` sensitive data. Never hardcode secrets — use `.env.local` only.
 - All Server Actions should return `{ success: true, data }` or `{ success: false, error: string }` — never throw from a Server Action that a form calls.
 
 ---
@@ -161,27 +164,26 @@ Write the audit entry in the same transaction as the mutation.
 ## Performance
 
 - Images: use `next/image` everywhere. Never use `<img>`.
-- Fonts: load via `next/font` — this project uses `Fraunces`, `Nunito_Sans`, and `IBM_Plex_Mono`.
-- Don't over-memoize. Only use `useMemo`/`useCallback` when you can measure a real performance problem.
+- Fonts: system sans-serif for now. Brand fonts (`Fraunces`, `Nunito_Sans`, `IBM_Plex_Mono`) loaded via `next/font` in the design system phase.
+- Only memoize (`useMemo`/`useCallback`) when you've measured a real performance problem.
 - Prefer static generation (`generateStaticParams`) for event detail pages; revalidate on publish/update.
 
 ---
 
-## Testing (aspirational — add as coverage grows)
+## Testing
 
-- Unit tests for Zod schemas and pure utility functions (Vitest).
-- Integration tests for Server Actions against a test DB.
-- E2E tests (Playwright) for the critical path: submit event → admin approves → event appears publicly.
+- Unit tests: Vitest for Zod schemas and pure utility functions.
+- Integration tests: Server Actions against a test DB.
+- E2E: Playwright for the critical path (submit event → admin approves → event appears publicly).
 
 ---
 
 ## Code Style
 
-- Prettier for formatting (run on save). Single quotes, no semicolons (configure to team preference — just be consistent).
+- Prettier for formatting (run on save). Single quotes, no semicolons.
 - ESLint with `eslint-config-next`. Fix all warnings before merging.
 - No commented-out code in commits. Use git history.
-- Write JSDoc only for non-obvious function contracts — don't narrate obvious code.
-- Keep functions short. If a function needs a comment to explain *what* it does (not *why*), it should be broken up or renamed.
+- Write JSDoc only for non-obvious function contracts. If a comment explains *what* the code does (not *why*), refactor instead.
 
 ---
 
@@ -189,8 +191,7 @@ Write the audit entry in the same transaction as the mutation.
 
 ```bash
 # Development
-turbo dev                    # All apps
-turbo dev --filter=web       # Web only
+pnpm dev                     # Start dev server
 
 # Database
 npx drizzle-kit generate     # Generate migration from schema changes
@@ -198,46 +199,30 @@ npx drizzle-kit migrate      # Apply migrations
 npx drizzle-kit studio       # Visual DB browser (localhost:4983)
 
 # Checks
-turbo lint
-turbo typecheck
-turbo build
+pnpm lint
+pnpm typecheck
+pnpm build
 
 # Package management
-pnpm add <pkg> --filter=web            # Add to web app
-pnpm add <pkg> --filter=@truckee/db    # Add to db package
-pnpm add -D <pkg> -w                   # Add dev dep to workspace root
-pnpm update --recursive --latest       # Update all deps to latest
+pnpm add <pkg>               # Add dependency
+pnpm add -D <pkg>            # Add dev dependency
+pnpm update                  # Update all deps
 ```
-
----
-
-## Things to Never Do
-
-- ❌ Don't use `any` in TypeScript
-- ❌ Don't put secrets in code or `.env.example` — use `.env.local` and document the variable names only
-- ❌ Don't use `<img>` — use `next/image`
-- ❌ Don't write raw SQL — use Drizzle
-- ❌ Don't fetch data in Client Components when a Server Component would work
-- ❌ Don't create API routes for UI mutations — use Server Actions
-- ❌ Don't hardcode version numbers in `package.json` — use latest/caret ranges
-- ❌ Don't create abstractions preemptively — wait until you have real duplication
 
 ---
 
 ## Accessibility
 
-This is a community nonprofit site. Accessibility is not optional.
 - All images need meaningful `alt` text.
 - Interactive elements must be keyboard-navigable.
 - Use semantic HTML (`<nav>`, `<main>`, `<article>`, `<button>`, not divs for everything).
 - Color contrast must meet WCAG AA minimum (4.5:1 for text).
-- Test with VoiceOver or NVDA occasionally.
 
 ---
 
 ## Project-Specific Notes
 
-- **This is a volunteer project for a small nonprofit.** Favor maintainability over cleverness. The next maintainer may not be an engineer.
+- **Volunteer project for a small nonprofit.** Favor maintainability over cleverness. The next maintainer may not be an engineer.
 - **Events** are the core feature. When in doubt, optimize for that workflow first.
-- **Magic link auth only** — no passwords, no OAuth (for now). Keep it simple.
+- **Magic link auth only** — no passwords, no OAuth (for now).
 - The site should be **fast on mobile** — many attendees will be on phones at outdoor events.
