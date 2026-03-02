@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+
+# Turborepo
+.turbo/
+
+# Build outputs
+dist/
+build/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment variables — never commit secrets
+.env
+.env.local
+.env.*.local
+# .env.example is intentionally NOT ignored (commit it without secrets)
+
+# Vercel
+.vercel/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+test-results/
+playwright-report/
+.vitest/
+
+# React Email local preview
+.react-email/
+
+# Logs
+*.log
