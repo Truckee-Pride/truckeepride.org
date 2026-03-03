@@ -14,9 +14,9 @@ export function Button({
   className = '',
 }: ButtonProps) {
   const baseStyles =
-    'inline-block px-6 py-3 rounded-lg font-semibold text-lg transition-all duration-300 ease-out cursor-pointer'
+    'inline-block px-6 py-3 rounded-lg font-semibold text-xl transition-all duration-300 ease-out cursor-pointer'
   const colorStyles =
-    'bg-[#e400ec] text-white no-underline hover:bg-[#ff33ff] hover:text-white hover:shadow-xl hover:-translate-y-1'
+    'bg-brand text-inverse no-underline hover:bg-brand-hover hover:text-inverse hover:shadow-xl hover:-translate-y-1'
   const textStyles = 'uppercase'
   const classes = `${baseStyles} ${colorStyles} ${textStyles} ${className}`
 

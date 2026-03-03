@@ -1,13 +1,50 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primitive palette */
+  --pink-500: #b800bf;
+  --pink-400: #cc00d4;
+  --neutral-900: #171717;
+  --neutral-500: #6b7280;
+  --neutral-400: #9ca3af;
+  --neutral-200: #e5e7eb;
+  --neutral-50: #f9fafb;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --white: #ffffff;
+
+  /* Surface */
+  --background: var(--white);
+  --surface: var(--neutral-50);
+  --border: var(--neutral-200);
+
+  /* Text */
+  --foreground: var(--neutral-900);
+  --text-muted: var(--neutral-500);
+  --text-subtle: var(--neutral-400);
+  --text-inverse: var(--white);
+
+  /* Brand / primary action */
+  --brand: var(--pink-500);
+  --brand-hover: var(--pink-400);
+
+  /* Links */
+  --link: var(--blue-600);
+  --link-hover: var(--blue-700);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
+  --color-muted: var(--text-muted);
+  --color-subtle: var(--text-subtle);
+  --color-inverse: var(--text-inverse);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
 }
 
 @layer base {
@@ -70,13 +107,50 @@
     margin-top: 1em;
   }
 
+  small {
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
   a {
-    color: #2563eb;
+    color: var(--brand);
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
   }
 
   a:hover {
-    color: #1d4ed8;
+    text-decoration-thickness: 2px;
+  }
+
+  footer nav ul {
+    list-style: none;
+    margin: 0 0 0.75rem 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  footer nav li {
+    display: inline;
+  }
+
+  footer nav li + li::before {
+    content: '·';
+    margin: 0 0.4rem 0 0.2rem;
+    color: var(--text-muted);
+  }
+
+  footer nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+
+  footer nav a:hover {
+    color: var(--text-subtle);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 }

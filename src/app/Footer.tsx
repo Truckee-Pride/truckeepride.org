@@ -38,12 +38,16 @@ export function Footer() {
         </ul>
       </nav>
       <p>
-        Truckee Tahoe Pride Foundation is a registered 501(c)3 non-profit. EIN
-        994735689
+        <small>
+          Truckee Tahoe Pride Foundation is a registered 501(c)3 non-profit. EIN
+          994735689
+        </small>
       </p>
       <p>
-        Looking for the Wolverines? Visit{' '}
-        <a href="https://truckeepride.com">TruckeePride.com</a>
+        <small>
+          Looking for the Wolverines? Visit{' '}
+          <a href="https://truckeepride.com">TruckeePride.com</a>
+        </small>
       </p>
     </footer>
   )
