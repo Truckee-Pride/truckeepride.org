@@ -112,10 +112,12 @@ app/
 
 ## Styling (Tailwind v4)
 
-- Use Tailwind utility classes directly. Don't create CSS files except for global base styles.
+- Use Tailwind utility classes directly. Don't create CSS files except for `globals.css`.
 - Use CSS variables for design tokens (colors, fonts, spacing scale) in `globals.css`.
 - **Placeholder phase** uses system sans-serif. Brand fonts (Fraunces, Nunito Sans, IBM Plex Mono) loaded via `next/font` in the design system phase.
 - Tailwind v4 is CSS-first: extend the theme using `@theme` in `globals.css`, not `tailwind.config.ts`.
+- **Never use `!important`** (or Tailwind's `!` prefix). If a utility class isn't winning, the base style is in the wrong cascade layer — fix it there, not on the utility side.
+- **All custom element styles in `globals.css` must be inside `@layer base { ... }`.** Tailwind v4 uses native CSS cascade layers. Unlayered CSS always beats layered CSS regardless of specificity — so bare `a { color: blue }` will override `text-white` on a link. Wrapping in `@layer base` puts the styles below Tailwind's `utilities` layer, so utility classes win naturally. The only things that should live outside `@layer base` are `:root` variables and `@theme` blocks.
 - Avoid arbitrary Tailwind values (`[42px]`). Keep component class lists readable — if a single element has more than ~8 utility classes, extract to a component.
 
 ---

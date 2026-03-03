@@ -1,9 +1,12 @@
-import Link from 'next/link'
+import { Button } from './Button'
 
 export default function Home() {
   return (
     <main>
-      <Link href="/donate">Donate to Truckee Pride!</Link>
+      <section>
+        <Button href="/donate">Donate</Button>
+      </section>
+
       <section>
         <h2>Our Mission</h2>
         <p>
