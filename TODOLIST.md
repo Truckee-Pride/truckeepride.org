@@ -7,10 +7,6 @@
 ## Phase 0: Scaffolding & Deployment
 **Goal: Deployed Next.js app with database connected, placeholder typography working.**
 
-- [ ] **0.1** Initialize Next.js 15 project (App Router, TypeScript, Tailwind CSS v4, ESLint) with pnpm
-- [ ] **0.2** Set up root `.env.example` with all required env vars
-- [ ] **0.3** Set up placeholder design system: system sans-serif, set base typography in `globals.css` (h1–h4, body, links), black on white
-- [ ] **0.4** Create minimal homepage: "Truckee Pride" h1 + test headings to verify typography
 - [ ] **0.5** Verify `pnpm dev` runs successfully
 - [ ] **0.6** Deploy to Vercel. Confirm preview deploys work on PRs.
 - [ ] **0.7** Set up Neon Postgres database (free tier). Add `DATABASE_URL` to Vercel env vars and local `.env`.

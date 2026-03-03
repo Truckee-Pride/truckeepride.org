@@ -8,7 +8,7 @@ This file guides Claude's behavior when working on the Truckee Pride website. Re
 
 Truckee Pride is a 501(c)3 nonprofit serving the LGBTQ+ community in Truckee, CA. This is a Next.js 15 web app hosted on Vercel with a Neon PostgreSQL database. The primary feature is an events calendar with user-submitted events and admin approval.
 
-**Repo structure:** Plain Next.js app (no monorepo). Schema, validators, and types all live in `src/`. See `ARCHITECTURE.md` for full structure, schema, and access control details.
+**Repo structure:** Plain Next.js app. Schema, validators, and types all live in `src/`. See `ARCHITECTURE.md` for full structure, schema, and access control details. See `TODOLIST.md` for next planned steps, and delete items from TODOLIST when finished implementing (delete the completed task text entirely, don't just mark as complete).
 
 ---
 
@@ -213,6 +213,7 @@ pnpm update                  # Update all deps
 
 ## Accessibility
 
+- Target WCAG 2.1 AA standards for accessibility.
 - All images need meaningful `alt` text.
 - Interactive elements must be keyboard-navigable.
 - Use semantic HTML (`<nav>`, `<main>`, `<article>`, `<button>`, not divs for everything).
