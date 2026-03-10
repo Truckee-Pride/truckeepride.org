@@ -16,10 +16,7 @@
 ## Phase 1: Database Schema & Auth Stub
 **Goal: Full schema migrated to Neon, dev user stub working, Drizzle queries verified.**
 
-- [ ] **1.1** Define Drizzle schema in `src/db/schema/`: `users.ts`, `events.ts`, `audit.ts`, `index.ts`
-- [ ] **1.2** Configure `drizzle-kit` in `drizzle.config.ts`
 - [ ] **1.3** Run `drizzle-kit generate` and `drizzle-kit migrate` against Neon
-- [ ] **1.4** Set up Drizzle client in `src/lib/db.ts` using `@neondatabase/serverless`
 - [ ] **1.5** Create auth stub (`src/lib/auth-stub.ts`): `getCurrentUser()` returns hardcoded admin. Seed Neon with stub user.
 - [ ] **1.6** Create Zod schemas in `src/lib/schemas/events.ts`: `createEventSchema` and `updateEventSchema`
 - [ ] **1.7** Verify Drizzle: render test Server Component querying `SELECT count(*) FROM users`

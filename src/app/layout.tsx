@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   description:
     'A grass-roots volunteer-run 501(c)3 nonprofit working to make everyone feel welcomed and at home in the mountains. Truckee, CA.',
   metadataBase: new URL('https://truckeepride.org'),
+  icons: {
+    icon: 'https://cdn.prod.website-files.com/65ce742373106d87447625dd/65ce854cf451afcd6ec7d150_favicon.png',
+  },
   openGraph: {
     title: 'Truckee Pride',
     description:
