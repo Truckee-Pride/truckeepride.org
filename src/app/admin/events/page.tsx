@@ -2,7 +2,8 @@ import { asc, desc } from 'drizzle-orm'
 import Link from 'next/link'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
-import { DeleteButton } from './DeleteButton'
+import { DashboardActionLink } from '@/components/dashboard/DashboardActionButton'
+import { DeleteEventButton } from './DeleteEventButton'
 
 const SORT_FIELDS = [
   'title',
@@ -138,9 +139,15 @@ export default async function AdminEventsPage({
                   })}
                 </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
-                  <Link href={`/events/${event.slug}`}>View</Link>
-                  <Link href={`/dashboard/events/${event.id}/edit`}>Edit</Link>
-                  <DeleteButton id={event.id} title={event.title} />
+                  <DashboardActionLink href={`/events/${event.slug}`}>
+                    View
+                  </DashboardActionLink>
+                  <DashboardActionLink
+                    href={`/dashboard/events/${event.id}/edit`}
+                  >
+                    Edit
+                  </DashboardActionLink>
+                  <DeleteEventButton id={event.id} title={event.title} />
                 </td>
               </tr>
             ))}

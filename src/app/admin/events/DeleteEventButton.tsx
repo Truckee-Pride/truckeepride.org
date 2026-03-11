@@ -1,9 +1,16 @@
 'use client'
 
 import { useTransition } from 'react'
+import { DashboardActionButton } from '@/components/dashboard/DashboardActionButton'
 import { deleteEvent } from './actions'
 
-export function DeleteButton({ id, title }: { id: string; title: string }) {
+export function DeleteEventButton({
+  id,
+  title,
+}: {
+  id: string
+  title: string
+}) {
   const [isPending, startTransition] = useTransition()
 
   function handleClick() {
@@ -14,12 +21,12 @@ export function DeleteButton({ id, title }: { id: string; title: string }) {
   }
 
   return (
-    <button
+    <DashboardActionButton
+      intent="danger"
       onClick={handleClick}
       disabled={isPending}
-      className="cursor-pointer text-red-600 hover:underline disabled:cursor-default disabled:opacity-50"
     >
       {isPending ? 'Deleting…' : 'Delete'}
-    </button>
+    </DashboardActionButton>
   )
 }
