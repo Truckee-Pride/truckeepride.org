@@ -1,7 +1,12 @@
 import type { Metadata } from 'next'
+import { Beiruti } from 'next/font/google'
 import { Header } from './Header'
 import { Footer } from './Footer'
 import './globals.css'
+
+const beiruti = Beiruti({
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
   title: {
@@ -31,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={beiruti.className}>
       <body>
         <Header />
         {children}

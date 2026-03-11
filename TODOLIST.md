@@ -4,26 +4,16 @@
 
 ---
 
-## Phase 0: Scaffolding & Deployment
-**Goal: Deployed Next.js app with database connected, placeholder typography working.**
-
-- [ ] **0.5** Verify `pnpm dev` runs successfully
-- [ ] **0.6** Deploy to Vercel. Confirm preview deploys work on PRs.
-- [ ] **0.7** Set up Neon Postgres database (free tier). Add `DATABASE_URL` to Vercel env vars and local `.env`.
-
----
-
 ## Phase 1: Database Schema & Auth Stub
+
 **Goal: Full schema migrated to Neon, dev user stub working, Drizzle queries verified.**
 
-- [ ] **1.3** Run `drizzle-kit generate` and `drizzle-kit migrate` against Neon
-- [ ] **1.5** Create auth stub (`src/lib/auth-stub.ts`): `getCurrentUser()` returns hardcoded admin. Seed Neon with stub user.
 - [ ] **1.6** Create Zod schemas in `src/lib/schemas/events.ts`: `createEventSchema` and `updateEventSchema`
-- [ ] **1.7** Verify Drizzle: render test Server Component querying `SELECT count(*) FROM users`
 
 ---
 
 ## Phase 2: Events CRUD & List View
+
 **Goal: Create, edit, list, view, approve events. Full working flow with stubbed auth, black-and-white styling.**
 
 - [ ] **2.1** Audit log utility (`src/lib/audit.ts`): `logAction(action, userId, targetType, targetId)`
@@ -45,6 +35,7 @@
 ---
 
 ## Phase 3: Authentication & Email
+
 **Goal: Replace stub with real magic link auth. Wire up email notifications.**
 
 - [ ] **3.1** Set up Resend account. Verify truckeepride.org domain (SPF/DKIM — coordinate with David).
@@ -64,7 +55,23 @@
 
 ---
 
+## MVP Launch: Go Live with Admin Events
+
+**Goal: Replace existing Webflow site. Admins can create/edit/view events. Public can browse events.**
+
+- [ ] **MVP.1** Custom domain on Vercel (truckeepride.org).
+- [ ] **MVP.2** DNS: domain → Vercel, verify email DNS (SPF/DKIM).
+- [ ] **MVP.3** `error.tsx` boundaries for graceful error recovery.
+- [ ] **MVP.4** Branded `not-found.tsx` (404).
+- [ ] **MVP.5** Empty states: no events, no pending approvals, no user events.
+- [ ] **MVP.6** Security: rate limiting on sign-in, Zod sanitization, route guards verified.
+- [ ] **MVP.7** Test all email flows on production domain.
+- [ ] **MVP.8** DNS cutover from Webflow → Vercel. **Go live.**
+
+---
+
 ## Phase 4: Homepage, Content & Image Uploads
+
 **Goal: Real homepage, content pages, site navigation, image uploads working.**
 
 - [ ] **4.1** Site header/nav: logo, nav links (Events, Get Involved, About, Donate), auth UI, mobile hamburger.
@@ -82,6 +89,7 @@
 ---
 
 ## Phase 5: Design System & Visual Polish
+
 **Goal: Replace black-and-white with full branded design.**
 
 - [ ] **5.1** Design tokens in `globals.css`: color palette (pride rainbow + warm neutrals), typography refinements, border radius, shadows.
@@ -92,19 +100,12 @@
 
 ---
 
-## Phase 6: Launch Prep
-**Goal: Production polish, SEO, security, go live.**
+## Phase 6: Post-Launch Polish
+
+**Goal: SEO, analytics, performance, admin tools.**
 
 - [ ] **6.1** `loading.tsx` skeletons: events list, event detail, dashboard, admin.
-- [ ] **6.2** `error.tsx` boundaries for graceful error recovery.
-- [ ] **6.3** Branded `not-found.tsx` (404).
-- [ ] **6.4** Empty states: no events, no pending approvals, no user events.
-- [ ] **6.5** Custom domain on Vercel (truckeepride.org).
-- [ ] **6.6** DNS: domain → Vercel, verify email DNS (SPF/DKIM).
-- [ ] **6.7** Security: rate limiting on sign-in, Zod sanitization, image upload server-side validation, route guards verified.
-- [ ] **6.8** SEO: `app/sitemap.ts` (dynamic), `robots.txt`, JSON-LD on events, OG images/metadata, favicon.
-- [ ] **6.9** Analytics: Vercel Analytics and/or Plausible.
-- [ ] **6.10** Performance: Lighthouse, Core Web Vitals.
-- [ ] **6.11** Test all email flows on production domain.
-- [ ] **6.12** Admin user management `/admin/users`: list users, change roles. Simple table.
-- [ ] **6.13** DNS cutover from Webflow → Vercel. **Go live.**
+- [ ] **6.2** SEO: `app/sitemap.ts` (dynamic), `robots.txt`, JSON-LD on events, OG images/metadata, favicon.
+- [ ] **6.3** Analytics: Vercel Analytics and/or Plausible.
+- [ ] **6.4** Performance: Lighthouse, Core Web Vitals.
+- [ ] **6.5** Admin user management `/admin/users`: list users, change roles. Simple table.
