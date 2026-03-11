@@ -1,4 +1,11 @@
-import { pgEnum, pgTable, real, text, timestamp } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  pgEnum,
+  pgTable,
+  real,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core'
 import { users } from './users'
 
 export const eventStatusEnum = pgEnum('event_status', [
@@ -24,6 +31,11 @@ export const events = pgTable('events', {
   endTime: timestamp('end_time', { mode: 'date' }),
   imageUrl: text('image_url'),
   externalUrl: text('external_url'),
+  shortDescription: text('short_description'),
+  emoji: text('emoji'),
+  requiresTicket: boolean('requires_ticket').default(false).notNull(),
+  ageRestriction: text('age_restriction'),
+  dogsWelcome: boolean('dogs_welcome').default(false).notNull(),
   status: eventStatusEnum('status').default('draft').notNull(),
   rejectionReason: text('rejection_reason'),
   ownerId: text('owner_id')

@@ -8,13 +8,26 @@ export const createEventSchema = z
     locationAddress: z.string().max(400).optional(),
     startTime: z.string().min(1, 'Start time is required'),
     endTime: z.string().optional(),
-    imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-    externalUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+    imageUrl: z
+      .string()
+      .url('Must be a valid URL')
+      .optional()
+      .or(z.literal('')),
+    externalUrl: z
+      .string()
+      .url('Must be a valid URL')
+      .optional()
+      .or(z.literal('')),
+    shortDescription: z.string().max(500).optional(),
+    emoji: z.string().max(10).optional(),
+    requiresTicket: z.boolean().optional().default(false),
+    ageRestriction: z.string().max(100).optional(),
+    dogsWelcome: z.boolean().optional().default(false),
   })
-  .refine(
-    (data) => !data.endTime || data.endTime >= data.startTime,
-    { message: 'End time must be after start time', path: ['endTime'] }
-  )
+  .refine((data) => !data.endTime || data.endTime >= data.startTime, {
+    message: 'End time must be after start time',
+    path: ['endTime'],
+  })
 
 export const updateEventSchema = createEventSchema
 
