@@ -27,32 +27,18 @@ Write code that is **simple, clear, and easy to delete**. Prefer boring solution
 
 Use `"latest"` for frequently-updated packages (Drizzle), caret ranges (`"^15"`) for frameworks. Never hardcode versions. Run `pnpm update` regularly.
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript (strict mode) |
-| Styling | Tailwind CSS v4 |
-| Database | Neon PostgreSQL (serverless) |
-| ORM | Drizzle ORM |
-| Auth | Auth.js v5 (magic link / email) |
-| Email | Resend + React Email |
-| File storage | Vercel Blob |
-| Validation | Zod |
-| Package manager | pnpm |
-
----
-
-## TypeScript
-
-- Enable `strict: true` in `tsconfig.json`. Never disable it.
-- Prefer `type` over `interface` for consistency.
-- **Never use `any`.** Use `unknown` and narrow it, or define a proper type.
-- Infer types from Zod schemas and Drizzle table definitions rather than duplicating them manually:
-  ```ts
-  type Event = typeof events.$inferSelect;
-  type NewEvent = typeof events.$inferInsert;
-  ```
-- Export types from the place they're defined, not from a central `types.ts` barrel file.
+| Layer           | Choice                          |
+| --------------- | ------------------------------- |
+| Framework       | Next.js 15 (App Router)         |
+| Language        | TypeScript (strict mode)        |
+| Styling         | Tailwind CSS v4                 |
+| Database        | Neon PostgreSQL (serverless)    |
+| ORM             | Drizzle ORM                     |
+| Auth            | Auth.js v5 (magic link / email) |
+| Email           | Resend + React Email            |
+| File storage    | Vercel Blob                     |
+| Validation      | Zod                             |
+| Package manager | pnpm                            |
 
 ---
 
@@ -66,6 +52,7 @@ Use `"latest"` for frequently-updated packages (Drizzle), caret ranges (`"^15"`)
 - Fetch data as close to where it's used as possible; don't prop-drill fetched data through many layers.
 
 ### File naming
+
 ```
 app/
   (public)/           # Public-facing routes (no auth required)
@@ -91,47 +78,6 @@ app/
 
 ---
 
-## Data Layer (Drizzle + Neon)
-
-- Schema lives in `src/db/schema/`. One file per domain (e.g., `events.ts`, `users.ts`, `audit.ts`).
-- Always write explicit column names; don't rely on Drizzle inference for column naming.
-- Use `drizzle-kit generate` → `drizzle-kit migrate` workflow. Never edit migration files manually.
-- Wrap multi-step mutations in a transaction. Call `revalidatePath()` or `revalidateTag()` after mutations to invalidate cached pages.
-- Prefer `db.query.*` (relational queries) over raw SQL for readability.
-
----
-
-## Forms & Validation
-
-- Use **Zod** for all input validation — both client-side (for fast feedback) and server-side (for security).
-- Define Zod schemas in a colocated `schema.ts` next to the form they validate.
-- Use React's `useActionState` (Next.js 15) with Server Actions for form handling — no client-side `fetch` for mutations.
-- Return structured errors from Server Actions; display them inline next to the relevant field.
-
----
-
-## Styling (Tailwind v4)
-
-- Use Tailwind utility classes directly. Don't create CSS files except for `globals.css`.
-- Use CSS variables for design tokens (colors, fonts, spacing scale) in `globals.css`.
-- **Placeholder phase** uses system sans-serif. Brand fonts (Fraunces, Nunito Sans, IBM Plex Mono) loaded via `next/font` in the design system phase.
-- Tailwind v4 is CSS-first: extend the theme using `@theme` in `globals.css`, not `tailwind.config.ts`.
-- **Never use `!important`** (or Tailwind's `!` prefix). If a utility class isn't winning, the base style is in the wrong cascade layer — fix it there, not on the utility side.
-- **All custom element styles in `globals.css` must be inside `@layer base { ... }`.** Tailwind v4 uses native CSS cascade layers. Unlayered CSS always beats layered CSS regardless of specificity — so bare `a { color: blue }` will override `text-white` on a link. Wrapping in `@layer base` puts the styles below Tailwind's `utilities` layer, so utility classes win naturally. The only things that should live outside `@layer base` are `:root` variables and `@theme` blocks.
-- Avoid arbitrary Tailwind values (`[42px]`). Keep component class lists readable — if a single element has more than ~8 utility classes, extract to a component.
-
----
-
-## Component Guidelines
-
-- One component per file. Filename = component name (PascalCase).
-- Default exports for page components and layouts. Named exports for everything else.
-- Co-locate a component's types, helpers, and sub-components in the same file if they're only used there.
-- Prefer composition over configuration: instead of a component with 10 boolean props, break it into smaller focused components.
-- Use `children` props generously for layout components — don't hardcode content in layout shells.
-
----
-
 ## Auth & Authorization
 
 - Auth.js v5 with email magic link (Resend) as the only auth method.
@@ -144,16 +90,6 @@ app/
 
 ---
 
-## Audit Logging
-
-All mutations to events (create, update, status change, delete) must write an audit log entry in the same transaction:
-```ts
-{ action, userId, targetType, targetId, createdAt }
-```
-Simple action log — no field-level diffs. Use Drizzle Studio to investigate details if needed.
-
----
-
 ## Error Handling
 
 - Use Next.js `error.tsx` boundaries to catch unexpected errors; show a friendly message without exposing stack traces.
@@ -163,29 +99,12 @@ Simple action log — no field-level diffs. Use Drizzle Studio to investigate de
 
 ---
 
-## Performance
-
-- Images: use `next/image` everywhere. Never use `<img>`.
-- Fonts: system sans-serif for now. Brand fonts (`Fraunces`, `Nunito_Sans`, `IBM_Plex_Mono`) loaded via `next/font` in the design system phase.
-- Only memoize (`useMemo`/`useCallback`) when you've measured a real performance problem.
-- Prefer static generation (`generateStaticParams`) for event detail pages; revalidate on publish/update.
-
----
-
-## Testing
-
-- Unit tests: Vitest for Zod schemas and pure utility functions.
-- Integration tests: Server Actions against a test DB.
-- E2E: Playwright for the critical path (submit event → admin approves → event appears publicly).
-
----
-
 ## Code Style
 
 - Prettier for formatting (run on save). Single quotes, no semicolons.
 - ESLint with `eslint-config-next`. Fix all warnings before merging.
 - No commented-out code in commits. Use git history.
-- Write JSDoc only for non-obvious function contracts. If a comment explains *what* the code does (not *why*), refactor instead.
+- Write JSDoc only for non-obvious function contracts. If a comment explains _what_ the code does (not _why_), refactor instead.
 
 ---
 
@@ -213,19 +132,26 @@ pnpm update                  # Update all deps
 
 ---
 
-## Accessibility
-
-- Target WCAG 2.1 AA standards for accessibility.
-- All images need meaningful `alt` text.
-- Interactive elements must be keyboard-navigable.
-- Use semantic HTML (`<nav>`, `<main>`, `<article>`, `<button>`, not divs for everything).
-- Color contrast must meet WCAG AA minimum (4.5:1 for text).
-
----
-
 ## Project-Specific Notes
 
 - **Volunteer project for a small nonprofit.** Favor maintainability over cleverness. The next maintainer may not be an engineer.
 - **Events** are the core feature. When in doubt, optimize for that workflow first.
 - **Magic link auth only** — no passwords, no OAuth (for now).
 - The site should be **fast on mobile** — many attendees will be on phones at outdoor events.
+
+---
+
+## Reference Docs
+
+Detailed conventions live in `.claude/`. Read the relevant file when working in that area:
+
+| Topic                                                 | File                       |
+| ----------------------------------------------------- | -------------------------- |
+| TypeScript                                            | `.claude/typescript.md`    |
+| Data layer (Drizzle, Neon, migrations, audit logging) | `.claude/data-layer.md`    |
+| Forms & Zod validation                                | `.claude/forms.md`         |
+| Tailwind / styling                                    | `.claude/tailwind.md`      |
+| Component patterns                                    | `.claude/components.md`    |
+| Performance                                           | `.claude/performance.md`   |
+| Testing                                               | `.claude/testing.md`       |
+| Accessibility                                         | `.claude/accessibility.md` |
