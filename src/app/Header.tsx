@@ -12,7 +12,7 @@ export function Header() {
         style={{ width: '100%', height: 'auto' }}
         priority
       />
-      <p className="absolute bottom-2 right-2 rounded bg-white/70 px-2 py-0.5 text-xs text-gray-500">
+      <p className="mt-2 pr-4 text-right text-xs text-gray-500 md:absolute md:bottom-2 md:right-2 md:mt-0 md:rounded md:bg-white/70 md:px-2 md:py-0.5">
         Art by maddie{' '}
         <a
           href="https://www.instagram.com/mtscapes.art?igsh=NTc4MTIwNjQ2YQ=="

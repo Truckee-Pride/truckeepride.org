@@ -79,8 +79,8 @@ const sponsors = [
 export default function Home() {
   return (
     <main>
-      <section>
-        <Button href="/donate">Donate</Button>
+      <section className="flex justify-center">
+        <Button href="/donate">Donate to Truckee Pride!</Button>
       </section>
 
       <section>
