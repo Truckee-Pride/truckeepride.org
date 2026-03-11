@@ -8,7 +8,6 @@
 
 **Goal: Full schema migrated to Neon, dev user stub working, Drizzle queries verified.**
 
-- [ ] **1.6** Create Zod schemas in `src/lib/schemas/events.ts`: `createEventSchema` and `updateEventSchema`
 
 ---
 
@@ -16,8 +15,6 @@
 
 **Goal: Create, edit, list, view, approve events. Full working flow with stubbed auth, black-and-white styling.**
 
-- [ ] **2.1** Audit log utility (`src/lib/audit.ts`): `logAction(action, userId, targetType, targetId)`
-- [ ] **2.2** Slug utility (`src/lib/slug.ts`): `generateSlug(title)` + `ensureUniqueSlug(slug, db)`
 - [ ] **2.3** Page route: `src/app/(dashboard)/events/new/page.tsx`
 - [ ] **2.4** Build `EventForm` client component: title, description (markdown), location (name/address), start+end datetime, image URL (real upload Phase 4), external URL. "Save as Draft" and "Submit for Review" buttons. Client-side Zod validation with inline errors.
 - [ ] **2.5** Server Action `createEvent`: `getCurrentUser()` → Zod validate → generate slug → insert → audit log → return `{ success, data: { id, slug } }`
