@@ -6,7 +6,7 @@ export const DONATE_BUTTON_TEXT = 'Donate to Truckee Pride!'
  */
 export const LayoutWidth = {
   /** Full-bleed content: hero images, banners */
-  banner: 'max-w-2xl mx-auto',
+  banner: 'max-w-3xl mx-auto',
   /** Admin dashboards and data-dense tables */
   admin: 'max-w-6xl mx-auto px-2 sm:px-0 py-8',
   /** Homepage, events list, content with sidebars */

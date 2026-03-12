@@ -33,6 +33,10 @@
   --link-hover: var(--blue-700);
 }
 
+@theme {
+  --breakpoint-banner: 50rem;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
