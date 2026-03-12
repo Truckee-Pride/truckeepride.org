@@ -16,6 +16,14 @@ export const eventStatusEnum = pgEnum('event_status', [
   'cancelled',
 ])
 
+export const ageRestrictionEnum = pgEnum('age_restriction', [
+  'All ages',
+  '18+',
+  '21+',
+  'Some parts 21+',
+  'PG-13',
+])
+
 export const events = pgTable('events', {
   id: text('id')
     .primaryKey()
@@ -29,12 +37,12 @@ export const events = pgTable('events', {
   locationLng: real('location_lng'),
   startTime: timestamp('start_time', { mode: 'date' }).notNull(),
   endTime: timestamp('end_time', { mode: 'date' }),
-  imageUrl: text('image_url'),
-  externalUrl: text('external_url'),
+  flyerUrl: text('flyer_url'),
+  ticketUrl: text('ticket_url'),
   shortDescription: text('short_description'),
   emoji: text('emoji'),
   requiresTicket: boolean('requires_ticket').default(false).notNull(),
-  ageRestriction: text('age_restriction'),
+  ageRestriction: ageRestrictionEnum('age_restriction'),
   dogsWelcome: boolean('dogs_welcome').default(false).notNull(),
   status: eventStatusEnum('status').default('draft').notNull(),
   rejectionReason: text('rejection_reason'),

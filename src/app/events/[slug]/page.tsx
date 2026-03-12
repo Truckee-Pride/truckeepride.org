@@ -20,7 +20,7 @@ export async function generateMetadata({
   return {
     title: event.title,
     description: event.shortDescription ?? event.description.slice(0, 160),
-    openGraph: event.imageUrl ? { images: [event.imageUrl] } : undefined,
+    openGraph: event.flyerUrl ? { images: [event.flyerUrl] } : undefined,
   }
 }
 
@@ -65,7 +65,6 @@ export default async function EventPage({
   if (!['approved', 'cancelled'].includes(event.status)) notFound()
 
   const cancelled = event.status === 'cancelled'
-  const title = event.emoji ? `${event.emoji} ${event.title}` : event.title
 
   return (
     <main>
@@ -75,7 +74,10 @@ export default async function EventPage({
         </div>
       )}
 
-      <h1 className="mt-0">{title}</h1>
+      {event.emoji && (
+        <div className="text-5xl leading-none mb-3">{event.emoji}</div>
+      )}
+      <h1 className="mt-0">{event.title}</h1>
 
       {event.shortDescription && (
         <p className="text-muted mt-2">{event.shortDescription}</p>
@@ -90,9 +92,17 @@ export default async function EventPage({
             <span className="text-muted"> · {event.locationAddress}</span>
           )}
         </li>
-        <li>
-          🎟️ {event.requiresTicket ? 'Tickets required' : 'Free admission'}
-        </li>
+        {event.requiresTicket && (
+          <li>
+            {event.ticketUrl ? (
+              <a href={event.ticketUrl} target="_blank" rel="noreferrer">
+                🎟️ Get tickets
+              </a>
+            ) : (
+              '🎟️ Requires tickets'
+            )}
+          </li>
+        )}
         {event.ageRestriction && <li>🔞 {event.ageRestriction}</li>}
         {event.dogsWelcome && <li>🐕 Dogs welcome</li>}
       </ul>
@@ -108,14 +118,14 @@ export default async function EventPage({
             locationName={event.locationName}
             locationAddress={event.locationAddress ?? null}
           />
-          {event.externalUrl && (
+          {event.ticketUrl && (
             <a
-              href={event.externalUrl}
+              href={event.ticketUrl}
               target="_blank"
               rel="noreferrer"
               className="inline-block px-6 py-3 rounded-lg font-semibold text-xl transition-all duration-300 ease-out bg-brand text-inverse no-underline hover:bg-brand-hover hover:text-inverse hover:shadow-xl hover:-translate-y-1 uppercase"
             >
-              {event.requiresTicket ? 'Get Tickets →' : 'More Info →'}
+              Get Tickets →
             </a>
           )}
         </div>
@@ -127,11 +137,11 @@ export default async function EventPage({
       </div>
 
       {/* Flyer image — supplemental, below description */}
-      {event.imageUrl && (
+      {event.flyerUrl && (
         <div className="mt-10">
           <small>Event flyer</small>
           <div className="mt-2">
-            <FlyerImage src={event.imageUrl} alt={`${event.title} flyer`} />
+            <FlyerImage src={event.flyerUrl} alt={`${event.title} flyer`} />
           </div>
         </div>
       )}

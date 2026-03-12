@@ -15,6 +15,27 @@
       "when": 1773252965923,
       "tag": "0001_mushy_agent_zero",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773273284657,
+      "tag": "0002_thick_ronan",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1773273572035,
+      "tag": "0003_fuzzy_nomad",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1773273852360,
+      "tag": "0004_illegal_angel",
+      "breakpoints": true
     }
   ]
 }
