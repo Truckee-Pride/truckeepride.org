@@ -28,10 +28,18 @@ export async function generateMetadata({
     where: eq(events.slug, slug),
   })
   if (!event || !['approved', 'cancelled'].includes(event.status)) return {}
+  const description = event.shortDescription ?? event.description.slice(0, 160)
+  const images = event.flyerUrl ? [event.flyerUrl] : undefined
   return {
     title: event.title,
-    description: event.shortDescription ?? event.description.slice(0, 160),
-    openGraph: event.flyerUrl ? { images: [event.flyerUrl] } : undefined,
+    description,
+    openGraph: { images },
+    twitter: {
+      card: 'summary_large_image',
+      title: event.title,
+      description,
+      images,
+    },
   }
 }
 
@@ -77,8 +85,37 @@ export default async function EventPage({
 
   const cancelled = event.status === 'cancelled'
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: event.title,
+    description: event.shortDescription ?? event.description.slice(0, 160),
+    startDate: event.startTime.toISOString(),
+    endDate: event.endTime?.toISOString(),
+    eventStatus: cancelled
+      ? 'https://schema.org/EventCancelled'
+      : 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: {
+      '@type': 'Place',
+      name: event.locationName,
+      address: event.locationAddress ?? event.locationName,
+    },
+    image: event.flyerUrl ?? undefined,
+    url: `https://truckeepride.org/events/${event.slug}`,
+    organizer: {
+      '@type': 'Organization',
+      name: 'Truckee Pride',
+      url: 'https://truckeepride.org',
+    },
+  }
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {cancelled && (
         <div className="bg-red-100 border border-red-400 text-red-800 rounded-lg px-4 py-3 mb-6 font-semibold">
           This event has been cancelled.
