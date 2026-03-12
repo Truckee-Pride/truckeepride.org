@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   images: {
@@ -7,8 +7,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cdn.prod.website-files.com',
       },
+      {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+      },
     ],
   },
 }
 
-export default nextConfig;
+export default nextConfig

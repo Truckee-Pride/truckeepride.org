@@ -1,4 +1,9 @@
 import Image from 'next/image'
+import Link from 'next/link'
+import { and, asc, eq, gte } from 'drizzle-orm'
+import { db } from '@/lib/db'
+import { events } from '@/db/schema'
+import { EventCard } from '@/components/EventCard'
 import { Button } from './Button'
 
 const sponsors = [
@@ -76,7 +81,16 @@ const sponsors = [
   },
 ]
 
-export default function Home() {
+export default async function Home() {
+  const upcomingEvents = await db.query.events.findMany({
+    where: and(
+      eq(events.status, 'approved'),
+      gte(events.startTime, new Date()),
+    ),
+    orderBy: asc(events.startTime),
+    limit: 5,
+  })
+
   return (
     <main>
       <section className="flex justify-center">
@@ -132,7 +146,18 @@ export default function Home() {
           building.
         </p>
 
-        <h2>[TODO: EVENTS GO HERE]</h2>
+        {upcomingEvents.length === 0 ? (
+          <p className="text-muted">No upcoming events — check back soon!</p>
+        ) : (
+          <div className="mt-8 flex flex-col gap-3">
+            {upcomingEvents.map((event, i) => (
+              <EventCard key={event.id} event={event} colorIndex={i} />
+            ))}
+          </div>
+        )}
+        <div className="mt-8">
+          <Link href="/events">View all events →</Link>
+        </div>
       </section>
 
       <section>
