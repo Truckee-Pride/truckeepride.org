@@ -1,89 +1,122 @@
 import type { Metadata } from 'next'
+import { Button } from '@/app/Button'
+import { LayoutWidth } from '@/lib/constants'
+import { PageHeader } from '@/components/PageHeader'
+import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 
 export const metadata: Metadata = {
-  title: 'Business Guide',
+  title: 'Local Business Guide',
   description:
     'Partner with Truckee Pride to show your support for the LGBTQ+ community. Sponsorship tiers, participation options, and marketing benefits.',
 }
 
 export default function BusinessGuidePage() {
   return (
-    <main className="max-w-2xl px-8 py-12">
-      <h1>Business Guide</h1>
+    <main className={LayoutWidth.prose}>
+      <section>
+        <div className="flex justify-center">
+          <Button href="/donate">{DONATE_BUTTON_TEXT}</Button>
+        </div>
+      </section>
+      <PageHeader
+        title="Local Business Guide"
+        subtitle="Thank you to all of the local Truckee businesses who have helped make Truckee Pride possible!"
+      />
 
-      <p className="mt-4">
-        Partnering with Truckee Pride is a meaningful way to show your business
-        supports the LGBTQ+ community in the Sierra Nevada. You&apos;ll gain
-        visibility across our marketing channels and connect with a loyal,
-        values-driven audience.
+      <p>
+        Learn more about the business benefits of getting involved in
+        Truckee&apos;s Pride week:
+      </p>
+      <ul>
+        <li>
+          <strong>Supporting Our Community:</strong> Businesses who participate
+          in Truckee Pride can show their support for diversity and inclusion in
+          our community.
+        </li>
+        <li>
+          <strong>Marketing and Events Calendar:</strong> Businesses that
+          participate in Truckee Pride are featured in our marketing materials
+          and events calendar, reaching a wider audience of locals and visitors.
+        </li>
+        <li>
+          <strong>Increased Sales:</strong> Businesses get increased foot
+          traffic and sales from both locals and visitors celebrating Truckee
+          Pride week.
+        </li>
+      </ul>
+
+      <h2>Levels of Support</h2>
+
+      <p>Here are some ways that local businesses can participate:</p>
+      <ul>
+        <li>
+          <strong>Window Display:</strong> A pride flag, poster or other symbol
+          of support in their window
+        </li>
+        <li>
+          <strong>Selling Pride-Themed Items:</strong> Sell Pride-themed
+          merchandise, such as books, t-shirts, or food and drinks
+        </li>
+        <li>
+          <strong>Hosting An Event:</strong> Host a Pride-themed event, such as
+          a group ride, live music, trivia or reading group. To be added to the
+          official events calendar,{' '}
+          <a href="mailto:hello@truckeepride.org">get in touch</a>.
+        </li>
+        <li>
+          <strong>Support:</strong> Sponsor Truckee Pride Week or give in-kind
+          contributions. Truckee Pride Week is proudly run by local volunteers.
+          All sponsorship goes directly to Pride events, music, food and
+          decorations.
+        </li>
+      </ul>
+
+      <h3>Sponsorship Levels</h3>
+
+      <p>
+        Truckee Tahoe Pride Foundation is a registered 501c3 non profit. We try
+        to use our spending to support the local community as much as possible:
+        we use local printers, hire local artists and support local businesses.
+      </p>
+      <ul>
+        <li>
+          <strong>Friend — $250+</strong> Logo on our website and social media
+          shout-outs
+        </li>
+        <li>
+          <strong>Champion — $5,000+</strong> The above plus physical banner and
+          shout-outs at major events
+        </li>
+        <li>
+          <strong>Unicorn — $20,000+</strong> The above plus booth at our
+          festival and speaking opportunities (and knowing you helped make some
+          really awesome events possible!)
+        </li>
+      </ul>
+
+      <h2>How can we help?</h2>
+
+      <p>
+        We&apos;re here to assist you in any way we can. We can provide you with
+        marketing materials, help you plan and promote your events, connect you
+        with artists and other organizations in the community.
       </p>
 
-      <h2 className="mt-10">Benefits of Participation</h2>
-      <ul className="mt-4 space-y-2">
-        <li>
-          Community goodwill and public recognition as an inclusive business
-        </li>
-        <li>
-          Marketing reach — featured in our event calendar, email newsletter,
-          and social media
-        </li>
-        <li>Increased foot traffic and sales during Pride Week events</li>
-      </ul>
+      <p>
+        For questions or requests, please{' '}
+        <a href="mailto:hello@truckeepride.org">send us an email</a>.
+      </p>
 
-      <h2 className="mt-10">Ways to Participate</h2>
-      <ul className="mt-4 space-y-2">
-        <li>
-          <strong>Window displays</strong> — Show pride symbols and rainbow
-          flags in your storefront
-        </li>
-        <li>
-          <strong>Themed events</strong> — Host a Pride-themed special during
-          Pride Week
-        </li>
-        <li>
-          <strong>Event hosting</strong> — Host an official Pride Week event and
-          get listed on our calendar
-        </li>
-      </ul>
+      <p>
+        <strong>
+          We hope you&apos;ll consider participating in Truckee Pride 2025. Lets
+          have fun and make Truckee a more welcoming and inclusive place!
+        </strong>
+      </p>
 
-      <h2 className="mt-10">Sponsorship Tiers</h2>
-      <div className="mt-4 space-y-6">
-        <div>
-          <h3>Friend — $250+</h3>
-          <p>
-            Logo on our website and recognition across our social media
-            channels.
-          </p>
-        </div>
-        <div>
-          <h3>Champion — $5,000+</h3>
-          <p>
-            Everything in Friend, plus a physical banner at Pride Week events
-            and verbal announcements at programming.
-          </p>
-        </div>
-        <div>
-          <h3>Unicorn — $20,000+</h3>
-          <p>
-            Everything in Champion, plus a festival booth and speaking
-            opportunities at Pride Week events.
-          </p>
-        </div>
+      <div className="mt-8">
+        <Button href="/donate">{DONATE_BUTTON_TEXT}</Button>
       </div>
-
-      <h2 className="mt-10">Support We Provide</h2>
-      <ul className="mt-4 space-y-2">
-        <li>Marketing materials and co-branded assets</li>
-        <li>Event planning assistance</li>
-        <li>Connections to local LGBTQ+ artists and community groups</li>
-      </ul>
-
-      <h2 className="mt-10">Get in Touch</h2>
-      <p className="mt-4">
-        Interested in partnering with us?{' '}
-        <a href="mailto:hello@truckeepride.org">Email hello@truckeepride.org</a>{' '}
-        and we&apos;ll get back to you.
-      </p>
     </main>
   )
 }

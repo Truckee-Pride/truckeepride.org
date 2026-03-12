@@ -1,10 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { and, asc, eq, gte } from 'drizzle-orm'
+import { LayoutWidth } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { EventCard } from '@/components/EventCard'
-import { Button } from './Button'
+import { Button } from '@/app/Button'
+import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 
 const sponsors = [
   {
@@ -92,9 +94,9 @@ export default async function Home() {
   })
 
   return (
-    <main>
+    <main className={LayoutWidth.wide}>
       <section className="flex justify-center">
-        <Button href="/donate">Donate to Truckee Pride!</Button>
+        <Button href="/donate">{DONATE_BUTTON_TEXT}</Button>
       </section>
 
       <section>

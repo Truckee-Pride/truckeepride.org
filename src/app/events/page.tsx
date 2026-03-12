@@ -1,4 +1,5 @@
 import { and, asc, eq, gte } from 'drizzle-orm'
+import { LayoutWidth } from '@/lib/constants'
 import Link from 'next/link'
 import { CalendarPlus } from 'lucide-react'
 import { db } from '@/lib/db'
@@ -19,7 +20,7 @@ export default async function EventsPage() {
   })
 
   return (
-    <main>
+    <main className={LayoutWidth.wide}>
       <div className="mt-8 mb-8 flex items-center justify-between gap-4">
         <h1 className="m-0">Upcoming Events</h1>
         <Link

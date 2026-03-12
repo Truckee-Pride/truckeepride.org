@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { LayoutWidth } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Donate',
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function DonatePage() {
   return (
-    <main>
+    <main className={LayoutWidth.prose}>
       <h1>Donate to Truckee Pride</h1>
       <p>
         Truckee Tahoe Pride Foundation is a 501(c)3 organization. We accept

@@ -1,9 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { LayoutWidth } from '@/lib/constants'
 
 export function Header() {
   return (
-    <header className="relative mx-auto">
+    <header className={`relative ${LayoutWidth.banner}`}>
       <Link href="/">
         <Image
           src="https://cdn.prod.website-files.com/65ce742373106d87447625dd/69838883c1472e6c00d4d154_16dc3cdd8d4656fe121d019f20cc67ff_Pride%20Banner.png"

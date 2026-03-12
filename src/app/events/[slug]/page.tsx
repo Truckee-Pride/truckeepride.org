@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm'
+import { LayoutWidth } from '@/lib/constants'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
@@ -111,7 +112,7 @@ export default async function EventPage({
   }
 
   return (
-    <main>
+    <main className={LayoutWidth.prose}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

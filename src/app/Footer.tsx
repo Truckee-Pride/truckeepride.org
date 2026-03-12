@@ -1,8 +1,9 @@
+import { LayoutWidth } from '@/lib/constants'
 import Link from 'next/link'
 
 export function Footer() {
   return (
-    <footer>
+    <footer className={LayoutWidth.banner}>
       <nav aria-label="Footer navigation">
         <ul>
           <li>
@@ -37,18 +38,14 @@ export function Footer() {
           </li>
         </ul>
       </nav>
-      <p>
-        <small>
-          Truckee Tahoe Pride Foundation is a registered 501(c)3 non-profit. EIN
-          994735689
-        </small>
-      </p>
-      <p>
-        <small>
-          Looking for the Wolverines? Visit{' '}
-          <a href="https://truckeepride.com">TruckeePride.com</a>
-        </small>
-      </p>
+      <small>
+        Truckee Tahoe Pride Foundation is a registered 501(c)3 non-profit. EIN
+        994735689
+      </small>
+      <small>
+        Looking for the Wolverines? Visit{' '}
+        <a href="https://truckeepride.com">TruckeePride.com</a>
+      </small>
     </footer>
   )
 }

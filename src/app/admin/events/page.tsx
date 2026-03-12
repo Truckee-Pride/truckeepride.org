@@ -54,7 +54,7 @@ export default async function AdminEventsPage({
   })
 
   return (
-    <main className="max-w-6xl px-8 py-8">
+    <>
       <h1 className="mb-6">Events ({allEvents.length})</h1>
 
       <div className="overflow-x-auto rounded-lg border border-border">
@@ -154,7 +154,7 @@ export default async function AdminEventsPage({
           </tbody>
         </table>
       </div>
-    </main>
+    </>
   )
 }
 

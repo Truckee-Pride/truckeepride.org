@@ -1,80 +1,118 @@
 import type { Metadata } from 'next'
+import { PageHeader } from '@/components/PageHeader'
+import { LayoutWidth } from '@/lib/constants'
 
 export const metadata: Metadata = {
-  title: 'LGBTQ+ Engagement & Mental Health in Truckee',
+  title: 'LGBTQ+ Community Engagement & Mental Health in North Lake Tahoe',
   description:
     '2022 PRC Community Engagement & Behavioral Health Survey findings on LGBTQ+ housing, mental health, and social inclusion in the North Tahoe region.',
 }
 
 export default function MentalHealthPage() {
   return (
-    <main className="max-w-2xl px-8 py-12">
-      <h1>LGBTQ+ Engagement &amp; Mental Health in Truckee</h1>
+    <main className={LayoutWidth.prose}>
+      <PageHeader
+        title="LGBTQ+ community engagement and mental health in North Lake Tahoe"
+        emoji="🏳️‍🌈"
+      />
 
-      <p className="mt-4">
-        In 2022, PRC, Inc. — a nationally recognized consulting firm
-        specializing in community health research since 1994 — conducted a
-        Community Engagement &amp; Behavioral Health Survey for Eagle Valley
-        Behavioral Health and local collaborative organizations in the North
-        Tahoe region.
+      <p>
+        The{' '}
+        <a href="https://www.ttcf.net/wp-content/uploads/2022/05/2022-PRC-Community-Engagement-Behavioral-Health-Survey-Report.pdf">
+          <strong>
+            2022 PRC Community Engagement &amp; Behavioral Health Survey Report
+          </strong>
+        </a>{' '}
+        highlights significant disparities experienced by LGBTQ+ individuals in
+        North Lake Tahoe, particularly in housing security, mental health, and
+        community belonging.
       </p>
 
-      <h2 className="mt-10">Key Findings</h2>
-      <ul className="mt-4 space-y-3">
+      <h2>Housing and Economic Instability</h2>
+
+      <p>
+        LGBTQ+ individuals in North Tahoe are disproportionately affected by
+        economic instability. The report indicates that a high percentage of
+        LGBTQ+ respondents have{' '}
+        <strong>seriously considered leaving North Tahoe</strong> due to{' '}
+        <strong>
+          housing instability, lack of stable employment, or insufficient income
+        </strong>
+        . This aligns with broader economic challenges in the region, but LGBTQ+
+        individuals, along with low-income residents and Hispanic populations,
+        are especially vulnerable.
+      </p>
+
+      <h2>Mental Health and Community Support</h2>
+
+      <p>
+        Mental health challenges are a key concern. LGBTQ+ individuals in North
+        Tahoe are:
+      </p>
+      <ul>
         <li>
-          Housing instability, lack of stable employment, and insufficient
-          income are driving residents — including LGBTQ+ community members — to
-          consider leaving the area.
+          More likely to experience{' '}
+          <strong>loneliness and social isolation</strong> compared to their
+          non-LGBTQ+ peers.
         </li>
         <li>
-          LGBTQ+ individuals in the region experience elevated rates of
-          isolation compared to the broader population.
+          Less likely to feel that the community is{' '}
+          <strong>
+            caring and sympathetic toward people with mental health issues
+          </strong>
+          .
         </li>
         <li>
-          The broader community lacks sufficient understanding of the mental
-          health struggles facing LGBTQ+ residents.
-        </li>
-        <li>
-          Healthcare access remains a barrier for many, particularly due to
-          insurance gaps.
-        </li>
-        <li>
-          Many LGBTQ+ respondents do not identify as part of the broader local
-          community, suggesting gaps in trust and social support structures.
+          Facing <strong>higher rates of healthcare insecurity</strong>, with
+          many lacking <strong>health insurance coverage</strong>.
         </li>
       </ul>
 
-      <h2 className="mt-10">Recommendations</h2>
-      <p className="mt-4">
-        The survey identified a need for targeted interventions in three areas:
-      </p>
-      <ul className="mt-4 space-y-2">
-        <li>Affordable and stable housing options</li>
-        <li>Accessible mental health services for LGBTQ+ individuals</li>
-        <li>Programs that foster social inclusion and community belonging</li>
-      </ul>
+      <h2>Community Engagement and Belonging</h2>
 
-      <h2 className="mt-10">How Truckee Pride Helps</h2>
-      <p className="mt-4">
-        Truckee Pride exists to address exactly these gaps — building community,
-        creating visible spaces for LGBTQ+ people in the mountains, and
-        connecting residents to resources and support networks.
+      <p>
+        Despite North Tahoe&apos;s strong community identity, LGBTQ+ residents
+        report lower levels of engagement and belonging. A significant portion
+        of LGBTQ+ respondents do not feel that{' '}
+        <strong>
+          being a member of the community is part of their identity
+        </strong>
+        . This may be linked to lower levels of trust and support from the
+        broader community.
       </p>
-      <ul className="mt-6 space-y-2">
-        <li>
-          <a href="https://chat.whatsapp.com/L9a8ogUvcbP2FieSIrMT1Z">
-            Join our WhatsApp community
-          </a>
-        </li>
-        <li>
-          <a href="https://www.canva.com/design/DAF-NFd991g/p5CqdBbERNwJZJ2Y5ex0Sg/view">
-            Suicide Prevention resources
-          </a>
-        </li>
-        <li>
-          <a href="mailto:hello@truckeepride.org">Get in touch</a>
-        </li>
-      </ul>
+
+      <h2>Conclusion</h2>
+
+      <p>
+        The survey underscores the need for{' '}
+        <strong>targeted interventions</strong> to support LGBTQ+ individuals in
+        North Tahoe, particularly in{' '}
+        <strong>
+          affordable housing, mental health services, and social inclusion
+          efforts
+        </strong>
+        . Addressing these disparities can contribute to a more inclusive and
+        supportive community for all residents.
+      </p>
+
+      <h2>About the study</h2>
+
+      <p>
+        The 2022 PRC Community Engagement &amp; Behavioral Health Survey, a
+        follow-up to a similar study in 2020, is a data-driven approach to
+        measuring community engagement and behavioral health needs in three
+        mountain-resort communities. Subsequently, this information may be used
+        to inform decisions and guide efforts to improve community health and
+        wellness. This assessment was conducted on behalf of Eagle Valley
+        Behavioral Health, Building Hope Summit County, and Community
+        Collaborative of Tahoe Truckee by PRC, Inc., with guidance and support
+        from FSG consultants. FSG is a consulting firm that advises corporate,
+        foundation, and nonprofit/NGO leaders on issues of social impact to
+        create a more equitable and sustainable future. PRC is a nationally
+        recognized healthcare consulting firm with extensive experience
+        conducting community quality-of-life and health research in hundreds of
+        communities across the United States since 1994.
+      </p>
     </main>
   )
 }
