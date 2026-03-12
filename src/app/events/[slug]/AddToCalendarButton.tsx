@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { CalendarPlus } from 'lucide-react'
 
 type Props = {
   title: string
@@ -89,7 +90,8 @@ export function AddToCalendarButton(props: Props) {
         aria-haspopup="true"
         aria-expanded={open}
       >
-        Add to Calendar ▾
+        <CalendarPlus className="inline-block mr-2 -mt-0.5" size={20} />
+        Add to Calendar
       </button>
 
       {open && (

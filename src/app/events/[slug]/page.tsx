@@ -2,6 +2,16 @@ import { eq } from 'drizzle-orm'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import {
+  Baby,
+  Beer,
+  Calendar,
+  Dog,
+  IdCard,
+  MapPin,
+  ShieldUser,
+  Ticket,
+} from 'lucide-react'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { FlyerImage } from './FlyerImage'
@@ -85,26 +95,53 @@ export default async function EventPage({
 
       {/* Info block */}
       <ul className="list-none p-0 m-0 space-y-2 text-lg mt-6">
-        <li>📅 {formatDateRange(event.startTime, event.endTime ?? null)}</li>
-        <li>
-          📍 {event.locationName}
+        <li className="flex items-center gap-2">
+          <Calendar size={20} className="shrink-0" />
+          {formatDateRange(event.startTime, event.endTime ?? null)}
+        </li>
+        <li className="flex items-center gap-2">
+          <MapPin size={20} className="shrink-0" />
+          {event.locationName}
           {event.locationAddress && (
             <span className="text-muted"> · {event.locationAddress}</span>
           )}
         </li>
         {event.requiresTicket && (
-          <li>
+          <li className="flex items-center gap-2">
+            <Ticket size={20} className="shrink-0" />
             {event.ticketUrl ? (
               <a href={event.ticketUrl} target="_blank" rel="noreferrer">
-                🎟️ Get tickets
+                Get tickets
               </a>
             ) : (
-              '🎟️ Requires tickets'
+              'Requires tickets'
             )}
           </li>
         )}
-        {event.ageRestriction && <li>🔞 {event.ageRestriction}</li>}
-        {event.dogsWelcome && <li>🐕 Dogs welcome</li>}
+        {event.ageRestriction && (
+          <li className="flex items-center gap-2">
+            {event.ageRestriction === 'All ages' && (
+              <Baby size={20} className="shrink-0" />
+            )}
+            {event.ageRestriction === 'PG-13' && (
+              <ShieldUser size={20} className="shrink-0" />
+            )}
+            {(event.ageRestriction === '21+' ||
+              event.ageRestriction === 'Some parts 21+') && (
+              <Beer size={20} className="shrink-0" />
+            )}
+            {event.ageRestriction === '18+' && (
+              <IdCard size={20} className="shrink-0" />
+            )}
+            {event.ageRestriction}
+          </li>
+        )}
+        {event.dogsWelcome && (
+          <li className="flex items-center gap-2">
+            <Dog size={20} className="shrink-0" />
+            Dogs welcome
+          </li>
+        )}
       </ul>
 
       {/* Action buttons */}
@@ -139,10 +176,7 @@ export default async function EventPage({
       {/* Flyer image — supplemental, below description */}
       {event.flyerUrl && (
         <div className="mt-10">
-          <small>Event flyer</small>
-          <div className="mt-2">
-            <FlyerImage src={event.flyerUrl} alt={`${event.title} flyer`} />
-          </div>
+          <FlyerImage src={event.flyerUrl} alt={`${event.title} flyer`} />
         </div>
       )}
 
