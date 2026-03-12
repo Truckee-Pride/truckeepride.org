@@ -12,6 +12,7 @@ import { Textarea } from '@/components/forms/Textarea'
 import { Select } from '@/components/forms/Select'
 import { Checkbox } from '@/components/forms/Checkbox'
 import { FormError } from '@/components/forms/FormError'
+import { EmojiPicker } from '@/components/forms/EmojiPicker'
 
 type ActionState = {
   success: boolean
@@ -107,16 +108,10 @@ export function EventForm({ event }: Props) {
         errors={errors.title}
       />
 
-      {/* TODO: replace with emoji-mart picker */}
-      <Input
+      <EmojiPicker
         label="Emoji"
         name="emoji"
         defaultValue={event?.emoji ?? ''}
-        maxLength={10}
-        placeholder="🏳️‍🌈"
-        className="max-w-24"
-        description="TODO: emoji picker (emoji-mart)"
-        errors={errors.emoji}
       />
 
       <Input
