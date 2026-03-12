@@ -12,17 +12,17 @@ Truckee Tahoe Pride Foundation is a 501(c)(3) nonprofit (EIN 994735689) based in
 
 ## Tech Stack
 
-| Layer | Technology | Rationale |
-|---|---|---|
-| **Framework** | Next.js 15 (App Router, TypeScript) | SSR for SEO, RSC, Server Actions, streaming. |
-| **Hosting** | Vercel | Best Next.js DX, preview deploys, edge caching. Free or Pro ($20/mo). |
-| **Database** | PostgreSQL on Neon | Serverless Postgres, connection pooling for Vercel, free tier. |
-| **ORM** | Drizzle ORM | SQL-first, tiny bundle, no codegen, TS-native schemas. |
-| **Auth** | Auth.js v5 with Resend email provider | Magic link only. Drizzle adapter. Sessions in Postgres. |
-| **Email** | Resend + React Email | Magic links + transactional notifications. `auth@truckeepride.org`. |
-| **File Storage** | Vercel Blob | Event images. S3-compatible. |
-| **Styling** | Tailwind CSS v4 | Utility-first, CSS-first config. |
-| **Validation** | Zod | Shared schemas between client and server. |
+| Layer            | Technology                            | Rationale                                                             |
+| ---------------- | ------------------------------------- | --------------------------------------------------------------------- |
+| **Framework**    | Next.js 15 (App Router, TypeScript)   | SSR for SEO, RSC, Server Actions, streaming.                          |
+| **Hosting**      | Vercel                                | Best Next.js DX, preview deploys, edge caching. Free or Pro ($20/mo). |
+| **Database**     | PostgreSQL on Neon                    | Serverless Postgres, connection pooling for Vercel, free tier.        |
+| **ORM**          | Drizzle ORM                           | SQL-first, tiny bundle, no codegen, TS-native schemas.                |
+| **Auth**         | Auth.js v5 with Resend email provider | Magic link only. Drizzle adapter. Sessions in Postgres.               |
+| **Email**        | Resend + React Email                  | Magic links + transactional notifications. `auth@truckeepride.org`.   |
+| **File Storage** | Vercel Blob                           | Event images. S3-compatible.                                          |
+| **Styling**      | Tailwind CSS v4                       | Utility-first, CSS-first config.                                      |
+| **Validation**   | Zod                                   | Shared schemas between client and server.                             |
 
 **Not using:** Turborepo/monorepo (single app, no need), MDX (too few content pages to justify), separate API routes (no external API consumers yet).
 
@@ -36,31 +36,28 @@ This is a plain Next.js app — no monorepo, no shared packages.
 truckeepride/
 ├── src/
 │   ├── app/                       # App Router routes
-│   │   ├── (public)/              # Route group: public pages
-│   │   │   ├── page.tsx           # Homepage
-│   │   │   ├── events/
-│   │   │   │   ├── page.tsx       # Events list
-│   │   │   │   └── [slug]/
-│   │   │   │       └── page.tsx   # Event detail
-│   │   │   ├── about/page.tsx
-│   │   │   ├── get-involved/page.tsx
-│   │   │   └── resources/page.tsx
-│   │   ├── (auth)/                # Route group: auth pages
-│   │   │   ├── sign-in/page.tsx
-│   │   │   └── verify/page.tsx
-│   │   ├── (dashboard)/           # Route group: authenticated area
-│   │   │   ├── layout.tsx         # Dashboard shell, auth guard
-│   │   │   ├── dashboard/page.tsx # User's events
-│   │   │   ├── events/
-│   │   │   │   ├── new/page.tsx
-│   │   │   │   └── [id]/
-│   │   │   │       └── edit/page.tsx
-│   │   │   └── admin/
-│   │   │       ├── layout.tsx     # Admin role guard
-│   │   │       ├── events/page.tsx    # Approval queue
-│   │   │       ├── events/[id]/
-│   │   │       │   └── owners/page.tsx # Manage event owners
-│   │   │       └── users/page.tsx
+│   │   ├── page.tsx               # Homepage
+│   │   ├── events/
+│   │   │   ├── page.tsx           # Events list (public)
+│   │   │   ├── new/page.tsx       # Create event (auth required)
+│   │   │   └── [slug]/
+│   │   │       └── page.tsx       # Event detail (public)
+│   │   ├── events/[id]/
+│   │   │   └── edit/page.tsx      # Edit event (auth + ownership)
+│   │   ├── dashboard/
+│   │   │   ├── layout.tsx         # Dashboard shell
+│   │   │   └── page.tsx           # My events
+│   │   ├── admin/
+│   │   │   ├── layout.tsx         # Admin role guard
+│   │   │   ├── events/page.tsx    # Approval queue
+│   │   │   ├── events/[id]/
+│   │   │   │   └── owners/page.tsx # Manage event owners
+│   │   │   └── users/page.tsx
+│   │   ├── sign-in/page.tsx
+│   │   ├── verify/page.tsx
+│   │   ├── about/page.tsx
+│   │   ├── get-involved/page.tsx
+│   │   ├── resources/page.tsx
 │   │   ├── api/
 │   │   │   └── auth/[...nextauth]/route.ts
 │   │   ├── layout.tsx             # Root layout
@@ -93,11 +90,21 @@ During early development, auth is stubbed so features can be built without email
 
 ```typescript
 // src/lib/auth-stub.ts
-export type SessionUser = { id: string; email: string; name: string; role: 'user' | 'admin' }
+export type SessionUser = {
+  id: string
+  email: string
+  name: string
+  role: 'user' | 'admin'
+}
 
 export async function getCurrentUser(): Promise<SessionUser | null> {
   if (process.env.NODE_ENV === 'development') {
-    return { id: 'dev-user-001', email: 'dev@truckeepride.org', name: 'Dev Admin', role: 'admin' }
+    return {
+      id: 'dev-user-001',
+      email: 'dev@truckeepride.org',
+      name: 'Dev Admin',
+      role: 'admin',
+    }
   }
   return null // replaced with Auth.js session lookup in Phase 3
 }
@@ -119,7 +126,9 @@ Black-and-white with system sans-serif until the full design system is built (Ph
 export const userRoleEnum = pgEnum('user_role', ['user', 'admin'])
 
 export const users = pgTable('users', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   name: text('name'),
   email: text('email').notNull().unique(),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
@@ -136,14 +145,20 @@ export const users = pgTable('users', {
 
 ```typescript
 export const eventStatusEnum = pgEnum('event_status', [
-  'draft', 'pending_review', 'approved', 'rejected', 'cancelled',
+  'draft',
+  'pending_review',
+  'approved',
+  'rejected',
+  'cancelled',
 ])
 
 export const events = pgTable('events', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   slug: text('slug').notNull().unique(),
   title: text('title').notNull(),
-  description: text('description').notNull(),       // Markdown
+  description: text('description').notNull(), // Markdown
   locationName: text('location_name').notNull(),
   locationAddress: text('location_address'),
   locationLat: real('location_lat'),
@@ -154,15 +169,23 @@ export const events = pgTable('events', {
   externalUrl: text('external_url'),
   status: eventStatusEnum('status').default('draft').notNull(),
   rejectionReason: text('rejection_reason'),
-  ownerId: text('owner_id').notNull().references(() => users.id),
+  ownerId: text('owner_id')
+    .notNull()
+    .references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
 export const eventOwners = pgTable('event_owners', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  eventId: text('event_id').notNull().references(() => events.id, { onDelete: 'cascade' }),
-  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  eventId: text('event_id')
+    .notNull()
+    .references(() => events.id, { onDelete: 'cascade' }),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
   addedBy: text('added_by').references(() => users.id),
   addedAt: timestamp('added_at').defaultNow().notNull(),
 })
@@ -174,10 +197,14 @@ export const eventOwners = pgTable('event_owners', {
 
 ```typescript
 export const auditLog = pgTable('audit_log', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  action: text('action').notNull(),  // e.g. 'event_created', 'event_approved'
-  userId: text('user_id').notNull().references(() => users.id),
-  targetType: text('target_type'),   // e.g. 'event', 'user'
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  action: text('action').notNull(), // e.g. 'event_created', 'event_approved'
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  targetType: text('target_type'), // e.g. 'event', 'user'
   targetId: text('target_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
@@ -189,11 +216,11 @@ Simple action log — records who did what and when. No field-level diffs. Use D
 
 ## Access Control
 
-| Role | Description | Assigned How |
-|---|---|---|
-| **Admin** | Full access: approve/reject events, edit any event, manage users and event owners. | `users.role = 'admin'`. Pride organizers. |
-| **User** | Submit new events. Edit events they own. | Any logged-in user. |
-| **Anonymous** | View approved events and public pages. | No auth required. |
+| Role          | Description                                                                        | Assigned How                              |
+| ------------- | ---------------------------------------------------------------------------------- | ----------------------------------------- |
+| **Admin**     | Full access: approve/reject events, edit any event, manage users and event owners. | `users.role = 'admin'`. Pride organizers. |
+| **User**      | Submit new events. Edit events they own.                                           | Any logged-in user.                       |
+| **Anonymous** | View approved events and public pages.                                             | No auth required.                         |
 
 ### Permission Check
 
@@ -202,7 +229,8 @@ canEditEvent(userId, event) → isAdmin(userId) || event.ownerId === userId || i
 ```
 
 ### Middleware Strategy
-- `middleware.ts` protects `/dashboard/*` and `/admin/*` → redirect to `/sign-in`
+
+- `middleware.ts` protects `/dashboard/*`, `/events/new`, `/events/*/edit`, and `/admin/*` → redirect to `/sign-in`
 - `/admin/layout.tsx` checks `role === 'admin'`
 - Server Actions check ownership before mutating
 
@@ -236,12 +264,12 @@ Every state transition writes to `audit_log`.
 
 ## Pages
 
-| Area | Pages |
-|---|---|
-| **Public** | Homepage, Events list, Event detail, About, Get Involved, Resources, Donate (ext link) |
-| **Auth** | Sign In, Verify |
-| **Dashboard** | My Events, Create Event, Edit Event |
-| **Admin** | Approval Queue, Manage Event Owners, User Management |
+| Area          | Pages                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------- |
+| **Public**    | Homepage, Events list, Event detail, About, Get Involved, Resources, Donate (ext link) |
+| **Auth**      | Sign In, Verify                                                                        |
+| **Dashboard** | My Events, Create Event, Edit Event                                                    |
+| **Admin**     | Approval Queue, Manage Event Owners, User Management                                   |
 
 ---
 

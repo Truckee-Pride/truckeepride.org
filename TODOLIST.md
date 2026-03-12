@@ -4,30 +4,21 @@
 
 ---
 
-## Phase 1: Database Schema & Auth Stub
-
-**Goal: Full schema migrated to Neon, dev user stub working, Drizzle queries verified.**
-
-
----
-
 ## Phase 2: Events CRUD & List View
 
 **Goal: Create, edit, list, view, approve events. Full working flow with stubbed auth, black-and-white styling.**
 
-- [ ] **2.3** Page route: `src/app/(dashboard)/events/new/page.tsx`
+- [ ] **2.3** Page route: `src/app/events/new/page.tsx`
 - [ ] **2.4** Build `EventForm` client component: title, description (markdown), location (name/address), start+end datetime, image URL (real upload Phase 4), external URL. "Save as Draft" and "Submit for Review" buttons. Client-side Zod validation with inline errors.
 - [ ] **2.5** Server Action `createEvent`: `getCurrentUser()` → Zod validate → generate slug → insert → audit log → return `{ success, data: { id, slug } }`
 - [ ] **2.6** Server Action `submitEventForReview`: draft → pending_review + audit log (skip email — Phase 3)
-- [ ] **2.7** Page route `src/app/(dashboard)/events/[id]/edit/page.tsx`: fetch event, check `canEditEvent`, pass to EventForm
+- [ ] **2.7** Page route `src/app/events/[id]/edit/page.tsx`: fetch event, check `canEditEvent`, pass to EventForm
 - [ ] **2.8** Server Action `updateEvent`: Zod validate → update → audit log
-- [ ] **2.9** Admin approval queue `src/app/(dashboard)/admin/events/page.tsx`: list pending_review events with approve/reject buttons; reject shows reason input
-- [ ] **2.10** Server Actions `approveEvent` and `rejectEvent`: set status, save reason, audit log (skip email — Phase 3)
-- [ ] **2.11** Events list `src/app/(public)/events/page.tsx`: upcoming approved events (asc), past events section (desc), event cards with title/date/location/image/link
-- [ ] **2.12** Event detail `src/app/(public)/events/[slug]/page.tsx`: fetch by slug (approved only), `notFound()` if missing, render description, `generateMetadata()` for SEO
-- [ ] **2.13** Dashboard `src/app/(dashboard)/dashboard/page.tsx`: current user's events (all statuses), status badges, edit links, "Create New Event" button
-- [ ] **2.14** Dashboard layout `src/app/(dashboard)/layout.tsx`: nav (Dashboard, Create Event, Admin links), stub user display, back to public site link
-- [ ] **2.15** Admin event owners page `src/app/(dashboard)/admin/events/[id]/owners/page.tsx`: list current owners, add/remove owners by email
+- [ ] **2.9** Admin approval queue: add approve/reject buttons to `src/app/admin/events/page.tsx`; reject shows reason input
+- [ ] **2.10** Server Actions `approveEvent` and `rejectEvent` in `src/app/admin/events/actions.ts`: set status, save reason, audit log (skip email — Phase 3)
+- [ ] **2.13** Dashboard `src/app/dashboard/page.tsx`: current user's events (all statuses), status badges, edit links, "Create New Event" button
+- [ ] **2.14** Dashboard layout `src/app/dashboard/layout.tsx`: nav (Dashboard, Create Event, Admin links), stub user display, back to public site link
+- [ ] **2.15** Admin event owners page `src/app/admin/events/[id]/owners/page.tsx`: list current owners, add/remove owners by email
 
 ---
 

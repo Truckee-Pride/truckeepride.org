@@ -55,23 +55,22 @@ Use `"latest"` for frequently-updated packages (Drizzle), caret ranges (`"^15"`)
 
 ```
 app/
-  (public)/           # Public-facing routes (no auth required)
-    events/
-      page.tsx
-      [slug]/
-        page.tsx
-  (dashboard)/        # Authenticated area
-    dashboard/
-      page.tsx
-    events/
-      new/page.tsx
-      [id]/edit/page.tsx
-    admin/            # Admin-only routes
-      events/page.tsx
-      users/page.tsx
-  (auth)/
-    sign-in/page.tsx
-    verify/page.tsx
+  page.tsx                    # Homepage
+  events/
+    page.tsx                  # Public events list
+    new/page.tsx              # Create event (auth required)
+    [slug]/page.tsx           # Public event detail
+  events/[id]/
+    edit/page.tsx             # Edit event (auth + ownership)
+  dashboard/
+    layout.tsx                # Dashboard shell
+    page.tsx                  # My events
+  admin/
+    layout.tsx                # Admin role guard
+    events/page.tsx           # Approval queue
+    users/page.tsx
+  sign-in/page.tsx
+  verify/page.tsx
   api/
     auth/[...nextauth]/route.ts
 ```
@@ -86,7 +85,7 @@ app/
 - Two roles only: `admin` (full access) and `user` (submit/edit own events).
 - Event ownership: creator is `ownerId`. Admins can add additional owners via `event_owners` table. A user can edit an event if they are an admin, the owner, or an additional owner.
 - Check permissions in Server Actions, not just in UI. Never trust client-supplied role claims.
-- Use middleware (`middleware.ts`) to protect `/dashboard/*` and `/admin/*` routes at the edge.
+- Use middleware (`middleware.ts`) to protect `/dashboard/*`, `/events/new`, `/events/*/edit`, and `/admin/*` routes at the edge.
 
 ---
 
