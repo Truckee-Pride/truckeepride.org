@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
+import { PageHeader } from '@/components/PageHeader'
 import { FlyerImage } from './FlyerImage'
 import { AddToCalendarButton } from './AddToCalendarButton'
 
@@ -84,23 +85,20 @@ export default async function EventPage({
         </div>
       )}
 
-      {event.emoji && (
-        <div className="text-5xl leading-none mb-3">{event.emoji}</div>
-      )}
-      <h1 className="mt-0">{event.title}</h1>
-
-      {event.shortDescription && (
-        <p className="text-muted mt-2">{event.shortDescription}</p>
-      )}
+      <PageHeader
+        title={event.title}
+        subtitle={event.shortDescription ?? undefined}
+        emoji={event.emoji ?? undefined}
+      />
 
       {/* Info block */}
-      <ul className="list-none p-0 m-0 space-y-2 text-lg mt-6">
+      <ul className="list-none p-0 m-0 space-y-1 text-base mt-6">
         <li className="flex items-center gap-2">
-          <Calendar size={20} className="shrink-0" />
+          <Calendar size={16} className="shrink-0" />
           {formatDateRange(event.startTime, event.endTime ?? null)}
         </li>
         <li className="flex items-center gap-2">
-          <MapPin size={20} className="shrink-0" />
+          <MapPin size={16} className="shrink-0" />
           {event.locationName}
           {event.locationAddress && (
             <span className="text-muted"> · {event.locationAddress}</span>
@@ -108,7 +106,7 @@ export default async function EventPage({
         </li>
         {event.requiresTicket && (
           <li className="flex items-center gap-2">
-            <Ticket size={20} className="shrink-0" />
+            <Ticket size={16} className="shrink-0" />
             {event.ticketUrl ? (
               <a href={event.ticketUrl} target="_blank" rel="noreferrer">
                 Get tickets
@@ -121,52 +119,28 @@ export default async function EventPage({
         {event.ageRestriction && (
           <li className="flex items-center gap-2">
             {event.ageRestriction === 'All ages' && (
-              <Baby size={20} className="shrink-0" />
+              <Baby size={16} className="shrink-0" />
             )}
             {event.ageRestriction === 'PG-13' && (
-              <ShieldUser size={20} className="shrink-0" />
+              <ShieldUser size={16} className="shrink-0" />
             )}
             {(event.ageRestriction === '21+' ||
               event.ageRestriction === 'Some parts 21+') && (
-              <Beer size={20} className="shrink-0" />
+              <Beer size={16} className="shrink-0" />
             )}
             {event.ageRestriction === '18+' && (
-              <IdCard size={20} className="shrink-0" />
+              <IdCard size={16} className="shrink-0" />
             )}
             {event.ageRestriction}
           </li>
         )}
         {event.dogsWelcome && (
           <li className="flex items-center gap-2">
-            <Dog size={20} className="shrink-0" />
+            <Dog size={16} className="shrink-0" />
             Dogs welcome
           </li>
         )}
       </ul>
-
-      {/* Action buttons */}
-      {!cancelled && (
-        <div className="flex flex-wrap gap-3 mt-6">
-          <AddToCalendarButton
-            title={event.title}
-            startTime={event.startTime}
-            endTime={event.endTime ?? null}
-            description={event.description}
-            locationName={event.locationName}
-            locationAddress={event.locationAddress ?? null}
-          />
-          {event.ticketUrl && (
-            <a
-              href={event.ticketUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block px-6 py-3 rounded-lg font-semibold text-xl transition-all duration-300 ease-out bg-brand text-inverse no-underline hover:bg-brand-hover hover:text-inverse hover:shadow-xl hover:-translate-y-1 uppercase"
-            >
-              Get Tickets →
-            </a>
-          )}
-        </div>
-      )}
 
       {/* Description (markdown) */}
       <div className="prose mt-8">
@@ -178,6 +152,32 @@ export default async function EventPage({
         <div className="mt-10">
           <FlyerImage src={event.flyerUrl} alt={`${event.title} flyer`} />
         </div>
+      )}
+
+      {/* Action buttons */}
+      {!cancelled && (
+        <section className="mt-10">
+          <div className="flex flex-wrap gap-3 mt-6">
+            <AddToCalendarButton
+              title={event.title}
+              startTime={event.startTime}
+              endTime={event.endTime ?? null}
+              description={event.description}
+              locationName={event.locationName}
+              locationAddress={event.locationAddress ?? null}
+            />
+            {event.ticketUrl && (
+              <a
+                href={event.ticketUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-block px-6 py-3 rounded-lg font-semibold text-xl transition-all duration-300 ease-out bg-brand text-inverse no-underline hover:bg-brand-hover hover:text-inverse hover:shadow-xl hover:-translate-y-1 uppercase"
+              >
+                Get Tickets →
+              </a>
+            )}
+          </div>
+        </section>
       )}
 
       <p className="mt-8">
