@@ -9,6 +9,7 @@ import {
 import type { Event } from '@/db/schema/events'
 import { createEvent } from '@/app/events/new/actions'
 import { Input } from '@/components/forms/Input'
+import { DateInput } from '@/components/forms/DateInput'
 import { Textarea } from '@/components/forms/Textarea'
 import { Select } from '@/components/forms/Select'
 import { Checkbox } from '@/components/forms/Checkbox'
@@ -210,14 +211,12 @@ export function EventForm({ event, action = createEvent }: Props) {
       </div>
 
       <div className="grid items-start gap-6 xs:grid-cols-3">
-        <Input
+        <DateInput
           label="Date"
           name="date"
-          type="date"
           required
           defaultValue={formatDate(event?.startTime)}
           errors={errors.date}
-          onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
         />
         <TimeCombobox
           label="Start Time"
