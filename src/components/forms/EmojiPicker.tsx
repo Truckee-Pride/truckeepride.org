@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 import { FormField } from './FormField'
+import { TextButton } from '@/components/TextButton'
 
 type Props = {
   name: string
@@ -56,13 +57,13 @@ export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
                 {emoji || '🏳️‍🌈'}
               </button>
               {emoji && (
-                <button
+                <TextButton
                   type="button"
+                  intent="danger"
                   onClick={() => setEmoji('')}
-                  className="text-sm text-muted hover:text-foreground"
                 >
                   Clear
-                </button>
+                </TextButton>
               )}
             </div>
           </>
