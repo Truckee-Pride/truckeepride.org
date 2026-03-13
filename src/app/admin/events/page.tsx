@@ -142,9 +142,7 @@ export default async function AdminEventsPage({
                   <DashboardActionLink href={`/events/${event.slug}`}>
                     View
                   </DashboardActionLink>
-                  <DashboardActionLink
-                    href={`/dashboard/events/${event.id}/edit`}
-                  >
+                  <DashboardActionLink href={`/events/${event.id}/edit`}>
                     Edit
                   </DashboardActionLink>
                   <DeleteEventButton id={event.id} title={event.title} />

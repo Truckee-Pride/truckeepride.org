@@ -44,9 +44,6 @@ truckeepride/
 │   │   │       └── page.tsx       # Event detail (public)
 │   │   ├── events/[id]/
 │   │   │   └── edit/page.tsx      # Edit event (auth + ownership)
-│   │   ├── dashboard/
-│   │   │   ├── layout.tsx         # Dashboard shell
-│   │   │   └── page.tsx           # My events
 │   │   ├── admin/
 │   │   │   ├── layout.tsx         # Admin role guard
 │   │   │   ├── events/page.tsx    # Approval queue
@@ -230,7 +227,7 @@ canEditEvent(userId, event) → isAdmin(userId) || event.ownerId === userId || i
 
 ### Middleware Strategy
 
-- `middleware.ts` protects `/dashboard/*`, `/events/new`, `/events/*/edit`, and `/admin/*` → redirect to `/sign-in`
+- `middleware.ts` protects `/events/new`, `/events/*/edit`, and `/admin/*` → redirect to `/sign-in`
 - `/admin/layout.tsx` checks `role === 'admin'`
 - Server Actions check ownership before mutating
 

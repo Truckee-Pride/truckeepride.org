@@ -62,9 +62,6 @@ app/
     [slug]/page.tsx           # Public event detail
   events/[id]/
     edit/page.tsx             # Edit event (auth + ownership)
-  dashboard/
-    layout.tsx                # Dashboard shell
-    page.tsx                  # My events
   admin/
     layout.tsx                # Admin role guard
     events/page.tsx           # Approval queue
@@ -85,7 +82,7 @@ app/
 - Two roles only: `admin` (full access) and `user` (submit/edit own events).
 - Event ownership: creator is `ownerId`. Admins can add additional owners via `event_owners` table. A user can edit an event if they are an admin, the owner, or an additional owner.
 - Check permissions in Server Actions, not just in UI. Never trust client-supplied role claims.
-- Use middleware (`middleware.ts`) to protect `/dashboard/*`, `/events/new`, `/events/*/edit`, and `/admin/*` routes at the edge.
+- Use middleware (`middleware.ts`) to protect `/events/new`, `/events/*/edit`, and `/admin/*` routes at the edge.
 
 ---
 
