@@ -48,6 +48,12 @@ export function EventForm({ event, action = createEvent }: Props) {
   const [requiresTicket, setRequiresTicket] = useState(
     event?.requiresTicket ?? false,
   )
+  const [startTime, setStartTime] = useState(() => {
+    const d = event?.startTime
+    if (!d) return ''
+    const offset = d.getTimezoneOffset()
+    return new Date(d.getTime() - offset * 60000).toISOString().slice(11, 16)
+  })
 
   const errors = { ...state.fieldErrors, ...clientErrors }
 
@@ -176,12 +182,14 @@ export function EventForm({ event, action = createEvent }: Props) {
           required
           defaultValue={formatTime(event?.startTime)}
           errors={errors.startTime}
+          onChange={setStartTime}
         />
         <TimeCombobox
           label="End Time"
           name="endTime"
           defaultValue={formatTime(event?.endTime)}
           errors={errors.endTime}
+          referenceTime={startTime || undefined}
         />
       </div>
 

@@ -1,17 +1,14 @@
-import { asc, desc } from 'drizzle-orm'
+import { asc, desc, eq } from 'drizzle-orm'
 import Link from 'next/link'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { DashboardActionLink } from '@/components/dashboard/DashboardActionButton'
 import { DeleteEventButton } from './DeleteEventButton'
+import { ApproveEventButton } from './ApproveEventButton'
+import { RejectEventButton } from './RejectEventButton'
+import { StatusFilter } from './StatusFilter'
 
-const SORT_FIELDS = [
-  'title',
-  'status',
-  'startTime',
-  'locationName',
-  'createdAt',
-] as const
+const SORT_FIELDS = ['title', 'startTime', 'locationName', 'createdAt'] as const
 type SortField = (typeof SORT_FIELDS)[number]
 
 function getOrderBy(sort: SortField, dir: 'asc' | 'desc') {
@@ -19,8 +16,6 @@ function getOrderBy(sort: SortField, dir: 'asc' | 'desc') {
   switch (sort) {
     case 'title':
       return fn(events.title)
-    case 'status':
-      return fn(events.status)
     case 'startTime':
       return fn(events.startTime)
     case 'locationName':
@@ -38,19 +33,32 @@ const STATUS_STYLES: Record<string, string> = {
   cancelled: 'bg-gray-100 text-gray-400',
 }
 
+const VALID_STATUSES = [
+  'draft',
+  'pending_review',
+  'approved',
+  'rejected',
+  'cancelled',
+] as const
+type EventStatus = (typeof VALID_STATUSES)[number]
+
 export default async function AdminEventsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sort?: string; dir?: string }>
+  searchParams: Promise<{ sort?: string; dir?: string; status?: string }>
 }) {
   const params = await searchParams
   const sort = (
     SORT_FIELDS.includes(params.sort as SortField) ? params.sort : 'startTime'
   ) as SortField
   const dir = params.dir === 'asc' ? 'asc' : ('desc' as const)
+  const statusFilter = VALID_STATUSES.includes(params.status as EventStatus)
+    ? (params.status as EventStatus)
+    : null
 
   const allEvents = await db.query.events.findMany({
     orderBy: getOrderBy(sort, dir),
+    ...(statusFilter ? { where: eq(events.status, statusFilter) } : {}),
   })
 
   return (
@@ -66,22 +74,19 @@ export default async function AdminEventsPage({
                   field="title"
                   current={sort}
                   dir={dir}
+                  status={statusFilter}
                   label="Title"
                 />
               </Th>
               <Th>
-                <SortLink
-                  field="status"
-                  current={sort}
-                  dir={dir}
-                  label="Status"
-                />
+                <StatusFilter />
               </Th>
               <Th>
                 <SortLink
                   field="startTime"
                   current={sort}
                   dir={dir}
+                  status={statusFilter}
                   label="Date"
                 />
               </Th>
@@ -90,6 +95,7 @@ export default async function AdminEventsPage({
                   field="locationName"
                   current={sort}
                   dir={dir}
+                  status={statusFilter}
                   label="Location"
                 />
               </Th>
@@ -98,6 +104,7 @@ export default async function AdminEventsPage({
                   field="createdAt"
                   current={sort}
                   dir={dir}
+                  status={statusFilter}
                   label="Added"
                 />
               </Th>
@@ -139,10 +146,16 @@ export default async function AdminEventsPage({
                   })}
                 </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
+                  {event.status === 'pending_review' && (
+                    <>
+                      <ApproveEventButton id={event.id} title={event.title} />
+                      <RejectEventButton id={event.id} title={event.title} />
+                    </>
+                  )}
                   <DashboardActionLink href={`/events/${event.slug}`}>
                     View
                   </DashboardActionLink>
-                  <DashboardActionLink href={`/events/${event.id}/edit`}>
+                  <DashboardActionLink href={`/events/${event.slug}/edit`}>
                     Edit
                   </DashboardActionLink>
                   <DeleteEventButton id={event.id} title={event.title} />
@@ -164,22 +177,28 @@ function SortLink({
   field,
   current,
   dir,
+  status,
   label,
 }: {
   field: SortField
   current: SortField
   dir: 'asc' | 'desc'
+  status: string | null
   label: string
 }) {
   const isActive = field === current
   const nextDir = isActive && dir === 'asc' ? 'desc' : 'asc'
+  const params = new URLSearchParams()
+  params.set('sort', field)
+  params.set('dir', nextDir)
+  if (status) params.set('status', status)
   return (
     <Link
-      href={`/admin/events?sort=${field}&dir=${nextDir}`}
+      href={`/admin/events?${params.toString()}`}
       className={`no-underline hover:underline inline-flex items-center gap-1 ${isActive ? 'text-brand' : 'text-foreground'}`}
     >
       {label}
-      {isActive && <span>{dir === 'asc' ? '↑' : '↓'}</span>}
+      {isActive && <span>{dir === 'asc' ? '\u2191' : '\u2193'}</span>}
     </Link>
   )
 }

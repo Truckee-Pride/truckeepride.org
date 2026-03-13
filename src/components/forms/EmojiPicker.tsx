@@ -51,7 +51,7 @@ export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
               <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="flex h-10 w-10 items-center justify-center rounded-md border border-border bg-background text-xl transition-colors hover:bg-surface"
+                className="flex h-10 w-10 items-center justify-center rounded-md border border-border bg-background text-xl transition-colors hover:bg-surface hover:cursor-pointer"
               >
                 {emoji || '🏳️‍🌈'}
               </button>

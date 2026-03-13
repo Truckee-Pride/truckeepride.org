@@ -8,10 +8,6 @@
 
 **Goal: Create, edit, list, view, approve events. Full working flow with stubbed auth, black-and-white styling.**
 
-- [ ] **2.7** Page route `src/app/events/[id]/edit/page.tsx`: fetch event, check `canEditEvent`, pass to EventForm
-- [ ] **2.8** Server Action `updateEvent`: Zod validate → update → audit log
-- [ ] **2.9** Admin approval queue: add approve/reject buttons to `src/app/admin/events/page.tsx`; reject shows reason input
-- [ ] **2.10** Server Actions `approveEvent` and `rejectEvent` in `src/app/admin/events/actions.ts`: set status, save reason, audit log (skip email — Phase 3)
 - [ ] **2.15** Admin event owners page `src/app/admin/events/[id]/owners/page.tsx`: list current owners, add/remove owners by email
 
 ---
