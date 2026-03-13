@@ -28,7 +28,11 @@ export async function generateMetadata({
   const event = await db.query.events.findFirst({
     where: eq(events.slug, slug),
   })
-  if (!event || !['approved', 'cancelled'].includes(event.status)) return {}
+  if (
+    !event ||
+    !['approved', 'cancelled', 'pending_review'].includes(event.status)
+  )
+    return {}
   const description = event.shortDescription ?? event.description.slice(0, 160)
   const images = event.flyerUrl ? [event.flyerUrl] : undefined
   return {
@@ -82,9 +86,11 @@ export default async function EventPage({
   })
 
   if (!event) notFound()
-  if (!['approved', 'cancelled'].includes(event.status)) notFound()
+  if (!['approved', 'cancelled', 'pending_review'].includes(event.status))
+    notFound()
 
   const cancelled = event.status === 'cancelled'
+  const pendingReview = event.status === 'pending_review'
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -117,6 +123,12 @@ export default async function EventPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {pendingReview && (
+        <div className="bg-yellow-50 border border-yellow-400 text-yellow-800 rounded-lg px-4 py-3 mb-6">
+          <strong>Submitted for review.</strong> Your event will go live once an
+          admin approves it.
+        </div>
+      )}
       {cancelled && (
         <div className="bg-red-100 border border-red-400 text-red-800 rounded-lg px-4 py-3 mb-6 font-semibold">
           This event has been cancelled.

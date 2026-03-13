@@ -1,6 +1,6 @@
 # Truckee Pride Website — Task List
 
-> **Actively maintained.** Check off tasks as completed. For architecture decisions and technical reference, see `ARCHITECTURE.md`.
+> **Actively maintained.** Delete tasks as completed. For architecture decisions and technical reference, see `ARCHITECTURE.md`.
 
 ---
 
@@ -8,8 +8,6 @@
 
 **Goal: Create, edit, list, view, approve events. Full working flow with stubbed auth, black-and-white styling.**
 
-- [ ] **2.5** Server Action `createEvent`: `getCurrentUser()` → Zod validate → generate slug → insert → audit log → return `{ success, data: { id, slug } }`. Wire into EventForm (currently has placeholder action).
-- [ ] **2.6** Server Action `submitEventForReview`: draft → pending_review + audit log (skip email — Phase 3)
 - [ ] **2.7** Page route `src/app/events/[id]/edit/page.tsx`: fetch event, check `canEditEvent`, pass to EventForm
 - [ ] **2.8** Server Action `updateEvent`: Zod validate → update → audit log
 - [ ] **2.9** Admin approval queue: add approve/reject buttons to `src/app/admin/events/page.tsx`; reject shows reason input
@@ -30,7 +28,13 @@
 - [ ] **3.6** Verify page `/verify`: "Check your email" + resend link.
 - [ ] **3.7** Auth middleware (`middleware.ts`): protect `/events/new`, `/events/*/edit`, and `/admin/*`.
 - [ ] **3.8** Admin guard in `/admin/layout.tsx`: check `role === 'admin'`, 403 if not.
-- [ ] **3.9** Wire ownership checks into Server Actions (createEvent, updateEvent, approve, reject, manage owners).
+- [ ] **3.9** Wire ownership/role checks everywhere they're missing:
+  - `events/[slug]/page.tsx`: `pending_review` events are currently visible to anyone — gate them so only the event owner or an admin can see them; everyone else gets `notFound()`
+  - `events/[slug]/page.tsx` `generateMetadata`: same gating as above (currently leaks event title/description in OG metadata for pending events)
+  - `submitEventForReview` (`events/new/actions.ts`): verify the calling user owns the event before transitioning status
+  - `updateEvent` (task 2.8, not yet built): call `canEditEvent(user, event)` before applying any update
+  - `approveEvent` / `rejectEvent` (task 2.10, not yet built): verify `user.role === 'admin'`
+  - Owner management actions (task 2.15, not yet built): verify `user.role === 'admin'`
 - [ ] **3.10** Seed production admin accounts (pride organizers).
 - [ ] **3.11** Build React Email templates: magic link, event approved, event rejected.
 - [ ] **3.12** Email utility (`src/lib/email.ts`) wrapping Resend.

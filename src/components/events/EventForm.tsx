@@ -7,6 +7,7 @@ import {
   type CreateEventInput,
 } from '@/lib/schemas/events'
 import type { Event } from '@/db/schema/events'
+import { createEvent } from '@/app/events/new/actions'
 import { Input } from '@/components/forms/Input'
 import { Textarea } from '@/components/forms/Textarea'
 import { Select } from '@/components/forms/Select'
@@ -21,15 +22,12 @@ type ActionState = {
   fieldErrors?: Partial<Record<keyof CreateEventInput, string[]>>
 }
 
-const initialState: ActionState = { success: false }
+type FormAction = (
+  prevState: ActionState,
+  formData: FormData,
+) => Promise<ActionState>
 
-// Placeholder action — replaced in Chunk 6 with real createEvent / updateEvent
-async function placeholderAction(
-  _prev: ActionState,
-  _formData: FormData,
-): Promise<ActionState> {
-  return { success: false, error: 'Server action not wired up yet' }
-}
+const initialState: ActionState = { success: false }
 
 const ageRestrictionOptions = AGE_RESTRICTION_OPTIONS.map((opt) => ({
   value: opt,
@@ -38,13 +36,11 @@ const ageRestrictionOptions = AGE_RESTRICTION_OPTIONS.map((opt) => ({
 
 type Props = {
   event?: Event
+  action?: FormAction
 }
 
-export function EventForm({ event }: Props) {
-  const [state, formAction, isPending] = useActionState(
-    placeholderAction,
-    initialState,
-  )
+export function EventForm({ event, action = createEvent }: Props) {
+  const [state, formAction, isPending] = useActionState(action, initialState)
   const [clientErrors, setClientErrors] = useState<
     Partial<Record<string, string[]>>
   >({})
