@@ -143,7 +143,7 @@ export function EventForm({ event }: Props) {
         errors={errors.description}
       />
 
-      <div className="grid gap-6 xs:grid-cols-2">
+      <div className="grid items-start gap-6 xs:grid-cols-2">
         <Input
           label="Location Name"
           name="locationName"
@@ -163,7 +163,7 @@ export function EventForm({ event }: Props) {
         />
       </div>
 
-      <div className="grid gap-6 xs:grid-cols-3">
+      <div className="grid items-start gap-6 xs:grid-cols-3">
         <Input
           label="Date"
           name="date"
