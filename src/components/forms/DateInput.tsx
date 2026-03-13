@@ -215,7 +215,15 @@ export function DateInput({
   const disabledDates = [{ before: today }, { after: oneYearFromToday }]
 
   return (
-    <div ref={containerRef}>
+    <div
+      ref={containerRef}
+      onBlur={(e) => {
+        // Close calendar when focus leaves the entire container
+        if (!containerRef.current?.contains(e.relatedTarget as Node)) {
+          setOpen(false)
+        }
+      }}
+    >
       <FormField
         label={label}
         name={name}
