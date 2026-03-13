@@ -6,21 +6,38 @@ type Props = Omit<
 > & {
   label: string
   name: string
+  description?: string
 }
 
-export function Checkbox({ label, name, className, ...rest }: Props) {
+export function Checkbox({
+  label,
+  name,
+  description,
+  className,
+  ...rest
+}: Props) {
   const inputId = `field-${name}`
 
   return (
-    <label htmlFor={inputId} className="flex items-center gap-2 text-sm">
-      <input
-        type="checkbox"
-        id={inputId}
-        name={name}
-        className={cn('h-4 w-4 rounded border-border accent-brand', className)}
-        {...rest}
-      />
-      {label}
-    </label>
+    <div>
+      <label htmlFor={inputId} className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id={inputId}
+          name={name}
+          className={cn(
+            'h-4 w-4 rounded border-border accent-brand',
+            className,
+          )}
+          {...rest}
+        />
+        <span className="text-sm font-medium text-foreground">{label}</span>
+      </label>
+      {description && (
+        <p className="ml-6 mt-0.5 text-sm leading-snug text-muted">
+          {description}
+        </p>
+      )}
+    </div>
   )
 }

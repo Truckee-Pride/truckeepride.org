@@ -60,6 +60,7 @@ export function EventForm({ event }: Props) {
       description: formData.get('description') as string,
       locationName: formData.get('locationName') as string,
       locationAddress: (formData.get('locationAddress') as string) || undefined,
+      date: formData.get('date') as string,
       startTime: formData.get('startTime') as string,
       endTime: (formData.get('endTime') as string) || undefined,
       flyerUrl: (formData.get('flyerUrl') as string) || undefined,
@@ -82,11 +83,16 @@ export function EventForm({ event }: Props) {
     setClientErrors({})
   }
 
-  function formatForDatetimeLocal(date: Date | null | undefined): string {
+  function formatDate(date: Date | null | undefined): string {
+    if (!date) return ''
+    return date.toISOString().slice(0, 10)
+  }
+
+  function formatTime(date: Date | null | undefined): string {
     if (!date) return ''
     const offset = date.getTimezoneOffset()
     const local = new Date(date.getTime() - offset * 60000)
-    return local.toISOString().slice(0, 16)
+    return local.toISOString().slice(11, 16)
   }
 
   return (
@@ -94,7 +100,7 @@ export function EventForm({ event }: Props) {
       action={formAction}
       onSubmit={handleSubmit}
       noValidate
-      className="mt-6 space-y-5"
+      className="mt-8 max-w-2xl space-y-6"
     >
       <FormError message={state.error} />
 
@@ -105,6 +111,7 @@ export function EventForm({ event }: Props) {
         defaultValue={event?.title}
         maxLength={200}
         placeholder="Pride Week Kickoff Party"
+        description="The main name of your event. Keep it short and descriptive."
         errors={errors.title}
       />
 
@@ -119,7 +126,8 @@ export function EventForm({ event }: Props) {
         name="shortDescription"
         defaultValue={event?.shortDescription ?? ''}
         maxLength={500}
-        placeholder="One-line summary shown on event cards"
+        placeholder="One-line summary shown on event lists"
+        description="Shown on home page and events list. One short sentence works best."
         errors={errors.shortDescription}
       />
 
@@ -130,10 +138,11 @@ export function EventForm({ event }: Props) {
         defaultValue={event?.description}
         rows={5}
         placeholder="Tell people what this event is about..."
+        description="Full details about the event. Include what to expect, what to bring, what to wear, etc."
         errors={errors.description}
       />
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <Input
           label="Location Name"
           name="locationName"
@@ -153,20 +162,29 @@ export function EventForm({ event }: Props) {
         />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <Input
+        label="Date"
+        name="date"
+        type="date"
+        required
+        defaultValue={formatDate(event?.startTime)}
+        errors={errors.date}
+      />
+
+      <div className="grid gap-6 sm:grid-cols-2">
         <Input
           label="Start Time"
           name="startTime"
-          type="datetime-local"
+          type="time"
           required
-          defaultValue={formatForDatetimeLocal(event?.startTime)}
+          defaultValue={formatTime(event?.startTime)}
           errors={errors.startTime}
         />
         <Input
           label="End Time"
           name="endTime"
-          type="datetime-local"
-          defaultValue={formatForDatetimeLocal(event?.endTime)}
+          type="time"
+          defaultValue={formatTime(event?.endTime)}
           errors={errors.endTime}
         />
       </div>
@@ -188,22 +206,24 @@ export function EventForm({ event }: Props) {
         placeholder="No restriction"
         defaultValue={event?.ageRestriction ?? ''}
         className="max-w-xs"
+        description="Select if any part of the event has age requirements."
         errors={errors.ageRestriction}
       />
 
-      <div className="flex flex-wrap gap-6">
-        <Checkbox
-          label="Requires Ticket"
-          name="requiresTicket"
-          defaultChecked={event?.requiresTicket}
-          onChange={(e) => setRequiresTicket(e.target.checked)}
-        />
-        <Checkbox
-          label="Dogs Welcome"
-          name="dogsWelcome"
-          defaultChecked={event?.dogsWelcome}
-        />
-      </div>
+      <Checkbox
+        label="Dogs Welcome"
+        name="dogsWelcome"
+        defaultChecked={event?.dogsWelcome}
+        description="Let attendees know if they can bring their furry friends."
+      />
+
+      <Checkbox
+        label="Requires Ticket"
+        name="requiresTicket"
+        defaultChecked={event?.requiresTicket}
+        onChange={(e) => setRequiresTicket(e.target.checked)}
+        description="Check this if attendees need a ticket or RSVP."
+      />
 
       {requiresTicket && (
         <Input
@@ -212,6 +232,7 @@ export function EventForm({ event }: Props) {
           type="url"
           defaultValue={event?.ticketUrl ?? ''}
           placeholder="https://tickets.example.com/event"
+          description="Link where attendees can buy tickets or RSVP."
           errors={errors.ticketUrl}
         />
       )}

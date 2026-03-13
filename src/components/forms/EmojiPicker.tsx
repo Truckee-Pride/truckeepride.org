@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
+import { FormField } from './FormField'
 
 type Props = {
   name: string
@@ -42,28 +43,31 @@ export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
 
   return (
     <div ref={containerRef}>
-      <label className="block text-sm font-semibold text-foreground">
-        {label}
-      </label>
-      <input type="hidden" name={name} value={emoji} />
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-background text-xl transition-colors hover:bg-surface"
-        >
-          {emoji || '🏳️‍🌈'}
-        </button>
-        {emoji && (
-          <button
-            type="button"
-            onClick={() => setEmoji('')}
-            className="text-sm text-muted hover:text-foreground"
-          >
-            Clear
-          </button>
+      <FormField label={label} name={name}>
+        {() => (
+          <>
+            <input type="hidden" name={name} value={emoji} />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setOpen(!open)}
+                className="flex h-10 w-10 items-center justify-center rounded-md border border-border bg-background text-xl transition-colors hover:bg-surface"
+              >
+                {emoji || '🏳️‍🌈'}
+              </button>
+              {emoji && (
+                <button
+                  type="button"
+                  onClick={() => setEmoji('')}
+                  className="text-sm text-muted hover:text-foreground"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </>
         )}
-      </div>
+      </FormField>
       {open && (
         <div className="absolute z-10 mt-1">
           <Picker
