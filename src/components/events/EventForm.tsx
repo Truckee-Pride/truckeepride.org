@@ -182,6 +182,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         name="description"
         required
         defaultValue={event?.description}
+        maxLength={5000}
         rows={5}
         placeholder="e.g. Join us for an evening of live music and dancing at the park. All ages welcome. Bring a blanket and your best dance moves!"
         description="Full details about the event. Include what to expect, what to bring, what to wear, etc."

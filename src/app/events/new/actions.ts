@@ -8,6 +8,7 @@ import { events, auditLog } from '@/db/schema'
 import { createEventSchema, type CreateEventInput } from '@/lib/schemas/events'
 import { generateSlug, ensureUniqueSlug } from '@/lib/slug'
 import { isBlobUrl } from '@/lib/upload'
+import { checkPendingEventLimit } from '@/lib/rate-limit'
 
 export type CreateEventState = {
   success: boolean
@@ -20,6 +21,15 @@ export async function createEvent(
   formData: FormData,
 ): Promise<CreateEventState> {
   const user = await getCurrentUser()
+
+  const rateLimit = await checkPendingEventLimit(user.id)
+  if (!rateLimit.allowed) {
+    return {
+      success: false,
+      error:
+        'You have too many pending events. Please wait for existing submissions to be reviewed.',
+    }
+  }
 
   const raw = {
     title: formData.get('title') as string,

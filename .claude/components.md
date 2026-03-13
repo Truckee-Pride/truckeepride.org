@@ -38,15 +38,16 @@ Both share styles from `src/components/text-button-styles.ts`. Use anywhere you 
 
 Before writing a bare `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`, use these:
 
-| Component      | Replaces                  | Notes                                                          |
-| -------------- | ------------------------- | -------------------------------------------------------------- |
-| `Input`        | `<input>`                 | Wraps in `FormField` — handles label, errors, accessibility    |
-| `Textarea`     | `<textarea>`              | Same pattern as Input                                          |
-| `Select`       | `<select>`                | Accepts `options: { value, label }[]`, includes custom chevron |
-| `Checkbox`     | `<input type="checkbox">` | Includes inline label; uses `accent-brand`                     |
-| `TimeCombobox` | custom time `<input>`     | Keyboard-navigable segments + dropdown; stores 24h `HH:MM`     |
-| `EmojiPicker`  | —                         | Button + dropdown picker; returns emoji string                 |
-| `FormError`    | inline error div          | Form-level (non-field) error; returns null if no message       |
-| `FormField`    | —                         | Core wrapper for custom fields; render-prop pattern            |
+| Component      | Replaces                  | Notes                                                                               |
+| -------------- | ------------------------- | ----------------------------------------------------------------------------------- |
+| `Input`        | `<input>`                 | Wraps in `FormField` — handles label, errors, accessibility                         |
+| `Textarea`     | `<textarea>`              | Same pattern as Input                                                               |
+| `Select`       | `<select>`                | Accepts `options: { value, label }[]`, includes custom chevron                      |
+| `Checkbox`     | `<input type="checkbox">` | Includes inline label; uses `accent-brand`                                          |
+| `DateInput`    | `<input type="date">`     | MM/DD/YYYY typed segments + react-day-picker calendar dropdown; stores `YYYY-MM-DD` |
+| `TimeCombobox` | custom time `<input>`     | Keyboard-navigable segments + dropdown; stores 24h `HH:MM`                          |
+| `EmojiPicker`  | —                         | Button + dropdown picker; returns emoji string                                      |
+| `FormError`    | inline error div          | Form-level (non-field) error; returns null if no message                            |
+| `FormField`    | —                         | Core wrapper for custom fields; render-prop pattern                                 |
 
 All form components take `name`, `label`, and `errors?: string[]`. `FormField` wires up `htmlFor`/`aria-describedby` automatically — don't do this manually.

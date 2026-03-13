@@ -72,6 +72,16 @@
 
 ---
 
+## MVP.5.x: Abuse Prevention
+
+**Goal: Protect event submission from spam, bots, and targeted harassment.**
+
+- [ ] **MVP.5.1** User banning: `bannedAt` column on users, admin "Ban Submitter" button in approval queue, bulk-reject pending events on ban
+- [ ] **MVP.5.2** Cloudflare Turnstile (free CAPTCHA) on event submission forms
+- [ ] **MVP.5.3** Disposable email domain blocking in Auth.js signIn callback
+
+---
+
 ## Deferred to Post-MVP
 
 - [ ] Admin event owners page (`src/app/admin/events/[id]/owners/page.tsx`) — use Drizzle Studio until then
