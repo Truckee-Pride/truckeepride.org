@@ -38,6 +38,18 @@ function parse24h(hhMM: string) {
   return { h12, min: m, period }
 }
 
+function formatDuration(startHHMM: string, endHHMM: string): string | null {
+  const [sh, sm] = startHHMM.split(':').map(Number)
+  const [eh, em] = endHHMM.split(':').map(Number)
+  const diff = eh * 60 + em - (sh * 60 + sm)
+  if (diff <= 0) return null
+  const h = Math.floor(diff / 60)
+  const m = diff % 60
+  if (h === 0) return `${m}m`
+  if (m === 0) return `${h}h`
+  return `${h}h ${m}m`
+}
+
 function selectAll(el: HTMLInputElement | null) {
   if (!el) return
   requestAnimationFrame(() => el.select())
@@ -50,6 +62,8 @@ type Props = {
   defaultValue?: string // HH:MM 24h
   errors?: string[]
   description?: string
+  referenceTime?: string // HH:MM 24h — used to show duration in dropdown
+  onChange?: (value: string) => void
 }
 
 export function TimeCombobox({
@@ -59,6 +73,8 @@ export function TimeCombobox({
   defaultValue,
   errors,
   description,
+  referenceTime,
+  onChange,
 }: Props) {
   const initial = defaultValue
     ? parse24h(defaultValue)
@@ -68,6 +84,7 @@ export function TimeCombobox({
   const [minute, setMinute] = useState(initial.min)
   const [period, setPeriod] = useState<'AM' | 'PM'>(initial.period)
   const [open, setOpen] = useState(false)
+  const [isEmpty, setIsEmpty] = useState(!defaultValue && !required)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const selectedRef = useRef<HTMLLIElement>(null)
@@ -112,12 +129,17 @@ export function TimeCombobox({
 
   // --- Handlers ---
 
-  const handleSelect = useCallback((opt: (typeof TIME_OPTIONS)[number]) => {
-    setHour(opt.h12)
-    setMinute(opt.min)
-    setPeriod(opt.period as 'AM' | 'PM')
-    setOpen(false)
-  }, [])
+  const handleSelect = useCallback(
+    (opt: (typeof TIME_OPTIONS)[number]) => {
+      setHour(opt.h12)
+      setMinute(opt.min)
+      setPeriod(opt.period as 'AM' | 'PM')
+      setIsEmpty(false)
+      setOpen(false)
+      onChange?.(opt.value)
+    },
+    [onChange],
+  )
 
   function clearBuffer() {
     digitBuffer.current = null
@@ -304,7 +326,7 @@ export function TimeCombobox({
       >
         {({ inputId, hasError, describedBy }) => (
           <div className="relative">
-            <input type="hidden" name={name} value={value24} />
+            <input type="hidden" name={name} value={isEmpty ? '' : value24} />
 
             <div
               id={inputId}
@@ -315,62 +337,69 @@ export function TimeCombobox({
               aria-invalid={hasError || undefined}
               aria-describedby={describedBy}
               onClick={() => {
+                if (isEmpty) setIsEmpty(false)
                 setOpen(!open)
                 hourRef.current?.focus()
               }}
               className={cn(
                 'flex h-10 w-full cursor-pointer items-center rounded-md border border-border bg-background px-3',
                 'text-base text-foreground',
-                'has-[:focus]:border-brand has-[:focus]:ring-1 has-[:focus]:ring-brand',
+                'has-focus:border-brand has-focus:ring-1 has-focus:ring-brand',
                 hasError && 'border-error',
               )}
             >
-              <div
-                className="flex items-center gap-0"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <input
-                  ref={hourRef}
-                  type="text"
-                  inputMode="numeric"
-                  value={hourText}
-                  readOnly
-                  aria-label="Hour"
-                  onFocus={() => handleSegmentFocus(hourRef)}
-                  onMouseUp={(e) => preventDeselect(e, hourRef)}
-                  onKeyDown={handleHourKeyDown}
-                  className={cn(segment, 'w-[2ch] text-right')}
-                />
-                <span
-                  className="select-none text-base text-foreground"
-                  aria-hidden
-                >
-                  :
+              {isEmpty ? (
+                <span className="text-base text-subtle select-none">
+                  hh:mm PM
                 </span>
-                <input
-                  ref={minuteRef}
-                  type="text"
-                  inputMode="numeric"
-                  value={minuteText}
-                  readOnly
-                  aria-label="Minute"
-                  onFocus={() => handleSegmentFocus(minuteRef)}
-                  onMouseUp={(e) => preventDeselect(e, minuteRef)}
-                  onKeyDown={handleMinuteKeyDown}
-                  className={cn(segment, 'w-[2ch] text-left')}
-                />
-                <input
-                  ref={periodRef}
-                  type="text"
-                  value={period}
-                  readOnly
-                  aria-label="AM or PM"
-                  onFocus={() => handleSegmentFocus(periodRef)}
-                  onMouseUp={(e) => preventDeselect(e, periodRef)}
-                  onKeyDown={handlePeriodKeyDown}
-                  className={cn(segment, 'ml-[0.5ch] w-[2.5ch] text-left')}
-                />
-              </div>
+              ) : (
+                <div
+                  className="flex items-center gap-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    ref={hourRef}
+                    type="text"
+                    inputMode="numeric"
+                    value={hourText}
+                    readOnly
+                    aria-label="Hour"
+                    onFocus={() => handleSegmentFocus(hourRef)}
+                    onMouseUp={(e) => preventDeselect(e, hourRef)}
+                    onKeyDown={handleHourKeyDown}
+                    className={cn(segment, 'w-[2ch] text-right')}
+                  />
+                  <span
+                    className="select-none text-base text-foreground"
+                    aria-hidden
+                  >
+                    :
+                  </span>
+                  <input
+                    ref={minuteRef}
+                    type="text"
+                    inputMode="numeric"
+                    value={minuteText}
+                    readOnly
+                    aria-label="Minute"
+                    onFocus={() => handleSegmentFocus(minuteRef)}
+                    onMouseUp={(e) => preventDeselect(e, minuteRef)}
+                    onKeyDown={handleMinuteKeyDown}
+                    className={cn(segment, 'w-[2ch] text-left')}
+                  />
+                  <input
+                    ref={periodRef}
+                    type="text"
+                    value={period}
+                    readOnly
+                    aria-label="AM or PM"
+                    onFocus={() => handleSegmentFocus(periodRef)}
+                    onMouseUp={(e) => preventDeselect(e, periodRef)}
+                    onKeyDown={handlePeriodKeyDown}
+                    className={cn(segment, 'ml-[0.5ch] w-[2.5ch] text-left')}
+                  />
+                </div>
+              )}
 
               <ChevronDown aria-hidden className="ml-auto size-4 text-subtle" />
             </div>
@@ -383,6 +412,8 @@ export function TimeCombobox({
               >
                 {TIME_OPTIONS.map((opt) => {
                   const isSelected = opt.value === value24
+                  const duration =
+                    referenceTime && formatDuration(referenceTime, opt.value)
                   return (
                     <li
                       key={opt.value}
@@ -397,13 +428,23 @@ export function TimeCombobox({
                           handleSelect(opt)
                         }}
                         className={cn(
-                          'w-full cursor-pointer rounded-lg px-3 py-1.5 text-left text-base',
+                          'flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-left text-base',
                           isSelected
                             ? 'bg-brand font-medium text-inverse'
                             : 'hover:bg-surface',
                         )}
                       >
-                        {opt.label}
+                        <span>{opt.label}</span>
+                        {duration && (
+                          <span
+                            className={cn(
+                              'text-sm',
+                              isSelected ? 'text-inverse/70' : 'text-subtle',
+                            )}
+                          >
+                            {duration}
+                          </span>
+                        )}
                       </button>
                     </li>
                   )

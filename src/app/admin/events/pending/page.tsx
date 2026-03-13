@@ -1,7 +1,7 @@
 import { asc, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
-import { DashboardActionLink } from '@/components/dashboard/DashboardActionButton'
+import { TextLink } from '@/components/TextLink'
 import { ApproveEventButton } from '../ApproveEventButton'
 import { RejectEventButton } from '../RejectEventButton'
 
@@ -59,12 +59,10 @@ export default async function PendingEventsPage() {
                   <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
                     <ApproveEventButton id={event.id} title={event.title} />
                     <RejectEventButton id={event.id} title={event.title} />
-                    <DashboardActionLink href={`/events/${event.slug}`}>
-                      View
-                    </DashboardActionLink>
-                    <DashboardActionLink href={`/events/${event.slug}/edit`}>
+                    <TextLink href={`/events/${event.slug}`}>View</TextLink>
+                    <TextLink href={`/events/${event.slug}/edit`}>
                       Edit
-                    </DashboardActionLink>
+                    </TextLink>
                   </td>
                 </tr>
               ))}

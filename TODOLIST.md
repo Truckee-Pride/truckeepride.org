@@ -4,87 +4,84 @@
 
 ---
 
-## Phase 2: Events CRUD & List View
+## MVP.1.x: Image Uploading
 
-**Goal: Create, edit, list, view, approve events. Full working flow with stubbed auth, black-and-white styling.**
+**Goal: Replace flyer URL input with file upload via Vercel Blob.**
 
-- [ ] **2.15** Admin event owners page `src/app/admin/events/[id]/owners/page.tsx`: list current owners, add/remove owners by email
-
----
-
-## Phase 3: Authentication & Email
-
-**Goal: Replace stub with real magic link auth. Wire up email notifications.**
-
-- [ ] **3.1** Set up Resend account. Verify truckeepride.org domain (SPF/DKIM — coordinate with David).
-- [ ] **3.2** Add Auth.js tables to Drizzle schema (accounts, sessions, verificationTokens). Generate + run migration.
-- [ ] **3.3** Configure Auth.js v5 (`src/lib/auth.ts`): Resend provider, Drizzle adapter, database sessions.
-- [ ] **3.4** Replace `getCurrentUser()` with real `auth()` session. Same signature, no other changes.
-- [ ] **3.5** Sign-in page `/sign-in`: email input → `signIn("resend", { email })` → redirect to verify.
-- [ ] **3.6** Verify page `/verify`: "Check your email" + resend link.
-- [ ] **3.7** Auth middleware (`middleware.ts`): protect `/events/new`, `/events/*/edit`, and `/admin/*`.
-- [ ] **3.8** Admin guard in `/admin/layout.tsx`: check `role === 'admin'`, 403 if not.
-- [ ] **3.9** Wire ownership/role checks everywhere they're missing:
-  - `events/[slug]/page.tsx`: `pending_review` events are currently visible to anyone — gate them so only the event owner or an admin can see them; everyone else gets `notFound()`
-  - `events/[slug]/page.tsx` `generateMetadata`: same gating as above (currently leaks event title/description in OG metadata for pending events)
-  - `submitEventForReview` (`events/new/actions.ts`): verify the calling user owns the event before transitioning status
-  - `updateEvent` (task 2.8, not yet built): call `canEditEvent(user, event)` before applying any update
-  - `approveEvent` / `rejectEvent` (task 2.10, not yet built): verify `user.role === 'admin'`
-  - Owner management actions (task 2.15, not yet built): verify `user.role === 'admin'`
-- [ ] **3.10** Seed production admin accounts (pride organizers).
-- [ ] **3.11** Build React Email templates: magic link, event approved, event rejected.
-- [ ] **3.12** Email utility (`src/lib/email.ts`) wrapping Resend.
-- [ ] **3.13** Wire emails: approve → owner, reject → owner.
-- [ ] **3.14** Auth UI in site header: sign-in/sign-out, user display.
+- [ ] **MVP.1.1** Set up Vercel Blob, add `BLOB_READ_WRITE_TOKEN` to env
+- [ ] **MVP.1.2** Upload server action: accept FormData, validate type (jpeg/png/webp) + size (5MB max), upload to Blob, return URL (`src/lib/blob.ts`)
+- [ ] **MVP.1.3** Update EventForm: file input with client-side preview, upload on submit, keep URL fallback (`src/components/events/EventForm.tsx`)
+- [ ] **MVP.1.4** Configure `next.config.ts` `images.remotePatterns` for Blob domain
 
 ---
 
-## MVP Launch: Go Live with Admin Events
+## MVP.2.x: Authentication
 
-**Goal: Replace existing Webflow site. Admins can create/edit/view events. Public can browse events.**
+**Goal: Replace auth stub with real Auth.js magic link auth. Protect routes and gate visibility.**
 
-- [ ] **MVP.1** Custom domain on Vercel (truckeepride.org).
-- [ ] **MVP.2** DNS: domain → Vercel, verify email DNS (SPF/DKIM).
-- [ ] **MVP.3** `error.tsx` boundaries for graceful error recovery.
-- [ ] **MVP.4** Branded `not-found.tsx` (404).
-- [ ] **MVP.5** Empty states: no events, no pending approvals, no user events.
-- [ ] **MVP.6** Security: rate limiting on sign-in, Zod sanitization, route guards verified.
-- [ ] **MVP.7** Test all email flows on production domain.
-- [ ] **MVP.8** DNS cutover from Webflow → Vercel. **Go live.**
-
----
-
-## Phase 4: Homepage, Content & Image Uploads
-
-**Goal: Real homepage, content pages, site navigation, image uploads working.**
-
-- [ ] **4.1** Site header/nav: add nav links (Events, Get Involved, About, Donate), auth UI, mobile hamburger. Logo/banner already in place.
-- [ ] **4.4** About page (`src/app/(public)/about/page.tsx`): org info, mission, team. Plain React Server Component.
-- [ ] **4.5** Get Involved page: volunteer form (name, email, interests, message → Resend to hello@truckeepride.org).
-- [ ] **4.8** Set up Vercel Blob. Add `BLOB_READ_WRITE_TOKEN` to env.
-- [ ] **4.9** Upload Server Action: accept FormData, validate type (jpeg/png/webp/gif) + size (max 5MB), upload to Blob, return URL.
-- [ ] **4.10** Update EventForm: real `<input type="file">` with client preview, upload on submit.
-- [ ] **4.11** Configure `next.config.ts` `images.remotePatterns` for Blob domain. Use `next/image` everywhere.
+- [ ] **MVP.2.0** Resend sandbox setup for dev/testing:
+  - Create Resend account (free tier: 3k emails/month, 100/day)
+  - Generate API key → add `AUTH_RESEND_KEY` to `.env.local`
+  - Generate auth secret → `openssl rand -base64 32` → add `AUTH_SECRET` to `.env.local`
+  - Sandbox limitation: can only send to your own Resend account email, from `onboarding@resend.dev`
+- [ ] **MVP.2.1** Add Auth.js tables to Drizzle schema (accounts, sessions, verificationTokens). Generate + run migration.
+- [ ] **MVP.2.2** Configure Auth.js v5 (`src/lib/auth.ts`): Resend provider, Drizzle adapter, database sessions
+- [ ] **MVP.2.3** Auth.js route handler (`src/app/api/auth/[...nextauth]/route.ts`)
+- [ ] **MVP.2.4** Replace `getCurrentUser()` stub with real `auth()` session — same return shape
+- [ ] **MVP.2.5** Sign-in page `/sign-in`: email input → magic link
+- [ ] **MVP.2.6** Verify page `/verify`: "Check your email" + resend link
+- [ ] **MVP.2.7** Auth middleware (`src/middleware.ts`): protect `/events/new`, `/events/*/edit`, `/admin/*` → redirect to `/sign-in`
+- [ ] **MVP.2.8** Admin guard in `/admin/layout.tsx`: check `role === 'admin'`, show 403
+- [ ] **MVP.2.9** Visibility gating: pending/draft/rejected events only visible to owner + admins (page + generateMetadata) (`src/app/events/[slug]/page.tsx`)
+- [ ] **MVP.2.10** Permission checks in all server actions:
+  - `submitEventForReview`: verify calling user owns the event
+  - `approveEvent` / `rejectEvent`: verify `user.role === 'admin'`
+- [ ] **MVP.2.11** Minimal header nav with auth UI: Events, Create Event (logged in), Admin (admin), Sign In / Sign Out (`src/app/Header.tsx`)
+- [ ] **MVP.2.12** "My Events" tab/filter on `/events` page: show user's own events with status badges
 
 ---
 
-## Phase 5: Design System & Visual Polish
+## MVP.3.x: Email
 
-**Goal: Replace black-and-white with full branded design.**
+**Goal: Magic link emails for auth + notification emails for approval workflow.**
 
-- [ ] **5.2** Reusable components: Dialog, Toast. (Button, Card, Input/Textarea/Select, Badge already exist.)
-- [ ] **5.3** Apply design across all pages: homepage, events, admin, forms.
-- [ ] **5.4** Responsive pass: mobile (375px), tablet (768px), desktop (1280px+).
-- [ ] **5.5** Accessibility: keyboard nav, screen reader, WCAG AA contrast, focus indicators, alt text, reduced motion.
+- [ ] **MVP.3.1** Verify truckeepride.org domain in Resend — coordinate with David for DNS access:
+  - Add Resend MX record to truckeepride.org DNS
+  - Add SPF (TXT) record
+  - Add DKIM (TXT) records (Resend provides these)
+  - Verify domain in Resend dashboard
+  - Update `EMAIL_FROM` env var to `auth@truckeepride.org`
+- [ ] **MVP.3.2** Email utility wrapping Resend SDK (`src/lib/email.ts`)
+- [ ] **MVP.3.3** Magic link email template — simple, branded (`src/emails/magic-link.tsx`)
+- [ ] **MVP.3.4** Event approved notification to owner (`src/emails/event-approved.tsx`)
+- [ ] **MVP.3.5** Event rejected notification to owner with reason (`src/emails/event-rejected.tsx`)
+- [ ] **MVP.3.6** Wire approve/reject actions to send emails (`src/app/admin/events/actions.ts`)
 
 ---
 
-## Phase 6: Post-Launch Polish
+## MVP.4.x: Production Config & Launch
 
-**Goal: SEO, analytics, performance, admin tools.**
+**Goal: Error handling, empty states, domain setup, go live.**
 
-- [ ] **6.1** `loading.tsx` skeletons: events list, event detail, admin.
-- [ ] **6.2** SEO: OG images/metadata. (sitemap.ts, robots.ts, favicon, and JSON-LD already exist.)
-- [ ] **6.3** Analytics: Vercel Analytics and/or Plausible.
-- [ ] **6.4** Performance: Lighthouse, Core Web Vitals.
-- [ ] **6.5** Admin user management `/admin/users`: list users, change roles. Simple table.
+- [ ] **MVP.4.1** Root `error.tsx` boundary — friendly message, no stack traces
+- [ ] **MVP.4.2** Root `not-found.tsx` — branded 404 page
+- [ ] **MVP.4.3** Empty states: no events on list page, no pending approvals, no user events
+- [ ] **MVP.4.4** Custom domain on Vercel (truckeepride.org)
+- [ ] **MVP.4.5** DNS cutover: domain → Vercel, Resend email DNS (SPF/DKIM) verified
+- [ ] **MVP.4.6** Smoke test all flows: sign in, create event, submit, approve, view, emails. **Go live.**
+
+---
+
+## Deferred to Post-MVP
+
+- [ ] Admin event owners page (`src/app/admin/events/[id]/owners/page.tsx`) — use Drizzle Studio until then
+- [ ] Admin user management `/admin/users` — use Drizzle Studio until then
+- [ ] Rate limiting on sign-in
+- [ ] Full site nav: Get Involved, About, Donate links, mobile hamburger
+- [ ] About page, Get Involved page
+- [ ] `loading.tsx` skeletons
+- [ ] Fancy React Email templates (replace plain text)
+- [ ] Design system & visual polish (Dialog, Toast, responsive pass, accessibility audit)
+- [ ] SEO: OG images/metadata
+- [ ] Analytics: Vercel Analytics and/or Plausible
+- [ ] Performance: Lighthouse, Core Web Vitals

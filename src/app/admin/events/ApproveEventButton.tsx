@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
-import { DashboardActionButton } from '@/components/dashboard/DashboardActionButton'
+import { TextButton } from '@/components/TextButton'
 import { approveEvent } from './actions'
 
 export function ApproveEventButton({
@@ -21,12 +21,8 @@ export function ApproveEventButton({
   }
 
   return (
-    <DashboardActionButton
-      intent="primary"
-      onClick={handleClick}
-      disabled={isPending}
-    >
+    <TextButton intent="primary" onClick={handleClick} disabled={isPending}>
       {isPending ? 'Approving\u2026' : 'Approve'}
-    </DashboardActionButton>
+    </TextButton>
   )
 }

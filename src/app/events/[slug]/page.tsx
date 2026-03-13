@@ -3,6 +3,7 @@ import { LayoutWidth } from '@/lib/constants'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import { Edit2 } from 'lucide-react'
 import {
   Baby,
   Beer,
@@ -16,8 +17,11 @@ import {
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { PageHeader } from '@/components/PageHeader'
+import { Button } from '@/components/Button'
 import { FlyerImage } from './FlyerImage'
 import { AddToCalendarButton } from './AddToCalendarButton'
+import { getCurrentUser } from '@/lib/auth-stub'
+import { canEditEvent } from '@/lib/permissions'
 
 export async function generateMetadata({
   params,
@@ -88,6 +92,9 @@ export default async function EventPage({
   if (!event) notFound()
   if (!['approved', 'cancelled', 'pending_review'].includes(event.status))
     notFound()
+
+  const user = await getCurrentUser()
+  const canEdit = await canEditEvent(user, event)
 
   const cancelled = event.status === 'cancelled'
   const pendingReview = event.status === 'pending_review'
@@ -214,15 +221,16 @@ export default async function EventPage({
               locationName={event.locationName}
               locationAddress={event.locationAddress ?? null}
             />
+            {canEdit && (
+              <Button href={`/events/${event.slug}/edit`}>
+                <Edit2 className="inline-block mr-2 -mt-0.5" size={20} />
+                Edit Event
+              </Button>
+            )}
             {event.ticketUrl && (
-              <a
-                href={event.ticketUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-block px-6 py-3 rounded-lg font-semibold text-xl transition-all duration-300 ease-out bg-brand text-inverse no-underline hover:bg-brand-hover hover:text-inverse hover:shadow-xl hover:-translate-y-1 uppercase"
-              >
+              <Button onClick={() => window.open(event.ticketUrl!, '_blank')}>
                 Get Tickets →
-              </a>
+              </Button>
             )}
           </div>
         </section>

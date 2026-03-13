@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { CalendarPlus } from 'lucide-react'
+import { Button } from '@/components/Button'
 
 type Props = {
   title: string
@@ -79,20 +80,16 @@ export function AddToCalendarButton(props: Props) {
     return () => document.removeEventListener('mousedown', handler)
   }, [open])
 
-  const baseBtn =
-    'inline-block px-6 py-3 rounded-lg font-semibold text-xl transition-all duration-300 ease-out cursor-pointer bg-brand text-inverse no-underline hover:bg-brand-hover hover:text-inverse hover:shadow-xl hover:-translate-y-1 uppercase'
-
   return (
     <div ref={ref} className="relative inline-block">
-      <button
+      <Button
         onClick={() => setOpen((v) => !v)}
-        className={baseBtn}
         aria-haspopup="true"
         aria-expanded={open}
       >
         <CalendarPlus className="inline-block mr-2 -mt-0.5" size={20} />
         Add to Calendar
-      </button>
+      </Button>
 
       {open && (
         <div className="absolute left-0 mt-1 z-10 min-w-max rounded-lg border border-border bg-background shadow-lg py-1">

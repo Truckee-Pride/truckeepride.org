@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
-import { DashboardActionButton } from '@/components/dashboard/DashboardActionButton'
+import { TextButton } from '@/components/TextButton'
 import { deleteEvent } from './actions'
 
 export function DeleteEventButton({
@@ -21,12 +21,8 @@ export function DeleteEventButton({
   }
 
   return (
-    <DashboardActionButton
-      intent="danger"
-      onClick={handleClick}
-      disabled={isPending}
-    >
+    <TextButton intent="danger" onClick={handleClick} disabled={isPending}>
       {isPending ? 'Deleting…' : 'Delete'}
-    </DashboardActionButton>
+    </TextButton>
   )
 }

@@ -6,7 +6,9 @@ import { getCurrentUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
 import { events, auditLog } from '@/db/schema'
 import { updateEventSchema, type UpdateEventInput } from '@/lib/schemas/events'
+import { del } from '@vercel/blob'
 import { canEditEvent } from '@/lib/permissions'
+import { isBlobUrl } from '@/lib/upload'
 
 export type UpdateEventState = {
   success: boolean
@@ -62,6 +64,32 @@ export async function updateEvent(
   }
 
   const data = result.data
+
+  // Validate flyerUrl: must be empty, a blob URL, or the unchanged existing URL
+  if (
+    data.flyerUrl &&
+    !isBlobUrl(data.flyerUrl) &&
+    data.flyerUrl !== event.flyerUrl
+  ) {
+    return {
+      success: false,
+      fieldErrors: { flyerUrl: ['Invalid image URL'] } as Partial<
+        Record<keyof UpdateEventInput, string[]>
+      >,
+    }
+  }
+
+  // Delete old blob if flyer was replaced or removed
+  const oldFlyerUrl = event.flyerUrl
+  const newFlyerUrl = data.flyerUrl || null
+  if (oldFlyerUrl && isBlobUrl(oldFlyerUrl) && oldFlyerUrl !== newFlyerUrl) {
+    try {
+      await del(oldFlyerUrl)
+    } catch {
+      // Non-critical — old blob will be cleaned up eventually
+    }
+  }
+
   const startTime = new Date(`${data.date}T${data.startTime}`)
   const endTime = data.endTime ? new Date(`${data.date}T${data.endTime}`) : null
 

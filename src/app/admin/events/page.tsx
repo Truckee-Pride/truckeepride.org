@@ -2,7 +2,7 @@ import { asc, desc, eq } from 'drizzle-orm'
 import Link from 'next/link'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
-import { DashboardActionLink } from '@/components/dashboard/DashboardActionButton'
+import { TextLink } from '@/components/TextLink'
 import { DeleteEventButton } from './DeleteEventButton'
 import { ApproveEventButton } from './ApproveEventButton'
 import { RejectEventButton } from './RejectEventButton'
@@ -152,12 +152,8 @@ export default async function AdminEventsPage({
                       <RejectEventButton id={event.id} title={event.title} />
                     </>
                   )}
-                  <DashboardActionLink href={`/events/${event.slug}`}>
-                    View
-                  </DashboardActionLink>
-                  <DashboardActionLink href={`/events/${event.slug}/edit`}>
-                    Edit
-                  </DashboardActionLink>
+                  <TextLink href={`/events/${event.slug}`}>View</TextLink>
+                  <TextLink href={`/events/${event.slug}/edit`}>Edit</TextLink>
                   <DeleteEventButton id={event.id} title={event.title} />
                 </td>
               </tr>

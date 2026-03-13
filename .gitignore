@@ -45,3 +45,5 @@ playwright-report/
 
 # Logs
 *.log
+.vercel
+.env*.local

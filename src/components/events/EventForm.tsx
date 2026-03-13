@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useState, useRef } from 'react'
 import {
   createEventSchema,
   AGE_RESTRICTION_OPTIONS,
@@ -15,6 +15,10 @@ import { Checkbox } from '@/components/forms/Checkbox'
 import { FormError } from '@/components/forms/FormError'
 import { EmojiPicker } from '@/components/forms/EmojiPicker'
 import { TimeCombobox } from '@/components/forms/TimeCombobox'
+import {
+  ImageUpload,
+  type ImageUploadHandle,
+} from '@/components/forms/ImageUpload'
 import { Button } from '@/components/Button'
 
 type ActionState = {
@@ -48,6 +52,10 @@ export function EventForm({ event, action = createEvent }: Props) {
   const [requiresTicket, setRequiresTicket] = useState(
     event?.requiresTicket ?? false,
   )
+  const [isUploading, setIsUploading] = useState(false)
+  const imageUploadRef = useRef<ImageUploadHandle>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+  const skipValidationRef = useRef(false)
   const [startTime, setStartTime] = useState(() => {
     const d = event?.startTime
     if (!d) return ''
@@ -57,7 +65,15 @@ export function EventForm({ event, action = createEvent }: Props) {
 
   const errors = { ...state.fieldErrors, ...clientErrors }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    // Second pass after upload — let the form action proceed
+    if (skipValidationRef.current) {
+      skipValidationRef.current = false
+      return
+    }
+
+    e.preventDefault()
+
     const formData = new FormData(e.currentTarget)
     const raw = {
       title: formData.get('title') as string,
@@ -79,12 +95,37 @@ export function EventForm({ event, action = createEvent }: Props) {
 
     const result = createEventSchema.safeParse(raw)
     if (!result.success) {
-      e.preventDefault()
       setClientErrors(result.error.flatten().fieldErrors)
       return
     }
 
     setClientErrors({})
+
+    // Upload image if one was selected
+    if (imageUploadRef.current?.needsUpload) {
+      setIsUploading(true)
+      try {
+        const url = await imageUploadRef.current.upload()
+        // Manually update the hidden input — React state won't re-render
+        // before requestSubmit fires below
+        const hidden = formRef.current?.querySelector<HTMLInputElement>(
+          'input[name="flyerUrl"]',
+        )
+        if (hidden) hidden.value = url ?? ''
+      } catch {
+        setClientErrors({
+          flyerUrl: ['Image upload failed. Please try again.'],
+        })
+        return
+      } finally {
+        setIsUploading(false)
+      }
+    }
+
+    // Programmatically submit — requestSubmit re-triggers onSubmit,
+    // so set flag to skip validation on the second pass
+    skipValidationRef.current = true
+    formRef.current?.requestSubmit()
   }
 
   function formatDate(date: Date | null | undefined): string {
@@ -101,6 +142,7 @@ export function EventForm({ event, action = createEvent }: Props) {
 
   return (
     <form
+      ref={formRef}
       action={formAction}
       onSubmit={handleSubmit}
       noValidate
@@ -193,13 +235,11 @@ export function EventForm({ event, action = createEvent }: Props) {
         />
       </div>
 
-      <Input
-        label="Flyer Image URL"
+      <ImageUpload
+        ref={imageUploadRef}
         name="flyerUrl"
-        type="url"
-        defaultValue={event?.flyerUrl ?? ''}
-        placeholder="e.g. https://imgur.com/your-flyer.jpg"
-        description="Paste a link to an image. File upload coming soon."
+        label="Flyer Image"
+        existingUrl={event?.flyerUrl}
         errors={errors.flyerUrl}
       />
 
@@ -242,12 +282,14 @@ export function EventForm({ event, action = createEvent }: Props) {
       )}
 
       <div className="pt-2">
-        <Button type="submit" disabled={isPending}>
-          {isPending
-            ? 'Submitting...'
-            : event
-              ? 'Save Changes'
-              : 'Submit for Review'}
+        <Button type="submit" disabled={isPending || isUploading}>
+          {isUploading
+            ? 'Uploading Image...'
+            : isPending
+              ? 'Submitting...'
+              : event
+                ? 'Save Changes'
+                : 'Submit for Review'}
         </Button>
       </div>
     </form>

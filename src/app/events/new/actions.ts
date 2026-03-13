@@ -7,6 +7,7 @@ import { db } from '@/lib/db'
 import { events, auditLog } from '@/db/schema'
 import { createEventSchema, type CreateEventInput } from '@/lib/schemas/events'
 import { generateSlug, ensureUniqueSlug } from '@/lib/slug'
+import { isBlobUrl } from '@/lib/upload'
 
 export type CreateEventState = {
   success: boolean
@@ -48,6 +49,17 @@ export async function createEvent(
   }
 
   const data = result.data
+
+  // Validate flyerUrl is either empty or a blob URL
+  if (data.flyerUrl && !isBlobUrl(data.flyerUrl)) {
+    return {
+      success: false,
+      fieldErrors: { flyerUrl: ['Invalid image URL'] } as Partial<
+        Record<keyof CreateEventInput, string[]>
+      >,
+    }
+  }
+
   const baseSlug = generateSlug(data.title)
   const slug = await ensureUniqueSlug(baseSlug)
 

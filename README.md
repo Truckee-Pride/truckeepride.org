@@ -8,8 +8,11 @@ Website for Truckee Pride, a 501(c)(3) nonprofit serving the LGBTQ+ community in
 # Install dependencies
 pnpm install
 
-# Copy env file and fill in values
-cp .env.example .env.local
+# Link to the Vercel project (one-time setup)
+npx vercel link
+
+# Pull environment variables from Vercel
+npx vercel env pull .env.local
 
 # Run dev server
 pnpm dev

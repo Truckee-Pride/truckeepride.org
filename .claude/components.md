@@ -24,10 +24,15 @@ Filled, shaped button for all actions. Renders as `<Link>` when `href` is provid
 <Button type="submit" disabled={isPending}>Save Changes</Button>
 ```
 
-### DashboardActionButton / DashboardActionLink (`src/components/dashboard/DashboardActionButton.tsx`)
+### TextButton (`src/components/TextButton.tsx`)
 
-Text-only inline actions for the admin UI (no background fill). Variants: `primary`, `danger`.
-Use only inside admin UI. For public-facing actions, use `Button`.
+Text-only inline `<button>` actions (no background fill). Variants: `primary`, `danger`.
+
+### TextLink (`src/components/TextLink.tsx`)
+
+Text-only inline `<Link>` navigation (no background fill). Variants: `primary`, `danger`.
+
+Both share styles from `src/components/text-button-styles.ts`. Use anywhere you need a styled text action — admin dashboards, forms, detail pages, etc.
 
 ### Form Components (`src/components/forms/`)
 

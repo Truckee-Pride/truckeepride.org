@@ -106,11 +106,14 @@ app/
 
 ## Component Library
 
-Before writing any bare HTML interactive element or inline Tailwind for a styled UI element, check `.claude/components.md` for an existing component. Specifically:
+**Never write a bare `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog in `.claude/components.md`. If no existing component fits, ask before creating a new one.
 
-- Any filled button → `Button` from `src/components/Button.tsx`
-- Inline admin text actions → `DashboardActionButton` / `DashboardActionLink`
-- Any `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">` inside a form → use the matching component from `src/components/forms/`
+Quick reference:
+
+- Filled action button or link → `Button` (`src/components/Button.tsx`)
+- Inline text button → `TextButton` (`src/components/TextButton.tsx`)
+- Inline text link → `TextLink` (`src/components/TextLink.tsx`)
+- Form fields (`input`, `textarea`, `select`, `checkbox`) → matching component from `src/components/forms/`
 
 ---
 

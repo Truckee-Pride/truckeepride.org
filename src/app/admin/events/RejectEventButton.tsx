@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
-import { DashboardActionButton } from '@/components/dashboard/DashboardActionButton'
+import { TextButton } from '@/components/TextButton'
 import { rejectEvent } from './actions'
 
 export function RejectEventButton({
@@ -26,12 +26,8 @@ export function RejectEventButton({
   }
 
   return (
-    <DashboardActionButton
-      intent="danger"
-      onClick={handleClick}
-      disabled={isPending}
-    >
+    <TextButton intent="danger" onClick={handleClick} disabled={isPending}>
       {isPending ? 'Rejecting\u2026' : 'Reject'}
-    </DashboardActionButton>
+    </TextButton>
   )
 }
