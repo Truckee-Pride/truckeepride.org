@@ -13,6 +13,7 @@ import { Select } from '@/components/forms/Select'
 import { Checkbox } from '@/components/forms/Checkbox'
 import { FormError } from '@/components/forms/FormError'
 import { EmojiPicker } from '@/components/forms/EmojiPicker'
+import { TimeCombobox } from '@/components/forms/TimeCombobox'
 
 type ActionState = {
   success: boolean
@@ -110,7 +111,7 @@ export function EventForm({ event }: Props) {
         required
         defaultValue={event?.title}
         maxLength={200}
-        placeholder="Pride Week Kickoff Party"
+        placeholder="e.g. Pride Week Kickoff Party"
         description="The main name of your event. Keep it short and descriptive."
         errors={errors.title}
       />
@@ -126,7 +127,7 @@ export function EventForm({ event }: Props) {
         name="shortDescription"
         defaultValue={event?.shortDescription ?? ''}
         maxLength={500}
-        placeholder="One-line summary shown on event lists"
+        placeholder="e.g. Live music, food trucks, and community fun"
         description="Shown on home page and events list. One short sentence works best."
         errors={errors.shortDescription}
       />
@@ -137,19 +138,19 @@ export function EventForm({ event }: Props) {
         required
         defaultValue={event?.description}
         rows={5}
-        placeholder="Tell people what this event is about..."
+        placeholder="e.g. Join us for an evening of live music and dancing at the park. All ages welcome. Bring a blanket and your best dance moves!"
         description="Full details about the event. Include what to expect, what to bring, what to wear, etc."
         errors={errors.description}
       />
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-6 xs:grid-cols-2">
         <Input
           label="Location Name"
           name="locationName"
           required
           defaultValue={event?.locationName}
           maxLength={200}
-          placeholder="Truckee Regional Park"
+          placeholder="e.g. Truckee Regional Park"
           errors={errors.locationName}
         />
         <Input
@@ -157,33 +158,30 @@ export function EventForm({ event }: Props) {
           name="locationAddress"
           defaultValue={event?.locationAddress ?? ''}
           maxLength={400}
-          placeholder="10981 Truckee Way, Truckee, CA"
+          placeholder="e.g. 10981 Truckee Way, Truckee, CA"
           errors={errors.locationAddress}
         />
       </div>
 
-      <Input
-        label="Date"
-        name="date"
-        type="date"
-        required
-        defaultValue={formatDate(event?.startTime)}
-        errors={errors.date}
-      />
-
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-6 xs:grid-cols-3">
         <Input
+          label="Date"
+          name="date"
+          type="date"
+          required
+          defaultValue={formatDate(event?.startTime)}
+          errors={errors.date}
+        />
+        <TimeCombobox
           label="Start Time"
           name="startTime"
-          type="time"
           required
           defaultValue={formatTime(event?.startTime)}
           errors={errors.startTime}
         />
-        <Input
+        <TimeCombobox
           label="End Time"
           name="endTime"
-          type="time"
           defaultValue={formatTime(event?.endTime)}
           errors={errors.endTime}
         />
@@ -194,7 +192,7 @@ export function EventForm({ event }: Props) {
         name="flyerUrl"
         type="url"
         defaultValue={event?.flyerUrl ?? ''}
-        placeholder="https://example.com/flyer.jpg"
+        placeholder="e.g. https://imgur.com/your-flyer.jpg"
         description="Paste a link to an image. File upload coming soon."
         errors={errors.flyerUrl}
       />
@@ -231,7 +229,7 @@ export function EventForm({ event }: Props) {
           name="ticketUrl"
           type="url"
           defaultValue={event?.ticketUrl ?? ''}
-          placeholder="https://tickets.example.com/event"
+          placeholder="e.g. https://eventbrite.com/your-event"
           description="Link where attendees can buy tickets or RSVP."
           errors={errors.ticketUrl}
         />

@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { labelStyles, descriptionStyles } from './styles'
 
 type Props = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -17,24 +18,29 @@ export function Checkbox({
   ...rest
 }: Props) {
   const inputId = `field-${name}`
+  const descId = description ? `${inputId}-desc` : undefined
 
   return (
     <div>
-      <label htmlFor={inputId} className="flex items-center gap-2">
+      <label
+        htmlFor={inputId}
+        className={`${labelStyles} flex items-center gap-2 leading-none`}
+      >
         <input
           type="checkbox"
           id={inputId}
           name={name}
+          aria-describedby={descId}
           className={cn(
             'h-4 w-4 rounded border-border accent-brand',
             className,
           )}
           {...rest}
         />
-        <span className="text-sm font-medium text-foreground">{label}</span>
+        {label}
       </label>
       {description && (
-        <p className="ml-6 mt-0.5 text-sm leading-snug text-muted">
+        <p id={descId} className={`${descriptionStyles} ml-6 mt-0`}>
           {description}
         </p>
       )}

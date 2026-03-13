@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
 
 const selectBase = cn(
-  'h-10 w-full rounded-md border border-border bg-background px-3 py-2',
+  'h-10 w-full appearance-none rounded-md border border-border bg-background bg-none px-3 py-2 pr-8',
   'text-base text-foreground',
   'focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand',
 )
@@ -35,21 +35,29 @@ export function Select({
       errors={errors}
     >
       {({ inputId, hasError, describedBy }) => (
-        <select
-          id={inputId}
-          name={name}
-          aria-invalid={hasError || undefined}
-          aria-describedby={describedBy}
-          className={cn(selectBase, hasError && 'border-error', className)}
-          {...rest}
-        >
-          {placeholder && <option value="">{placeholder}</option>}
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+        <div className={cn('relative', className)}>
+          <select
+            id={inputId}
+            name={name}
+            aria-invalid={hasError || undefined}
+            aria-describedby={describedBy}
+            className={cn(selectBase, hasError && 'border-error')}
+            {...rest}
+          >
+            {placeholder && <option value="">{placeholder}</option>}
+            {options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          <span
+            aria-hidden
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-subtle"
+          >
+            ▾
+          </span>
+        </div>
       )}
     </FormField>
   )

@@ -15,6 +15,7 @@ export const createEventSchema = z
     description: z.string().min(1, 'Description is required'),
     locationName: z.string().min(1, 'Location name is required').max(200),
     locationAddress: z.string().max(400).optional(),
+    date: z.string().min(1, 'Date is required'),
     startTime: z.string().min(1, 'Start time is required'),
     endTime: z.string().optional(),
     flyerUrl: z
@@ -33,10 +34,16 @@ export const createEventSchema = z
     ageRestriction: z.enum(AGE_RESTRICTION_OPTIONS).optional(),
     dogsWelcome: z.boolean().optional().default(false),
   })
-  .refine((data) => !data.endTime || data.endTime >= data.startTime, {
-    message: 'End time must be after start time',
-    path: ['endTime'],
-  })
+  .refine(
+    (data) => {
+      if (!data.endTime) return true
+      return `${data.date}T${data.endTime}` >= `${data.date}T${data.startTime}`
+    },
+    {
+      message: 'End time must be after start time',
+      path: ['endTime'],
+    },
+  )
   .refine((data) => !data.ticketUrl || data.requiresTicket, {
     message: 'Ticket URL requires "Requires Ticket" to be enabled',
     path: ['ticketUrl'],

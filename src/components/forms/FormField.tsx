@@ -1,3 +1,4 @@
+import { labelStyles, descriptionStyles } from './styles'
 import { FieldError } from './FieldError'
 
 export type FieldProps = {
@@ -31,13 +32,12 @@ export function FormField({
   const describedBy =
     [hasError && errorId, descId].filter(Boolean).join(' ') || undefined
 
+  const fieldProps = { inputId, hasError, describedBy }
+
   return (
     <div className="grid">
       <div className="mb-1">
-        <label
-          htmlFor={inputId}
-          className="text-lg font-medium text-foreground"
-        >
+        <label htmlFor={inputId} className={labelStyles}>
           {label}
           {!required && (
             <span className="ml-1.5 text-base font-normal text-muted">
@@ -46,12 +46,12 @@ export function FormField({
           )}
         </label>
         {description && (
-          <p id={descId} className="-mt-1 text-base leading-snug text-muted">
+          <p id={descId} className={`${descriptionStyles} -mt-1`}>
             {description}
           </p>
         )}
       </div>
-      {children({ inputId, hasError, describedBy })}
+      {children(fieldProps)}
       <FieldError id={errorId} errors={errors} />
     </div>
   )

@@ -43,6 +43,7 @@
 
 @theme {
   --breakpoint-banner: 50rem;
+  --breakpoint-xs: 30rem;
 }
 
 @theme inline {
