@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Button } from '@/app/Button'
+import { Button } from '@/components/Button'
 import { LayoutWidth } from '@/lib/constants'
 import { PageHeader } from '@/components/PageHeader'
 import { DONATE_BUTTON_TEXT } from '@/lib/constants'

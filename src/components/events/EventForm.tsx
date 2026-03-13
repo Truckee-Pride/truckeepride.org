@@ -15,6 +15,7 @@ import { Checkbox } from '@/components/forms/Checkbox'
 import { FormError } from '@/components/forms/FormError'
 import { EmojiPicker } from '@/components/forms/EmojiPicker'
 import { TimeCombobox } from '@/components/forms/TimeCombobox'
+import { Button } from '@/components/Button'
 
 type ActionState = {
   success: boolean
@@ -233,17 +234,13 @@ export function EventForm({ event, action = createEvent }: Props) {
       )}
 
       <div className="pt-2">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-lg bg-brand px-6 py-2.5 font-semibold text-inverse transition-colors hover:bg-brand-hover disabled:opacity-50"
-        >
+        <Button type="submit" disabled={isPending}>
           {isPending
             ? 'Submitting...'
             : event
               ? 'Save Changes'
               : 'Submit for Review'}
-        </button>
+        </Button>
       </div>
     </form>
   )

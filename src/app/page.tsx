@@ -5,7 +5,7 @@ import { LayoutWidth } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { EventCard } from '@/components/EventCard'
-import { Button } from '@/app/Button'
+import { Button } from '@/components/Button'
 import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 
 const sponsors = [
