@@ -1,6 +1,13 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  type KeyboardEvent,
+} from 'react'
+import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
 
@@ -22,11 +29,7 @@ function to24h(h12: number, min: number, period: 'AM' | 'PM'): string {
   return `${String(h24).padStart(2, '0')}:${String(min).padStart(2, '0')}`
 }
 
-function parse24h(hhMM: string): {
-  h12: number
-  min: number
-  period: 'AM' | 'PM'
-} {
+function parse24h(hhMM: string) {
   const [hStr, mStr] = hhMM.split(':')
   const h = parseInt(hStr, 10)
   const m = parseInt(mStr, 10)
@@ -71,8 +74,6 @@ export function TimeCombobox({
   const hourRef = useRef<HTMLInputElement>(null)
   const minuteRef = useRef<HTMLInputElement>(null)
   const periodRef = useRef<HTMLInputElement>(null)
-
-  // Digit buffer for two-keystroke number entry
   const digitBuffer = useRef<number | null>(null)
   const digitTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
@@ -80,36 +81,36 @@ export function TimeCombobox({
   const hourText = String(hour).padStart(2, '0')
   const minuteText = String(minute).padStart(2, '0')
 
-  // Close on outside click / Escape
+  // --- Effects ---
+
   useEffect(() => {
     if (!open) return
-    function handleClick(e: MouseEvent) {
+    function onMouseDown(e: MouseEvent) {
       if (
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
-      ) {
+      )
         setOpen(false)
-      }
     }
-    function handleKey(e: KeyboardEvent) {
+    function onKeyDown(e: globalThis.KeyboardEvent) {
       if (e.key === 'Escape') setOpen(false)
     }
-    document.addEventListener('mousedown', handleClick)
-    document.addEventListener('keydown', handleKey)
+    document.addEventListener('mousedown', onMouseDown)
+    document.addEventListener('keydown', onKeyDown)
     return () => {
-      document.removeEventListener('mousedown', handleClick)
-      document.removeEventListener('keydown', handleKey)
+      document.removeEventListener('mousedown', onMouseDown)
+      document.removeEventListener('keydown', onKeyDown)
     }
   }, [open])
 
-  // Scroll selected option into view when dropdown opens
   useEffect(() => {
-    if (open) {
-      requestAnimationFrame(() => {
-        selectedRef.current?.scrollIntoView({ block: 'nearest' })
-      })
-    }
+    if (open)
+      requestAnimationFrame(() =>
+        selectedRef.current?.scrollIntoView({ block: 'nearest' }),
+      )
   }, [open])
+
+  // --- Handlers ---
 
   const handleSelect = useCallback((opt: (typeof TIME_OPTIONS)[number]) => {
     setHour(opt.h12)
@@ -125,34 +126,29 @@ export function TimeCombobox({
 
   function handleHourDigit(n: number) {
     if (digitBuffer.current !== null) {
-      // Second digit — combine
       const full = digitBuffer.current * 10 + n
-      const clamped =
-        full >= 1 && full <= 12 ? full : full === 0 ? 12 : digitBuffer.current
-      setHour(clamped)
+      setHour(
+        full >= 1 && full <= 12 ? full : full === 0 ? 12 : digitBuffer.current,
+      )
       clearBuffer()
       selectAll(hourRef.current)
-    } else {
-      // First digit
-      if (n >= 2) {
-        // Can only be single digit (2–9)
-        setHour(n)
-        clearBuffer()
-        selectAll(hourRef.current)
-      } else {
-        // 0 or 1 — could be start of 01–12, wait for second digit
-        digitBuffer.current = n
-        // Show the digit immediately as a preview
-        setHour(n === 0 ? 10 : n) // 0→show 10 temporarily, 1→show 1
-        selectAll(hourRef.current)
-        digitTimer.current = setTimeout(() => {
-          // No second digit came — accept as-is
-          if (n === 0) setHour(10)
-          digitBuffer.current = null
-          selectAll(hourRef.current)
-        }, 800)
-      }
+      return
     }
+    if (n >= 2) {
+      setHour(n)
+      clearBuffer()
+      selectAll(hourRef.current)
+      return
+    }
+    // 0 or 1: could be start of 01–12
+    digitBuffer.current = n
+    setHour(n === 0 ? 10 : n)
+    selectAll(hourRef.current)
+    digitTimer.current = setTimeout(() => {
+      if (n === 0) setHour(10)
+      digitBuffer.current = null
+      selectAll(hourRef.current)
+    }, 800)
   }
 
   function handleMinuteDigit(n: number) {
@@ -161,25 +157,141 @@ export function TimeCombobox({
       setMinute(full <= 59 ? full : digitBuffer.current)
       clearBuffer()
       selectAll(minuteRef.current)
-    } else {
-      if (n >= 6) {
-        setMinute(n)
+      return
+    }
+    if (n >= 6) {
+      setMinute(n)
+      clearBuffer()
+      selectAll(minuteRef.current)
+      return
+    }
+    digitBuffer.current = n
+    setMinute(n)
+    selectAll(minuteRef.current)
+    digitTimer.current = setTimeout(() => {
+      digitBuffer.current = null
+      selectAll(minuteRef.current)
+    }, 800)
+  }
+
+  function focusSegment(ref: React.RefObject<HTMLInputElement | null>) {
+    clearBuffer()
+    ref.current?.focus()
+  }
+
+  function handleSegmentFocus(ref: React.RefObject<HTMLInputElement | null>) {
+    clearBuffer()
+    selectAll(ref.current)
+    setOpen(true)
+  }
+
+  function preventDeselect(
+    e: React.MouseEvent,
+    ref: React.RefObject<HTMLInputElement | null>,
+  ) {
+    e.preventDefault()
+    selectAll(ref.current)
+  }
+
+  function handleHourKeyDown(e: KeyboardEvent) {
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault()
         clearBuffer()
-        selectAll(minuteRef.current)
-      } else {
-        digitBuffer.current = n
-        setMinute(n)
-        selectAll(minuteRef.current)
-        digitTimer.current = setTimeout(() => {
-          digitBuffer.current = null
-          selectAll(minuteRef.current)
-        }, 800)
-      }
+        setHour((h) => (h >= 12 ? 1 : h + 1))
+        selectAll(hourRef.current)
+        break
+      case 'ArrowDown':
+        e.preventDefault()
+        clearBuffer()
+        setHour((h) => (h <= 1 ? 12 : h - 1))
+        selectAll(hourRef.current)
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        focusSegment(minuteRef)
+        break
+      case 'ArrowLeft':
+        e.preventDefault()
+        focusSegment(periodRef)
+        break
+      case 'Tab':
+        break
+      default:
+        e.preventDefault()
+        if (/^[0-9]$/.test(e.key)) handleHourDigit(parseInt(e.key, 10))
     }
   }
 
-  const segmentBase =
-    'bg-transparent text-center text-base caret-transparent outline-none selection:bg-brand/20 text-foreground rounded-sm'
+  function handleMinuteKeyDown(e: KeyboardEvent) {
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault()
+        clearBuffer()
+        setMinute((m) => (m >= 59 ? 0 : m + 1))
+        selectAll(minuteRef.current)
+        break
+      case 'ArrowDown':
+        e.preventDefault()
+        clearBuffer()
+        setMinute((m) => (m <= 0 ? 59 : m - 1))
+        selectAll(minuteRef.current)
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        focusSegment(periodRef)
+        break
+      case 'ArrowLeft':
+        e.preventDefault()
+        focusSegment(hourRef)
+        break
+      case 'Tab':
+        break
+      default:
+        e.preventDefault()
+        if (/^[0-9]$/.test(e.key)) handleMinuteDigit(parseInt(e.key, 10))
+    }
+  }
+
+  function handlePeriodKeyDown(e: KeyboardEvent) {
+    switch (e.key) {
+      case 'ArrowUp':
+      case 'ArrowDown':
+        e.preventDefault()
+        setPeriod((p) => (p === 'AM' ? 'PM' : 'AM'))
+        selectAll(periodRef.current)
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        focusSegment(hourRef)
+        break
+      case 'ArrowLeft':
+        e.preventDefault()
+        focusSegment(minuteRef)
+        break
+      case 'a':
+      case 'A':
+        e.preventDefault()
+        setPeriod('AM')
+        selectAll(periodRef.current)
+        break
+      case 'p':
+      case 'P':
+        e.preventDefault()
+        setPeriod('PM')
+        selectAll(periodRef.current)
+        break
+      case 'Tab':
+        break
+      default:
+        e.preventDefault()
+    }
+  }
+
+  // --- Styles ---
+
+  const segment =
+    'bg-transparent text-base caret-transparent outline-none selection:bg-brand/20 text-foreground p-0'
 
   return (
     <div ref={containerRef}>
@@ -214,10 +326,9 @@ export function TimeCombobox({
               )}
             >
               <div
-                className="flex items-center"
+                className="flex items-center gap-0"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Hour */}
                 <input
                   ref={hourRef}
                   type="text"
@@ -225,50 +336,17 @@ export function TimeCombobox({
                   value={hourText}
                   readOnly
                   aria-label="Hour"
-                  onFocus={() => {
-                    clearBuffer()
-                    selectAll(hourRef.current)
-                    setOpen(true)
-                  }}
-                  onMouseUp={(e) => {
-                    e.preventDefault()
-                    selectAll(hourRef.current)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'ArrowUp') {
-                      e.preventDefault()
-                      clearBuffer()
-                      setHour((h) => (h >= 12 ? 1 : h + 1))
-                      selectAll(hourRef.current)
-                    } else if (e.key === 'ArrowDown') {
-                      e.preventDefault()
-                      clearBuffer()
-                      setHour((h) => (h <= 1 ? 12 : h - 1))
-                      selectAll(hourRef.current)
-                    } else if (e.key === 'ArrowRight') {
-                      e.preventDefault()
-                      clearBuffer()
-                      minuteRef.current?.focus()
-                    } else if (e.key === 'ArrowLeft') {
-                      e.preventDefault()
-                      clearBuffer()
-                      periodRef.current?.focus()
-                    } else if (/^[0-9]$/.test(e.key)) {
-                      e.preventDefault()
-                      handleHourDigit(parseInt(e.key, 10))
-                    } else if (e.key !== 'Tab') {
-                      e.preventDefault()
-                    }
-                  }}
-                  className={cn(segmentBase, 'w-6')}
+                  onFocus={() => handleSegmentFocus(hourRef)}
+                  onMouseUp={(e) => preventDeselect(e, hourRef)}
+                  onKeyDown={handleHourKeyDown}
+                  className={cn(segment, 'w-[2ch] text-right')}
                 />
-
-                {/* Colon — use an input-like span with matching line-height */}
-                <span className="inline-flex w-2 select-none justify-center text-base text-foreground">
+                <span
+                  className="select-none text-base text-foreground"
+                  aria-hidden
+                >
                   :
                 </span>
-
-                {/* Minute */}
                 <input
                   ref={minuteRef}
                   type="text"
@@ -276,90 +354,25 @@ export function TimeCombobox({
                   value={minuteText}
                   readOnly
                   aria-label="Minute"
-                  onFocus={() => {
-                    clearBuffer()
-                    selectAll(minuteRef.current)
-                    setOpen(true)
-                  }}
-                  onMouseUp={(e) => {
-                    e.preventDefault()
-                    selectAll(minuteRef.current)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'ArrowUp') {
-                      e.preventDefault()
-                      clearBuffer()
-                      setMinute((m) => (m >= 59 ? 0 : m + 1))
-                      selectAll(minuteRef.current)
-                    } else if (e.key === 'ArrowDown') {
-                      e.preventDefault()
-                      clearBuffer()
-                      setMinute((m) => (m <= 0 ? 59 : m - 1))
-                      selectAll(minuteRef.current)
-                    } else if (e.key === 'ArrowRight') {
-                      e.preventDefault()
-                      clearBuffer()
-                      periodRef.current?.focus()
-                    } else if (e.key === 'ArrowLeft') {
-                      e.preventDefault()
-                      clearBuffer()
-                      hourRef.current?.focus()
-                    } else if (/^[0-9]$/.test(e.key)) {
-                      e.preventDefault()
-                      handleMinuteDigit(parseInt(e.key, 10))
-                    } else if (e.key !== 'Tab') {
-                      e.preventDefault()
-                    }
-                  }}
-                  className={cn(segmentBase, 'w-6')}
+                  onFocus={() => handleSegmentFocus(minuteRef)}
+                  onMouseUp={(e) => preventDeselect(e, minuteRef)}
+                  onKeyDown={handleMinuteKeyDown}
+                  className={cn(segment, 'w-[2ch] text-left')}
                 />
-
-                {/* AM/PM */}
                 <input
                   ref={periodRef}
                   type="text"
                   value={period}
                   readOnly
                   aria-label="AM or PM"
-                  onFocus={() => {
-                    clearBuffer()
-                    selectAll(periodRef.current)
-                    setOpen(true)
-                  }}
-                  onMouseUp={(e) => {
-                    e.preventDefault()
-                    selectAll(periodRef.current)
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                      e.preventDefault()
-                      setPeriod((p) => (p === 'AM' ? 'PM' : 'AM'))
-                      selectAll(periodRef.current)
-                    } else if (e.key === 'ArrowRight') {
-                      e.preventDefault()
-                      hourRef.current?.focus()
-                    } else if (e.key === 'ArrowLeft') {
-                      e.preventDefault()
-                      minuteRef.current?.focus()
-                    } else if (e.key === 'a' || e.key === 'A') {
-                      e.preventDefault()
-                      setPeriod('AM')
-                      selectAll(periodRef.current)
-                    } else if (e.key === 'p' || e.key === 'P') {
-                      e.preventDefault()
-                      setPeriod('PM')
-                      selectAll(periodRef.current)
-                    } else if (e.key !== 'Tab') {
-                      e.preventDefault()
-                    }
-                  }}
-                  className={cn(segmentBase, 'ml-1 w-7')}
+                  onFocus={() => handleSegmentFocus(periodRef)}
+                  onMouseUp={(e) => preventDeselect(e, periodRef)}
+                  onKeyDown={handlePeriodKeyDown}
+                  className={cn(segment, 'ml-[0.5ch] w-[2.5ch] text-left')}
                 />
               </div>
 
-              <span aria-hidden className="ml-auto text-sm text-subtle">
-                ▾
-              </span>
+              <ChevronDown aria-hidden className="ml-auto size-4 text-subtle" />
             </div>
 
             {open && (

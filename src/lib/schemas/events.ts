@@ -31,7 +31,7 @@ export const createEventSchema = z
     shortDescription: z.string().max(500).optional(),
     emoji: z.string().max(10).optional(),
     requiresTicket: z.boolean().optional().default(false),
-    ageRestriction: z.enum(AGE_RESTRICTION_OPTIONS).optional(),
+    ageRestriction: z.enum(AGE_RESTRICTION_OPTIONS).default('All ages'),
     dogsWelcome: z.boolean().optional().default(false),
   })
   .refine(

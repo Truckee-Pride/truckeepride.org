@@ -154,24 +154,22 @@ export default async function EventPage({
             )}
           </li>
         )}
-        {event.ageRestriction && (
-          <li className="flex items-center gap-2">
-            {event.ageRestriction === 'All ages' && (
-              <Baby size={16} className="shrink-0" />
-            )}
-            {event.ageRestriction === 'PG-13' && (
-              <ShieldUser size={16} className="shrink-0" />
-            )}
-            {(event.ageRestriction === '21+' ||
-              event.ageRestriction === 'Some parts 21+') && (
-              <Beer size={16} className="shrink-0" />
-            )}
-            {event.ageRestriction === '18+' && (
-              <IdCard size={16} className="shrink-0" />
-            )}
-            {event.ageRestriction}
-          </li>
-        )}
+        <li className="flex items-center gap-2">
+          {event.ageRestriction === 'All ages' && (
+            <Baby size={16} className="shrink-0" />
+          )}
+          {event.ageRestriction === 'PG-13' && (
+            <ShieldUser size={16} className="shrink-0" />
+          )}
+          {(event.ageRestriction === '21+' ||
+            event.ageRestriction === 'Some parts 21+') && (
+            <Beer size={16} className="shrink-0" />
+          )}
+          {event.ageRestriction === '18+' && (
+            <IdCard size={16} className="shrink-0" />
+          )}
+          {event.ageRestriction}
+        </li>
         {event.dogsWelcome && (
           <li className="flex items-center gap-2">
             <Dog size={16} className="shrink-0" />

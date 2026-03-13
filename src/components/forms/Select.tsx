@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
 
@@ -51,12 +52,10 @@ export function Select({
               </option>
             ))}
           </select>
-          <span
+          <ChevronDown
             aria-hidden
-            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-subtle"
-          >
-            ▾
-          </span>
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 size-4 text-subtle"
+          />
         </div>
       )}
     </FormField>

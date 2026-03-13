@@ -70,7 +70,7 @@ export function EventForm({ event }: Props) {
         (formData.get('shortDescription') as string) || undefined,
       emoji: (formData.get('emoji') as string) || undefined,
       requiresTicket: formData.get('requiresTicket') === 'on',
-      ageRestriction: (formData.get('ageRestriction') as string) || undefined,
+      ageRestriction: formData.get('ageRestriction') as string,
       dogsWelcome: formData.get('dogsWelcome') === 'on',
     }
 
@@ -171,6 +171,7 @@ export function EventForm({ event }: Props) {
           required
           defaultValue={formatDate(event?.startTime)}
           errors={errors.date}
+          onClick={(e) => (e.target as HTMLInputElement).showPicker?.()}
         />
         <TimeCombobox
           label="Start Time"
@@ -200,9 +201,9 @@ export function EventForm({ event }: Props) {
       <Select
         label="Age Restriction"
         name="ageRestriction"
+        required
         options={ageRestrictionOptions}
-        placeholder="No restriction"
-        defaultValue={event?.ageRestriction ?? ''}
+        defaultValue={event?.ageRestriction ?? 'All ages'}
         className="max-w-xs"
         description="Select if any part of the event has age requirements."
         errors={errors.ageRestriction}

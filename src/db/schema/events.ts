@@ -42,7 +42,9 @@ export const events = pgTable('events', {
   shortDescription: text('short_description'),
   emoji: text('emoji'),
   requiresTicket: boolean('requires_ticket').default(false).notNull(),
-  ageRestriction: ageRestrictionEnum('age_restriction'),
+  ageRestriction: ageRestrictionEnum('age_restriction')
+    .default('All ages')
+    .notNull(),
   dogsWelcome: boolean('dogs_welcome').default(false).notNull(),
   status: eventStatusEnum('status').default('draft').notNull(),
   rejectionReason: text('rejection_reason'),
