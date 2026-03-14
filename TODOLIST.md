@@ -82,16 +82,35 @@
 
 ---
 
+## MVP 6: Tidy 
+
+- [ ] Hide all sponsor logos except Cultural District, Church of the mountains, Arcteryx
+- [ ] Hide lodge offer section (the link is out of date)
+- [ ] All pages should have container with a little left and right margin on mobile
+- [ ] Submit event emoji is not optional
+- [ ] Submit event allow user to radio check "Vibe Tags" Sporty, Crafty, Family Focused, Smarty pants, Lets dance
+- [ ] Submit event short description either needs to be required (with min and max length) OR we LLM generate them. they're very helpful for SEO and for presenting the calendar on the homepage
+- [ ] Center the footer links and small text
+- [ ] Remove the "looking for wolverines line"
+- [ ] In the tiles for events lets make it a solid single color outline
+- [ ] Bring back the photo carousel to the homepage! Put it below the calendar
+- [ ] Make the donate button look like original (color hard shadow, 2d, hard edges)
+- [ ] In the Meta tags (for seo) make sure each event page has its time, date, maybe location (not address) in the description
+
 ## Deferred to Post-MVP
 
 - [ ] Admin event owners page (`src/app/admin/events/[id]/owners/page.tsx`) — use Drizzle Studio until then
 - [ ] Admin user management `/admin/users` — use Drizzle Studio until then
 - [ ] Rate limiting on sign-in
 - [ ] Full site nav: Get Involved, About, Donate links, mobile hamburger
+- [ ] On event address do the fancy google search bar and then display a google maps link
 - [ ] About page, Get Involved page
 - [ ] `loading.tsx` skeletons
+- [ ] Make it easy for admin to toggle sponsor logos and add new ones (we do this each year based on their sponsorship)
 - [ ] Fancy React Email templates (replace plain text)
 - [ ] Design system & visual polish (Dialog, Toast, responsive pass, accessibility audit)
 - [ ] SEO: OG images/metadata
 - [ ] Analytics: Vercel Analytics and/or Plausible
 - [ ] Performance: Lighthouse, Core Web Vitals
+- [ ] Make it easy for admins to edit the photo carousel image options
+- [ ] Make repeat events maintain an nice slug in 2027
