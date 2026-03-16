@@ -1,46 +1,111 @@
-import { and, asc, eq, gte } from 'drizzle-orm'
+import { and, asc, desc, eq, gte, lte, arrayOverlaps } from 'drizzle-orm'
 import { LayoutWidth } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { EventCard } from '@/components/EventCard'
-import type { Metadata } from 'next'
 import { AddEvent } from '@/components/AddEvent'
+import { EventFilters } from './EventFilters'
+import {
+  VIBE_TAGS,
+  AGE_RESTRICTION_OPTIONS,
+  type VibeTag,
+  type AgeRestriction,
+} from '@/lib/schemas/events'
 
-export const metadata: Metadata = {
-  title: 'Upcoming Events',
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ time?: string }>
+}) {
+  const params = await searchParams
+  return {
+    title: params.time === 'past' ? 'Past Events' : 'Upcoming Events',
+  }
 }
 
-export default async function EventsPage() {
-  const upcomingEvents = await db.query.events.findMany({
-    where: and(
-      eq(events.status, 'approved'),
-      gte(events.startTime, new Date()),
-    ),
-    orderBy: asc(events.startTime),
+export default async function EventsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ time?: string; tags?: string; age?: string }>
+}) {
+  const params = await searchParams
+
+  const time = params.time === 'past' ? 'past' : 'upcoming'
+
+  const tagList = params.tags
+    ? params.tags
+        .split(',')
+        .filter((t): t is VibeTag =>
+          (VIBE_TAGS as readonly string[]).includes(t),
+        )
+    : []
+
+  const ageFilter = (AGE_RESTRICTION_OPTIONS as readonly string[]).includes(
+    params.age ?? '',
+  )
+    ? (params.age as AgeRestriction)
+    : null
+
+  // Build query conditions
+  const conditions = [eq(events.status, 'approved')]
+
+  if (time === 'upcoming') {
+    conditions.push(gte(events.startTime, new Date()))
+  } else {
+    conditions.push(lte(events.startTime, new Date()))
+  }
+
+  if (ageFilter) {
+    conditions.push(eq(events.ageRestriction, ageFilter))
+  }
+
+  if (tagList.length > 0) {
+    conditions.push(arrayOverlaps(events.vibeTags, tagList))
+  }
+
+  const filteredEvents = await db.query.events.findMany({
+    where: and(...conditions),
+    orderBy: time === 'past' ? desc(events.startTime) : asc(events.startTime),
   })
+
+  const hasFilters = tagList.length > 0 || !!ageFilter
 
   return (
     <main className={LayoutWidth.wide}>
       <div className="mt-8 mb-8 flex items-center justify-between gap-4">
-        <h1 className="m-0">Upcoming Events</h1>
+        <h1 className="m-0">
+          {time === 'past' ? 'Past Events' : 'Upcoming Events'}
+        </h1>
         <AddEvent />
       </div>
 
-      {upcomingEvents.length === 0 ? (
+      <div className="mb-6">
+        <EventFilters time={time} tags={tagList} age={ageFilter} />
+      </div>
+
+      {filteredEvents.length === 0 ? (
         <div className="py-8 text-center">
           <p className="text-muted">
-            No upcoming events right now — check back soon!
+            {hasFilters
+              ? 'No events match your filters.'
+              : time === 'past'
+                ? 'No past events yet.'
+                : 'No upcoming events right now — check back soon!'}
           </p>
-          <p className="mt-2 text-muted">
-            Have an event to share with the community?
-          </p>
-          <div className="mt-4 flex justify-center">
-            <AddEvent />
-          </div>
+          {!hasFilters && time === 'upcoming' && (
+            <>
+              <p className="mt-2 text-muted">
+                Have an event to share with the community?
+              </p>
+              <div className="mt-4 flex justify-center">
+                <AddEvent />
+              </div>
+            </>
+          )}
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {upcomingEvents.map((event, i) => (
+          {filteredEvents.map((event, i) => (
             <EventCard key={event.id} event={event} colorIndex={i} />
           ))}
         </div>
