@@ -4,17 +4,6 @@
 
 ---
 
-## MVP.1.x: Image Uploading
-
-**Goal: Replace flyer URL input with file upload via Vercel Blob.**
-
-- [ ] **MVP.1.1** Set up Vercel Blob, add `BLOB_READ_WRITE_TOKEN` to env
-- [ ] **MVP.1.2** Upload server action: accept FormData, validate type (jpeg/png/webp) + size (5MB max), upload to Blob, return URL (`src/lib/blob.ts`)
-- [ ] **MVP.1.3** Update EventForm: file input with client-side preview, upload on submit, keep URL fallback (`src/components/events/EventForm.tsx`)
-- [ ] **MVP.1.4** Configure `next.config.ts` `images.remotePatterns` for Blob domain
-
----
-
 ## MVP.2.x: Authentication
 
 **Goal: Replace auth stub with real Auth.js magic link auth. Protect routes and gate visibility.**
@@ -82,7 +71,7 @@
 
 ---
 
-## MVP 6: Tidy 
+## MVP 6: Tidy
 
 - [ ] Hide all sponsor logos except Cultural District, Church of the mountains, Arcteryx
 - [ ] Hide lodge offer section (the link is out of date)
