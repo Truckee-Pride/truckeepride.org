@@ -34,13 +34,25 @@ export function EventLightbox({ event, onCloseAction }: Props) {
   const panelStyles = cn(
     'relative w-full',
     LayoutWidth.wide,
-    'max-h-[calc(100dvh-2rem)] overflow-y-auto',
+    'max-h-[calc(100dvh-2rem)]',
+    'flex flex-col',
     'rounded-xl bg-background shadow-xl',
+  )
+
+  const panelInnerStyles = cn('flex flex-col flex-1 min-h-0')
+
+  const closeButtonRowStyles = cn('flex shrink-0 justify-end p-3')
+
+  const scrollAreaStyles = cn(
+    'overflow-y-auto flex-1 min-h-0',
     'p-6 sm:p-8',
+    '[&::-webkit-scrollbar]:w-1.5',
+    '[&::-webkit-scrollbar-track]:bg-transparent',
+    '[&::-webkit-scrollbar-thumb]:rounded-full',
+    '[&::-webkit-scrollbar-thumb]:bg-muted/50',
   )
 
   const closeButtonStyles = cn(
-    'absolute top-3 right-3',
     'p-1 rounded-md',
     'text-muted cursor-pointer',
     'hover:text-foreground hover:bg-surface',
@@ -55,25 +67,30 @@ export function EventLightbox({ event, onCloseAction }: Props) {
       aria-label={event.title}
     >
       <div className={panelStyles}>
-        <button
-          onClick={onCloseAction}
-          className={closeButtonStyles}
-          aria-label="Close"
-        >
-          <X size={20} />
-        </button>
+        <div className={panelInnerStyles}>
+          <div className={closeButtonRowStyles}>
+            <button
+              onClick={onCloseAction}
+              className={closeButtonStyles}
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
+          </div>
+          <div className={scrollAreaStyles}>
+            <header>
+              {event.emoji && (
+                <div className="text-5xl leading-none mb-2">{event.emoji}</div>
+              )}
+              <h2 className="mt-0 mb-0 text-2xl font-bold">{event.title}</h2>
+              {event.shortDescription && (
+                <p className="text-muted mt-1 mb-0">{event.shortDescription}</p>
+              )}
+            </header>
 
-        <header>
-          {event.emoji && (
-            <div className="text-5xl leading-none mb-2">{event.emoji}</div>
-          )}
-          <h2 className="mt-0 mb-0 text-2xl font-bold">{event.title}</h2>
-          {event.shortDescription && (
-            <p className="text-muted mt-1 mb-0">{event.shortDescription}</p>
-          )}
-        </header>
-
-        <EventDetails event={event} />
+            <EventDetails event={event} />
+          </div>
+        </div>
       </div>
     </div>
   )
