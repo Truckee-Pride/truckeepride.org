@@ -15,9 +15,10 @@ export function Checkbox({
   name,
   description,
   className,
+  value,
   ...rest
 }: Props) {
-  const inputId = `field-${name}`
+  const inputId = value ? `field-${name}-${value}` : `field-${name}`
   const descId = description ? `${inputId}-desc` : undefined
 
   return (
@@ -30,6 +31,7 @@ export function Checkbox({
           type="checkbox"
           id={inputId}
           name={name}
+          value={value}
           aria-describedby={descId}
           className={cn(
             'h-4 w-4 rounded border-border accent-brand',

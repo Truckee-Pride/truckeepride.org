@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
 
 const segmentBase = cn(
-  'bg-transparent text-center text-base text-foreground',
+  'bg-transparent text-center text-base text-foreground font-mono tabular-nums',
   'focus:outline-none',
   'selection:bg-brand/20',
 )
@@ -124,6 +124,8 @@ export function DateInput({
 
   function revertIfInvalid() {
     if (!month && !day && !year) return // allow fully empty
+    // Year is still being typed — don't revert yet
+    if (year.length > 0 && year.length < 4) return
     if (!isValidDate()) {
       setMonth(lastValid.current.month)
       setDay(lastValid.current.day)
@@ -172,6 +174,10 @@ export function DateInput({
   ) {
     if (e.key === 'Enter') {
       e.preventDefault()
+      // Commit current state as valid if it passes validation
+      if (isValidDate()) {
+        lastValid.current = { month, day, year }
+      }
       setOpen(false)
       return
     }
@@ -247,10 +253,16 @@ export function DateInput({
             <input type="hidden" name={name} value={hiddenValue} />
             <div
               className={cn(
-                'flex h-10 w-full items-center rounded-md border border-border bg-background px-3',
+                'flex h-10 w-full cursor-pointer items-center rounded-md border border-border bg-background px-3',
                 'focus-within:border-brand focus-within:ring-1 focus-within:ring-brand',
                 fieldHasError && 'border-error',
               )}
+              onClick={(e) => {
+                if (!(e.target as HTMLElement).closest('input, button')) {
+                  setOpen(true)
+                  yearRef.current?.focus()
+                }
+              }}
             >
               <input
                 ref={monthRef}
@@ -349,7 +361,7 @@ export function DateInput({
                     day: 'p-0 text-center',
                     day_button: cn(
                       'inline-flex size-9 items-center justify-center rounded-lg',
-                      'cursor-pointer text-sm text-foreground',
+                      'cursor-pointer text-sm text-foreground tabular-nums',
                       'hover:bg-surface',
                     ),
                     selected: 'bg-brand/20 text-foreground rounded-lg',

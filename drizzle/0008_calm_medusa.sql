@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "vibe_tags" text[] DEFAULT '{}' NOT NULL;

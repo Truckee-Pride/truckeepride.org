@@ -45,6 +45,7 @@ export const events = pgTable('events', {
   ageRestriction: ageRestrictionEnum('age_restriction')
     .default('All ages')
     .notNull(),
+  vibeTags: text('vibe_tags').array().default([]).notNull(),
   dogsWelcome: boolean('dogs_welcome').default(false).notNull(),
   status: eventStatusEnum('status').default('draft').notNull(),
   rejectionReason: text('rejection_reason'),

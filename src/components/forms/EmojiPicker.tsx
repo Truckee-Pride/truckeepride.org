@@ -4,15 +4,22 @@ import { useState, useRef, useEffect } from 'react'
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 import { FormField } from './FormField'
-import { TextButton } from '@/components/TextButton'
 
 type Props = {
   name: string
   label: string
   defaultValue?: string
+  errors?: string[]
+  required?: boolean
 }
 
-export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
+export function EmojiPicker({
+  name,
+  label,
+  defaultValue = '',
+  errors,
+  required,
+}: Props) {
   const [emoji, setEmoji] = useState(defaultValue)
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -44,7 +51,7 @@ export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
 
   return (
     <div ref={containerRef}>
-      <FormField label={label} name={name}>
+      <FormField label={label} name={name} required={required} errors={errors}>
         {() => (
           <>
             <input type="hidden" name={name} value={emoji} />
@@ -56,15 +63,6 @@ export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
               >
                 {emoji || '🏳️‍🌈'}
               </button>
-              {emoji && (
-                <TextButton
-                  type="button"
-                  intent="danger"
-                  onClick={() => setEmoji('')}
-                >
-                  Clear
-                </TextButton>
-              )}
             </div>
           </>
         )}

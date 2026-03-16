@@ -29,18 +29,6 @@
 
 ---
 
-## MVP.6: Event Form Polish
-
-See `event-form-polish.md` for full specs.
-
-- [ ] DateInput: fix text clipping at narrow widths (change grid from `xs:grid-cols-3` to `sm:grid-cols-3`)
-- [ ] DateInput: dead zone between YYYY and calendar icon should have pointer cursor and open picker
-- [ ] DateInput: typed year not committed on Enter / click away (fix `revertIfInvalid`)
-- [ ] End Time: add "Clear" TextButton right-aligned with label (add `labelAction` slot to `FormField`, `clearable` prop to `TimeCombobox`)
-- [ ] Emoji is required: Zod schema change, EmojiPicker errors prop, remove Clear button
-- [ ] Short description required with min 10 / max 150 chars
-- [ ] Vibe Tags: multi-select checkboxes (Sporty, Crafty, Family Focused, Smarty Pants, Let's Dance) — requires DB migration
-
 ---
 
 ## MVP.7: Tidy

@@ -6,6 +6,7 @@ import {
   createEventBaseSchema,
   AGE_RESTRICTION_OPTIONS,
   type AgeRestriction,
+  VIBE_TAGS,
   type CreateEventInput,
 } from '@/lib/schemas/events'
 import { useFormErrors } from '@/hooks/useFormErrors'
@@ -150,6 +151,8 @@ export function EventForm({ event, action = createEvent }: Props) {
     state.fieldErrors,
   )
 
+  const defaultVibeTags = new Set(event?.vibeTags ?? [])
+
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setTitle(e.target.value)
     onFieldChange('title', e.target.value)
@@ -210,14 +213,38 @@ export function EventForm({ event, action = createEvent }: Props) {
       <EmojiPicker
         label="Emoji"
         name="emoji"
+        required
         defaultValue={event?.emoji ?? ''}
+        errors={errors.emoji}
       />
+
+      <fieldset>
+        <legend className="text-base font-semibold text-foreground">
+          Vibe Tags
+          <span className="ml-1.5 text-base font-normal text-muted">
+            (optional)
+          </span>
+        </legend>
+        <p className="mt-1 text-sm text-muted">Pick any that fit your event.</p>
+        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+          {VIBE_TAGS.map((tag) => (
+            <Checkbox
+              key={tag}
+              label={tag}
+              name="vibeTags"
+              value={tag}
+              defaultChecked={defaultVibeTags.has(tag)}
+            />
+          ))}
+        </div>
+      </fieldset>
 
       <Input
         label="Short Description"
         name="shortDescription"
+        required
         value={shortDescription}
-        maxLength={500}
+        maxLength={150}
         placeholder="e.g. Live music, food trucks, and community fun"
         description="Shown on home page and events list. One short sentence works best."
         errors={errors.shortDescription}
@@ -276,6 +303,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         <TimeCombobox
           label="End Time"
           name="endTime"
+          clearable
           defaultValue={formatTime(event?.endTime)}
           errors={errors.endTime}
           referenceTime={startTime || undefined}

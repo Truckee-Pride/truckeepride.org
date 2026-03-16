@@ -10,6 +10,7 @@ import {
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
+import { TextButton } from '@/components/TextButton'
 
 // 48 options: 12:00 AM → 11:30 PM in 30-min increments
 const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
@@ -64,6 +65,7 @@ type Props = {
   description?: string
   referenceTime?: string // HH:MM 24h — used to show duration in dropdown
   onChange?: (value: string) => void
+  clearable?: boolean
 }
 
 export function TimeCombobox({
@@ -75,6 +77,7 @@ export function TimeCombobox({
   description,
   referenceTime,
   onChange,
+  clearable,
 }: Props) {
   const initial = defaultValue
     ? parse24h(defaultValue)
@@ -310,6 +313,15 @@ export function TimeCombobox({
     }
   }
 
+  function handleClearEndTime() {
+    setIsEmpty(true)
+    setHour(12)
+    setMinute(0)
+    setPeriod('PM')
+  }
+
+  const showClear = clearable && !isEmpty
+
   // --- Styles ---
 
   const segment =
@@ -323,6 +335,17 @@ export function TimeCombobox({
         required={required}
         description={description}
         errors={errors}
+        labelAction={
+          showClear ? (
+            <TextButton
+              type="button"
+              intent="danger"
+              onClick={handleClearEndTime}
+            >
+              Clear
+            </TextButton>
+          ) : undefined
+        }
       >
         {({ inputId, hasError, describedBy }) => (
           <div className="relative">
