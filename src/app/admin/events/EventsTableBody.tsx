@@ -81,7 +81,7 @@ export function EventsTableBody({ events }: { events: Event[] }) {
       </tbody>
 
       {selectedEvent && (
-        <EventLightbox event={selectedEvent} onClose={handleClose} />
+        <EventLightbox event={selectedEvent} onCloseAction={handleClose} />
       )}
     </>
   )

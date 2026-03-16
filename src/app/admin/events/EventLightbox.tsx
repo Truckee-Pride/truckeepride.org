@@ -2,39 +2,62 @@
 
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { EventDetails } from '@/components/EventDetails'
 import type { Event } from '@/db/schema/events'
+import { LayoutWidth } from '@/lib/constants'
 
 type Props = {
   event: Event
-  onClose: () => void
+  onCloseAction: () => void
 }
 
-export function EventLightbox({ event, onClose }: Props) {
+export function EventLightbox({ event, onCloseAction }: Props) {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') onCloseAction()
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
+  }, [onCloseAction])
 
   function handleBackdropClick(e: React.MouseEvent) {
-    if (e.target === e.currentTarget) onClose()
+    if (e.target === e.currentTarget) onCloseAction()
   }
+
+  const backdropStyles = cn(
+    'fixed inset-0 z-50',
+    'flex items-center justify-center',
+    'bg-black/60 p-4',
+  )
+
+  const panelStyles = cn(
+    'relative w-full',
+    LayoutWidth.wide,
+    'max-h-[calc(100dvh-2rem)] overflow-y-auto',
+    'rounded-xl bg-background shadow-xl',
+    'p-6 sm:p-8',
+  )
+
+  const closeButtonStyles = cn(
+    'absolute top-3 right-3',
+    'p-1 rounded-md',
+    'text-muted cursor-pointer',
+    'hover:text-foreground hover:bg-surface',
+  )
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className={backdropStyles}
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-label={event.title}
     >
-      <div className="relative w-full max-w-prose max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-xl bg-background shadow-xl p-6 sm:p-8">
+      <div className={panelStyles}>
         <button
-          onClick={onClose}
-          className="absolute top-3 right-3 p-1 rounded-md text-muted hover:text-foreground hover:bg-surface cursor-pointer"
+          onClick={onCloseAction}
+          className={closeButtonStyles}
           aria-label="Close"
         >
           <X size={20} />
