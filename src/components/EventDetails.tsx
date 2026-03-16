@@ -97,7 +97,23 @@ export function EventDetails({ event }: Props) {
 
       {/* Description (markdown) */}
       <div className="prose mt-8">
-        <ReactMarkdown>{event.description}</ReactMarkdown>
+        <ReactMarkdown
+          allowedElements={[
+            'p',
+            'strong',
+            'em',
+            'h2',
+            'h3',
+            'ul',
+            'ol',
+            'li',
+            'blockquote',
+            'a',
+            'br',
+          ]}
+        >
+          {event.description}
+        </ReactMarkdown>
       </div>
 
       {/* Flyer image */}

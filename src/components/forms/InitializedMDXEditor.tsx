@@ -45,7 +45,7 @@ export function InitializedMDXEditor({ editorRef, ...props }: Props) {
             <DiffSourceToggleWrapper>
               <UndoRedo />
               <Separator />
-              <BoldItalicUnderlineToggles />
+              <BoldItalicUnderlineToggles options={['Bold', 'Italic']} />
               <Separator />
               <ListsToggle />
               <Separator />
