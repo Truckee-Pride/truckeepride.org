@@ -90,10 +90,10 @@ The migration should update the existing dev user:
 
 ```sql
 UPDATE users
-SET first_name = 'Sam',
-    last_name = 'Grossberg',
-    email = 'sam.grossberg@gmail.com',
-    phone = '+12066174714'
+SET first_name = 'Legacy',
+    last_name = 'Owner',
+    email = 'legacy@truckeepride.org',
+    phone = '+10000000000'
 WHERE id = 'dev-user-id';
 ```
 
@@ -102,10 +102,10 @@ Also update the auth stub (`src/lib/auth-stub.ts`) to match:
 ```ts
 const DEV_USER: User = {
   id: 'dev-user-id',
-  firstName: 'Sam',
-  lastName: 'Grossberg',
-  email: 'sam.grossberg@gmail.com',
-  phone: '+12066174714',
+  firstName: 'Legacy',
+  lastName: 'Owner',
+  email: 'legacy@truckeepride.org',
+  phone: '+10000000000',
   // ...
 }
 ```
