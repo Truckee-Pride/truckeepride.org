@@ -34,12 +34,6 @@
 
 **Goal: Magic link emails for auth + notification emails for approval workflow.**
 
-- [ ] **MVP.3.1** Verify truckeepride.org domain in Resend — coordinate with David for DNS access:
-  - Add Resend MX record to truckeepride.org DNS
-  - Add SPF (TXT) record
-  - Add DKIM (TXT) records (Resend provides these)
-  - Verify domain in Resend dashboard
-  - Update `EMAIL_FROM` env var to `auth@truckeepride.org`
 - [ ] **MVP.3.2** Email utility wrapping Resend SDK (`src/lib/email.ts`)
 - [ ] **MVP.3.3** Magic link email template — simple, branded (`src/emails/magic-link.tsx`)
 - [ ] **MVP.3.4** Event approved notification to owner (`src/emails/event-approved.tsx`)
@@ -48,16 +42,13 @@
 
 ---
 
-## MVP.4.x: Production Config & Launch
+## MVP.4.x: Errors and polish
 
 **Goal: Error handling, empty states, domain setup, go live.**
 
 - [ ] **MVP.4.1** Root `error.tsx` boundary — friendly message, no stack traces
 - [ ] **MVP.4.2** Root `not-found.tsx` — branded 404 page
 - [ ] **MVP.4.3** Empty states: no events on list page, no pending approvals, no user events
-- [ ] **MVP.4.4** Custom domain on Vercel (truckeepride.org)
-- [ ] **MVP.4.5** DNS cutover: domain → Vercel, Resend email DNS (SPF/DKIM) verified
-- [ ] **MVP.4.6** Smoke test all flows: sign in, create event, submit, approve, view, emails. **Go live.**
 
 ---
 
@@ -71,20 +62,43 @@
 
 ---
 
-## MVP 6: Tidy
+## MVP.6: Event Form Polish
+
+See `event-form-polish.md` for full specs.
+
+- [ ] DateInput: fix text clipping at narrow widths (change grid from `xs:grid-cols-3` to `sm:grid-cols-3`)
+- [ ] DateInput: dead zone between YYYY and calendar icon should have pointer cursor and open picker
+- [ ] DateInput: typed year not committed on Enter / click away (fix `revertIfInvalid`)
+- [ ] End Time: add "Clear" TextButton right-aligned with label (add `labelAction` slot to `FormField`, `clearable` prop to `TimeCombobox`)
+- [ ] Emoji is required: Zod schema change, EmojiPicker errors prop, remove Clear button
+- [ ] Short description required with min 10 / max 150 chars
+- [ ] Vibe Tags: multi-select checkboxes (Sporty, Crafty, Family Focused, Smarty Pants, Let's Dance) — requires DB migration
+
+---
+
+## MVP.7: Tidy
 
 - [ ] Hide all sponsor logos except Cultural District, Church of the mountains, Arcteryx
 - [ ] Hide lodge offer section (the link is out of date)
 - [ ] All pages should have container with a little left and right margin on mobile
-- [ ] Submit event emoji is not optional
-- [ ] Submit event allow user to radio check "Vibe Tags" Sporty, Crafty, Family Focused, Smarty pants, Lets dance
-- [ ] Submit event short description either needs to be required (with min and max length) OR we LLM generate them. they're very helpful for SEO and for presenting the calendar on the homepage
 - [ ] Center the footer links and small text
 - [ ] Remove the "looking for wolverines line"
 - [ ] In the tiles for events lets make it a solid single color outline
 - [ ] Bring back the photo carousel to the homepage! Put it below the calendar
 - [ ] Make the donate button look like original (color hard shadow, 2d, hard edges)
 - [ ] In the Meta tags (for seo) make sure each event page has its time, date, maybe location (not address) in the description
+
+## MVP.8: Launch
+
+- [ ] **MVP.7.1** Verify truckeepride.org domain in Resend — coordinate with David for DNS access:
+  - Add Resend MX record to truckeepride.org DNS
+  - Add SPF (TXT) record
+  - Add DKIM (TXT) records (Resend provides these)
+  - Verify domain in Resend dashboard
+  - Update `EMAIL_FROM` env var to `auth@truckeepride.org`
+- [ ] **MVP.7.2** Custom domain on Vercel (truckeepride.org)
+- [ ] **MVP.7.3** DNS cutover: domain → Vercel, Resend email DNS (SPF/DKIM) verified
+- [ ] **MVP.7.4** Smoke test all flows: sign in, create event, submit, approve, view, emails. **Go live.**
 
 ## Deferred to Post-MVP
 

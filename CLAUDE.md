@@ -101,6 +101,7 @@ app/
 - ESLint with `eslint-config-next`. Fix all warnings before merging.
 - No commented-out code in commits. Use git history.
 - Write JSDoc only for non-obvious function contracts. If a comment explains _what_ the code does (not _why_), refactor instead.
+- **Named event handlers.** Always use `handleX` functions instead of inline arrow functions for event handlers (e.g. `onClick={handleSave}` not `onClick={() => { ... }}`). This keeps JSX readable and makes handlers easy to find.
 
 ---
 
