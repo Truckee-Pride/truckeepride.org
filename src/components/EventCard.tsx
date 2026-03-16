@@ -40,8 +40,8 @@ export function EventCard({ event, colorIndex }: Props) {
   return (
     <Link href={`/events/${event.slug}`} className="group block no-underline">
       <div
-        className="flex h-[15rem] overflow-hidden rounded-xl border border-border border-l-[5px] bg-background transition-all duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-lg"
-        style={{ borderLeftColor: borderColor }}
+        className="flex h-[15rem] overflow-hidden rounded-xl border-2 bg-background transition-all duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-lg"
+        style={{ borderColor: borderColor }}
       >
         {/* Text */}
         <div className="flex flex-1 flex-col justify-start gap-1.5 px-4 pt-8 pb-[1.875rem]">
