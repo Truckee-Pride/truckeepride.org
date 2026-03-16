@@ -19,6 +19,7 @@
     "*.{json,css,md}": "prettier --write"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.11.1",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@neondatabase/serverless": "^1.0.2",
@@ -29,6 +30,7 @@
     "drizzle-orm": "^0.45.1",
     "lucide-react": "^0.577.0",
     "next": "^15",
+    "next-auth": "5.0.0-beta.30",
     "react": "^19",
     "react-day-picker": "^9.14.0",
     "react-dom": "^19",
