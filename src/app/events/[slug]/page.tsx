@@ -12,6 +12,8 @@ import { AddToCalendarButton } from './AddToCalendarButton'
 import { getCurrentUser } from '@/lib/auth-stub'
 import { canEditEvent } from '@/lib/permissions'
 
+const PUBLIC_STATUSES = ['approved', 'cancelled']
+
 export async function generateMetadata({
   params,
 }: {
@@ -21,11 +23,14 @@ export async function generateMetadata({
   const event = await db.query.events.findFirst({
     where: eq(events.slug, slug),
   })
-  if (
-    !event ||
-    !['approved', 'cancelled', 'pending_review'].includes(event.status)
-  )
-    return {}
+  if (!event) return {}
+
+  // Only show metadata for public events, or non-public if viewer is owner/admin
+  if (!PUBLIC_STATUSES.includes(event.status)) {
+    const user = await getCurrentUser()
+    if (!user || !(await canEditEvent(user, event))) return {}
+  }
+
   const description = event.shortDescription ?? event.description.slice(0, 160)
   const images = event.flyerUrl ? [event.flyerUrl] : undefined
   return {
@@ -52,11 +57,15 @@ export default async function EventPage({
   })
 
   if (!event) notFound()
-  if (!['approved', 'cancelled', 'pending_review'].includes(event.status))
-    notFound()
 
   const user = await getCurrentUser()
-  const canEdit = await canEditEvent(user, event)
+
+  // Non-public events are only visible to owners and admins
+  if (!PUBLIC_STATUSES.includes(event.status)) {
+    if (!user || !(await canEditEvent(user, event))) notFound()
+  }
+
+  const canEdit = user ? await canEditEvent(user, event) : false
 
   const cancelled = event.status === 'cancelled'
   const pendingReview = event.status === 'pending_review'

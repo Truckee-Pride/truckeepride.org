@@ -2,7 +2,7 @@
 
 import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
-import { getCurrentUser } from '@/lib/auth-stub'
+import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
 import { events, auditLog } from '@/db/schema'
 import { createEventSchema, type CreateEventInput } from '@/lib/schemas/events'
@@ -20,7 +20,7 @@ export async function createEvent(
   _prev: CreateEventState,
   formData: FormData,
 ): Promise<CreateEventState> {
-  const user = await getCurrentUser()
+  const user = await requireUser()
 
   const rateLimit = await checkPendingEventLimit(user.id)
   if (!rateLimit.allowed) {
@@ -118,6 +118,14 @@ export async function submitEventForReview(
   eventId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
+  const event = await db.query.events.findFirst({
+    where: eq(events.id, eventId),
+  })
+  if (!event) return { success: false, error: 'Event not found' }
+  if (event.ownerId !== userId) {
+    return { success: false, error: 'You do not own this event' }
+  }
+
   const [updated] = await db
     .update(events)
     .set({ status: 'pending_review', updatedAt: new Date() })

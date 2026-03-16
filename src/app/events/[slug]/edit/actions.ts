@@ -2,7 +2,7 @@
 
 import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
-import { getCurrentUser } from '@/lib/auth-stub'
+import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
 import { events, auditLog } from '@/db/schema'
 import { updateEventSchema, type UpdateEventInput } from '@/lib/schemas/events'
@@ -21,7 +21,7 @@ export async function updateEvent(
   _prev: UpdateEventState,
   formData: FormData,
 ): Promise<UpdateEventState> {
-  const user = await getCurrentUser()
+  const user = await requireUser()
 
   const event = await db.query.events.findFirst({
     where: eq(events.id, eventId),
