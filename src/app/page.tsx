@@ -10,76 +10,16 @@ import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 
 const sponsors = [
   {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/68372b2a43203a02f9310ba1_eagle.webp',
-    alt: 'Palisades Tahoe',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/68007d756034fa5117407554_tahoe-donner-logo-2000px.png',
-    alt: 'Tahoe Donner',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/68007c57273dd8ba51f0d6b4_truckee-logo.svg',
-    alt: 'Town of Truckee',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/682b87d2b329cb13967af7f8_Pacos%20Secondary%20Script%20Logo%20F1.png',
-    alt: "Paco's",
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/6668912fc6bef6fb40ba830f_Screenshot%202024-06-11%20at%2011.00.47%E2%80%AFAM.png',
-    alt: 'The UPS Store',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/681bac19599421f51470c247_Fulllogo.png',
-    alt: 'Dreamtown CrossFit',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/680aaf63eb514c0dd8920201_Primary%20Tahoe%20Modern%20Blue%20(3).png',
-    alt: 'Tahoe Modern',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/680aaf9ca0d5d2e97e74a61e_TNT%20Pride%20Logo.png',
-    alt: 'TNT Pride',
-  },
-  {
     src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/66196c1e462acfb2d388edef_TCD-Logo-FullColor%20(1).png',
     alt: 'Truckee Cultural District',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/6838c05d3c2531c40c67f737_WhatsApp%20Image%202025-05-24%20at%2015.40.26.jpeg',
-    alt: 'Truckee Gymnastics',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/6823a7bc747da816449f5b01_images.png',
-    alt: 'Pacific Crest Coffee Co.',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/6600e45b3a2b81f75fd0be9f_image.png',
-    alt: 'Tahoe Print Shop',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/68007ab13f483a200fb91720_GO%20Logo%20Round_With%20Background%20(1).jpg',
-    alt: 'Grocery Outlet Bargain Market',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/68007ccdb027fa84b0f9ee9e_Raleys_RGB-1.png',
-    alt: "Raley's",
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/68007c1fe93343e3455f372b_visit-truckee-tahoe.svg',
-    alt: 'Visit Truckee Tahoe',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/681bac4a0e0802157c09583a_IMG_0672.png',
-    alt: 'Kidzone Museum',
   },
   {
     src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/65df7639c337d845f1a33402_Church%20of%20the%20Mountains%20Logo.%20Transparent.png',
     alt: 'Church of the Mountains',
   },
   {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/65fa0fa21dedf54099b1a484_637674363286330000.png',
-    alt: 'Town of Truckee',
+    src: 'https://cdn.brandfetch.io/idEhX7aFK4/w/820/h/500/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1750540338911',
+    alt: "Arc'teryx",
   },
 ]
 
@@ -96,7 +36,12 @@ export default async function Home() {
   return (
     <main className={LayoutWidth.wide}>
       <section className="flex justify-center">
-        <Button href="/donate">{DONATE_BUTTON_TEXT}</Button>
+        <Button
+          href="/donate"
+          className="rounded-none shadow-[4px_4px_0px_0px_#171717] hover:shadow-[2px_2px_0px_0px_#171717] hover:translate-x-0.5 hover:translate-y-0.5 transition-none"
+        >
+          {DONATE_BUTTON_TEXT}
+        </Button>
       </section>
 
       <section>
@@ -162,16 +107,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <section>
-        <h2>Looking for somewhere to stay?</h2>
-        <p>
-          Thanks to our partners at Visit Truckee Tahoe,{' '}
-          <a href="https://lodging.visittruckeetahoe.com">
-            you can search and book Truckee Lodging through their site
-          </a>
-          .
-        </p>
-      </section>
       <section>
         <h2>Thank you to our sponsors!</h2>
         <p>
