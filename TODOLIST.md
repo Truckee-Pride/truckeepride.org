@@ -22,9 +22,6 @@
 **Goal: Magic link emails for auth + notification emails for approval workflow.**
 
 - [ ] **MVP.3.2** Email utility wrapping Resend SDK (`src/lib/email.ts`)
-- [ ] **MVP.3.3** Magic link email template — simple, branded (`src/emails/magic-link.tsx`)
-- [ ] **MVP.3.4** Event approved notification to owner (`src/emails/event-approved.tsx`)
-- [ ] **MVP.3.5** Event rejected notification to owner with reason (`src/emails/event-rejected.tsx`)
 - [ ] **MVP.3.6** Wire approve/reject actions to send emails (`src/app/admin/events/actions.ts`)
 
 ---
