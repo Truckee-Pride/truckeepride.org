@@ -26,6 +26,7 @@
   - `approveEvent` / `rejectEvent`: verify `user.role === 'admin'`
 - [ ] **MVP.2.11** Minimal header nav with auth UI: Events, Create Event (logged in), Admin (admin), Sign In / Sign Out (`src/app/Header.tsx`)
 - [ ] **MVP.2.12** Multi-step event submission flow for unauthenticated users — see `multistep-event-flow.md` for full spec
+- [ ] **MVP.2.13** Edit Profile page (`/profile/edit`) — let users update their name, email, etc.
 
 ---
 
