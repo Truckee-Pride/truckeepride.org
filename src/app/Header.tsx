@@ -1,14 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { LayoutWidth } from '@/lib/constants'
-import { getCurrentUser } from '@/lib/auth-stub'
-import { signOut } from '@/lib/auth'
-import { TextLink } from '@/components/TextLink'
-import { TextButton } from '@/components/TextButton'
 
-export async function Header() {
-  const user = await getCurrentUser()
-
+export function Header() {
   return (
     <header className={`relative mt-0 banner:mt-8 ${LayoutWidth.banner}`}>
       <Link href="/">
@@ -32,21 +26,6 @@ export async function Header() {
           @mtscapes.art
         </a>
       </p>
-      {user && (
-        <nav className="mt-2 flex items-center justify-end gap-4 px-2">
-          {user.role === 'admin' && (
-            <TextLink href="/admin/events">Admin</TextLink>
-          )}
-          <form
-            action={async () => {
-              'use server'
-              await signOut({ redirectTo: '/' })
-            }}
-          >
-            <TextButton type="submit">Sign out</TextButton>
-          </form>
-        </nav>
-      )}
     </header>
   )
 }

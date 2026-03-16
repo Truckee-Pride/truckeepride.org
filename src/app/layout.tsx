@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Beiruti } from 'next/font/google'
 import { Header } from './Header'
+import { NavBar } from './NavBar'
 import { Footer } from './Footer'
 import './globals.css'
 
@@ -41,7 +42,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={beiruti.className}>
-      <body>
+      <body className="pt-10">
+        <NavBar />
         <Header />
         {children}
         <Footer />
