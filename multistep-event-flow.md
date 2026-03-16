@@ -68,15 +68,47 @@ Authenticating before the event form eliminates the need for anonymous drafts:
 
 **File: `src/db/schema/users.ts`**
 
-Add three nullable columns to the `users` table:
+Replace the `name` column with `firstName`, `lastName`, and `phone`:
 
 ```
-firstName: text('first_name')   — nullable (existing users won't have it)
-lastName: text('last_name')     — nullable
-phone: text('phone')            — nullable
+— Remove:
+name: text('name')
+
+— Add:
+firstName: text('first_name').notNull()
+lastName: text('last_name').notNull()
+phone: text('phone').notNull()
 ```
 
-Update `User` and `NewUser` types (auto-inferred from schema).
+All three fields are required (NOT NULL). The old `name` column is removed entirely.
+
+Update `User` and `NewUser` types (auto-inferred from schema). Update all code that references `user.name` to use `user.firstName` / `user.lastName` (or a derived `${firstName} ${lastName}`).
+
+### Seed migration
+
+The migration should update the existing dev user:
+
+```sql
+UPDATE users
+SET first_name = 'Sam',
+    last_name = 'Grossberg',
+    email = 'sam.grossberg@gmail.com',
+    phone = '+12066174714'
+WHERE id = 'dev-user-id';
+```
+
+Also update the auth stub (`src/lib/auth-stub.ts`) to match:
+
+```ts
+const DEV_USER: User = {
+  id: 'dev-user-id',
+  firstName: 'Sam',
+  lastName: 'Grossberg',
+  email: 'sam.grossberg@gmail.com',
+  phone: '+12066174714',
+  // ...
+}
+```
 
 ### Events table: no changes needed
 
@@ -162,15 +194,49 @@ Used during account creation: if a Gravatar exists for the email, store its URL 
 ```ts
 import { z } from 'zod'
 
+// Strip non-digits, then validate length
+const phoneSchema = z
+  .string()
+  .min(1, 'Phone number is required')
+  .transform((val) => val.replace(/\D/g, ''))
+  .pipe(
+    z.string()
+      .min(10, 'Phone number must be at least 10 digits')
+      .max(15, 'Phone number is too long')
+      .regex(/^\d+$/, 'Phone number must contain only digits')
+  )
+
 export const accountFieldsSchema = z.object({
-  firstName: z.string().min(1, 'First name is required').max(100),
-  lastName: z.string().min(1, 'Last name is required').max(100),
-  email: z.string().email('Valid email is required'),
-  phone: z.string().min(10, 'Phone number is required').max(20),
+  firstName: z
+    .string()
+    .min(1, 'First name is required')
+    .max(50, 'First name is too long')
+    .regex(/^[a-zA-Z\s'-]+$/, 'First name contains invalid characters'),
+  lastName: z
+    .string()
+    .min(1, 'Last name is required')
+    .max(50, 'Last name is too long')
+    .regex(/^[a-zA-Z\s'-]+$/, 'Last name contains invalid characters'),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Enter a valid email address')
+    .max(254, 'Email is too long')
+    .transform((val) => val.toLowerCase().trim()),
+  phone: phoneSchema,
 })
 
 export type AccountFieldsInput = z.infer<typeof accountFieldsSchema>
 ```
+
+### Validation notes
+
+| Field | Rules | Why |
+|-------|-------|-----|
+| firstName | 1–50 chars, letters/spaces/hyphens/apostrophes only | Allows names like "Mary-Jane" and "O'Brien" while blocking injection |
+| lastName | Same as firstName | Same reasoning |
+| email | Standard email format, max 254 chars (RFC 5321), lowercased + trimmed | Prevents duplicates from casing, enforces spec max length |
+| phone | Strip formatting → 10–15 digits only | 10 digits = US number, up to 15 = international (ITU-T E.164 max). Raw digits stored in DB; formatting is display-only. |
 
 Profile photo is excluded from the schema — it's set from Gravatar during account creation or uploaded later after auth.
 
