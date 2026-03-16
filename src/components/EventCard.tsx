@@ -13,7 +13,7 @@ const PRIDE_COLORS = [
   '#c4b5fd', // violet
 ]
 
-function formatCardDate(start: Date, end: Date | null): string {
+function formatCardDate(start: Date): string {
   const tz = 'America/Los_Angeles'
   const date = new Intl.DateTimeFormat('en-US', {
     timeZone: tz,
@@ -40,8 +40,8 @@ export function EventCard({ event, colorIndex }: Props) {
   return (
     <Link href={`/events/${event.slug}`} className="group block no-underline">
       <div
-        className="flex h-[15rem] overflow-hidden rounded-xl border border-border border-l-[5px] bg-background transition-all duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-lg"
-        style={{ borderLeftColor: borderColor }}
+        className="flex h-[15rem] overflow-hidden rounded-xl border-2 bg-background transition-all duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-lg"
+        style={{ borderColor: borderColor }}
       >
         {/* Text */}
         <div className="flex flex-1 flex-col justify-start gap-1.5 px-4 pt-8 pb-[1.875rem]">
@@ -53,7 +53,7 @@ export function EventCard({ event, colorIndex }: Props) {
           </h3>
           <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
             <Calendar size={13} className="shrink-0" />
-            {formatCardDate(event.startTime, event.endTime ?? null)}
+            {formatCardDate(event.startTime)}
           </p>
           <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
             <MapPin size={13} className="shrink-0" />
