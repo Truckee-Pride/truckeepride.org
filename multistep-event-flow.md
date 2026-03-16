@@ -9,24 +9,22 @@
 ### Unauthenticated user
 
 ```
-Step 1: /events/new
-  Fill out event form → click "Next"
-  → Event saved as anonymous draft in DB (draftToken cookie set)
-  → Redirect to /events/new/account
+Step 1: /events/new (not logged in)
+  Shows account creation form: first name, last name, email, phone, profile photo
+  "Already have an account? Sign In" link at top toggles to email-only sign-in mode
+  → Creates user record (or finds existing) → sends magic link
+  → Redirect to /verify?email=...&next=/events/new
 
-Step 2: /events/new/account
-  Fill out first name, last name, email, phone, optional profile photo
-  → If email already exists in DB: skip account creation, just send magic link
-  → If email is new: create user record
-  → Link draft event to user (set ownerId)
-  → Send magic link with redirectTo=/events/[slug]/confirm
-  → Redirect to /verify?email=...&event=...
-
-Step 3: /verify
+Step 2: /verify
   "Check your email" page with resend option
 
-Step 4: Click magic link in email
-  → Authenticated → redirected to /events/[slug]/confirm
+Step 3: Click magic link in email
+  → Authenticated → redirected to /events/new (now logged in)
+
+Step 4: /events/new (logged in)
+  Standard event form → click "Submit"
+  → Event saved as draft in DB
+  → Redirect to /events/[slug]/confirm
 
 Step 5: /events/[slug]/confirm
   Preview of event page + "Submit for Review" button
@@ -37,19 +35,36 @@ Step 5: /events/[slug]/confirm
 ### Logged-in user
 
 ```
-Step 1: /events/new
-  Fill out event form → click "Submit for Review"
-  → Event created and immediately submitted for review (current behavior)
+Step 1: /events/new (logged in)
+  Standard event form → click "Submit"
+  → Event saved as draft
+  → Redirect to /events/[slug]/confirm
+
+Step 2: /events/[slug]/confirm
+  Preview + "Submit for Review"
   → Redirect to /events/[slug]
 ```
 
-No account step, no confirmation page. Unchanged from current flow.
+Both paths go through the confirmation page. The only difference is logged-in users skip account creation and magic link verification.
+
+---
+
+## Why Account Creation First
+
+Authenticating before the event form eliminates the need for anonymous drafts:
+
+- `ownerId` stays `NOT NULL` — no schema change to events table
+- No `draftToken` column or cookie needed
+- No anonymous DB writes from unauthenticated users (major security win)
+- Image uploads stay auth-gated (existing behavior)
+- Rate limiting works naturally (tied to user ID)
+- Simpler code: one `createEvent` action handles both flows, always creates a draft with an owner
 
 ---
 
 ## DB Schema Changes
 
-### 1. User profile columns
+### User profile columns
 
 **File: `src/db/schema/users.ts`**
 
@@ -63,48 +78,59 @@ phone: text('phone')            — nullable
 
 Update `User` and `NewUser` types (auto-inferred from schema).
 
-### 2. Anonymous draft support on events table
+### Events table: no changes needed
 
-**File: `src/db/schema/events.ts`**
+The events table already supports `status='draft'` and `ownerId` as NOT NULL. Since the user authenticates before creating the event, all drafts have an owner. No schema changes needed.
 
-Currently `ownerId` is `NOT NULL` with a foreign key to `users.id`. Anonymous drafts (step 1, before account creation) have no user yet. Two changes needed:
-
-**Option A (recommended): Make `ownerId` nullable**
-
-```
-ownerId: text('owner_id').references(() => users.id)   // remove .notNull()
-```
-
-Add a `draftToken` column for claiming anonymous drafts:
-
-```
-draftToken: text('draft_token')   — nullable, indexed
-```
-
-The `draftToken` is a random UUID generated when an anonymous draft is created. It's stored in an HTTP-only cookie on the client. During step 2 (account creation), the server reads the cookie, finds the draft by token, sets `ownerId`, and clears `draftToken`.
-
-**Why nullable ownerId?** The alternative (a separate `anonymous_drafts` table) duplicates the entire events schema. Nullable ownerId is simpler — anonymous drafts are just events with `ownerId IS NULL` and a `draftToken`. They're invisible to all public queries (which already filter by status).
-
-**Cleanup:** Anonymous drafts with no owner that are older than 7 days can be deleted by a future cron job (out of scope).
-
-### 3. Ensuring drafts persist through the full flow
-
-The draft event row stays in the DB throughout the entire flow:
+### Draft lifecycle
 
 | Step | Event state |
 |------|-------------|
-| Step 1: form submit | `status='draft'`, `ownerId=NULL`, `draftToken=<uuid>` |
-| Step 2: account creation | `status='draft'`, `ownerId=<user.id>`, `draftToken=NULL` |
-| Step 3-4: verify + magic link | No change — event stays as draft |
+| Step 4: event form submit | `status='draft'`, `ownerId=<user.id>` |
+| Between steps 4 and 5 | Draft persists in DB; user can navigate away and return |
 | Step 5: confirm + submit | `status='pending_review'`, `ownerId=<user.id>` |
 
-The magic link's `redirectTo` URL includes the event slug (`/events/[slug]/confirm`), so Auth.js redirects the user straight to the confirmation page after authentication. The draft is loaded by slug and verified against the authenticated user's ID.
-
-**Important:** The `createEvent` server action (used by logged-in users) continues to set `ownerId` directly — no `draftToken` needed. Only the anonymous flow uses `draftToken`.
+The event stays as a draft until the user explicitly clicks "Submit for Review" on the confirmation page. If the user abandons at step 4, the draft remains in their account and they can find it later (via "My Events" or a direct link).
 
 ### Migration
 
 Run: `npx drizzle-kit generate && npx drizzle-kit migrate`
+
+---
+
+## Security Safeguards
+
+### Threat model
+
+| Attack vector | Risk | Mitigation |
+|--------------|------|-----------|
+| Account creation spam | Attacker creates many accounts to pollute DB | IP-based rate limit on account creation: **5 per IP per hour** (in-memory or Vercel KV). Cloudflare Turnstile (MVP.5.2) adds CAPTCHA. |
+| Magic link email spam | Attacker triggers magic link emails to arbitrary addresses | Per-email rate limit: **3 magic links per email per hour**. Prevents using the form to harass someone's inbox. |
+| Image upload abuse (gore, CSAM, storage costs) | Attacker uploads harmful or expensive images | **Upload endpoint stays auth-gated** — only authenticated users can upload. Since account creation is step 1, users must verify email before uploading anything. Profile photo upload also requires auth (it's on the account form, but uploaded after magic link verification — see note below). |
+| Draft spam from authenticated users | Verified user creates many draft events | Existing rate limit: 3 pending events for new users, 10 for trusted users. Drafts count toward this limit. |
+| Offensive text content | Attacker puts gore/slurs in title/description | Admin approval queue — nothing goes public without review. Admins see it, but the text is gated behind a review step. |
+| Disposable email abuse | Throwaway emails to create many accounts | Disposable email domain blocking in Auth.js signIn callback (MVP.5.3). |
+
+### Profile photo timing
+
+The profile photo `ImageUpload` is on the account creation form (step 1), but the upload endpoint requires authentication. Two options:
+
+**Option A (recommended): Defer profile photo upload to after verification.** Show the ImageUpload field on the account form but with a note: "You can add a profile photo after verifying your email." The field is disabled/hidden for new signups. After magic link verification, the user can update their profile photo from a settings page or on return visits.
+
+**Option B:** Allow selecting a file on the account form, but only upload it after magic link verification. Store the file selection in client state. When the user returns authenticated, the confirmation page or a post-auth hook triggers the upload. More complex, worse UX if they open the magic link on a different device.
+
+**Gravatar is unaffected** — it's a read-only URL lookup, no upload needed. The Gravatar URL can be set as the user's `image` during account creation without any upload.
+
+### IP-based rate limiting implementation
+
+Add a lightweight in-memory rate limiter for the account creation server action:
+
+```ts
+// Simple sliding window: Map<ip, timestamps[]>
+// Check: filter timestamps within last hour, reject if >= 5
+```
+
+This is an in-memory Map that resets on deploy — acceptable for a small nonprofit site. For production hardening, upgrade to Vercel KV or Upstash Redis (post-MVP).
 
 ---
 
@@ -125,6 +151,8 @@ export function getGravatarUrl(email: string, size = 200): string {
 
 `d=404` returns a 404 if no Gravatar exists — client can detect and show nothing.
 
+Used during account creation: if a Gravatar exists for the email, store its URL as the user's `image` field. No upload needed.
+
 ---
 
 ## Account Fields Schema
@@ -139,15 +167,16 @@ export const accountFieldsSchema = z.object({
   lastName: z.string().min(1, 'Last name is required').max(100),
   email: z.string().email('Valid email is required'),
   phone: z.string().min(10, 'Phone number is required').max(20),
-  profileImage: z.string().url().optional().or(z.literal('')),
 })
 
 export type AccountFieldsInput = z.infer<typeof accountFieldsSchema>
 ```
 
+Profile photo is excluded from the schema — it's set from Gravatar during account creation or uploaded later after auth.
+
 ---
 
-## Step 1: Event Form (Page 1)
+## Step 1: Account Creation / Sign-In
 
 ### Page
 
@@ -155,68 +184,29 @@ export type AccountFieldsInput = z.infer<typeof accountFieldsSchema>
 
 ```tsx
 export default async function NewEventPage() {
-  const user = await getCurrentUser()   // returns User | null
+  const user = await getCurrentUser()
+
+  if (!user) {
+    // Show account creation / sign-in form
+    return (
+      <main className={LayoutWidth.wide}>
+        <PageHeader
+          title="Submit Event"
+          subtitle="Create an account to submit your event for review."
+        />
+        <AccountForm redirectTo="/events/new" />
+      </main>
+    )
+  }
+
+  // Logged-in: show event form
   return (
     <main className={LayoutWidth.wide}>
       <PageHeader
         title="Submit Event"
         subtitle="Fill out the details below. Your event will be reviewed before it goes live."
       />
-      <EventForm user={user} />
-    </main>
-  )
-}
-```
-
-### EventForm changes
-
-**File: `src/components/events/EventForm.tsx`** (modify)
-
-Add `user: User | null` prop. The form fields stay the same — this page is only the event details.
-
-**Button text and action change based on auth state:**
-- Logged in (`user` is present): button says "Submit for Review", action is `createEvent` (current behavior, unchanged)
-- Not logged in (`user` is null): button says "Next: Create Account", action is `createAnonymousDraft`
-
-### New server action: `createAnonymousDraft`
-
-**File: `src/app/events/new/actions.ts`** (modify — add new action)
-
-```
-createAnonymousDraft(prevState, formData):
-  1. Parse + validate event fields with createEventSchema
-  2. Return field errors if validation fails
-  3. Generate slug (ensureUniqueSlug)
-  4. Generate draftToken (crypto.randomUUID())
-  5. Insert event with status='draft', ownerId=NULL, draftToken
-  6. Set HTTP-only cookie: 'draft_token' = draftToken (SameSite=Lax, path=/, maxAge=7 days)
-  7. redirect(`/events/new/account?event=${slug}`)
-```
-
-No user record, no auth, no magic link — just save the event and move on.
-
----
-
-## Step 2: Account Creation (Page 2)
-
-### Page
-
-**File: `src/app/events/new/account/page.tsx`** (new)
-
-Server Component:
-
-```tsx
-export default async function AccountPage({ searchParams }) {
-  const { event } = await searchParams
-  // Load the draft event by slug to show a summary (title, date)
-  // Verify draftToken cookie matches the event's draftToken
-  // If no match or event not found → redirect to /events/new
-
-  return (
-    <main>
-      <PageHeader title="Create Your Account" subtitle="Almost done! ..." />
-      <p>Your event "{event.title}" has been saved as a draft.</p>
-      <AccountForm eventSlug={event.slug} />
+      <EventForm />
     </main>
   )
 }
@@ -226,19 +216,33 @@ export default async function AccountPage({ searchParams }) {
 
 **File: `src/components/events/AccountForm.tsx`** (new, client component)
 
-Fields:
+Two modes controlled by React state:
 
+**Default mode: "Create Account"**
+
+At the top: `Already have an account?` `<TextLink onClick={handleToggleMode}>Sign In</TextLink>`
+
+Fields:
 - `Input` name="firstName", label="First Name", required, `autoComplete="given-name"`
 - `Input` name="lastName", label="Last Name", required, `autoComplete="family-name"`
 - `Input` name="email", label="Email", required, `type="email"`, `autoComplete="email"`, `inputMode="email"`
-- Phone number field (see phone number section below)
-- Gravatar preview + `ImageUpload` for profile photo (see Gravatar section below)
-- Hidden input: `eventSlug`
-- Button: "Create Account & Continue"
+- Phone number field (see below)
+- Gravatar preview (see below)
+- Hidden input: `redirectTo`
+- `Button`: "Create Account"
+
+**Sign-in mode (after clicking "Sign In")**
+
+At the top: `New here?` `<TextLink onClick={handleToggleMode}>Create Account</TextLink>`
+
+Fields:
+- `Input` name="email", label="Email", required, `type="email"`, `autoComplete="email"`, `inputMode="email"`
+- Hidden input: `redirectTo`
+- `Button`: "Send Login Link"
+
+The toggle switches between modes using React state. Each mode uses a different server action.
 
 ### Phone number field
-
-The `Input` component should support phone formatting. Implementation:
 
 ```
 name="phone"
@@ -248,18 +252,19 @@ autoComplete="tel"
 inputMode="tel"
 ```
 
-**Auto-formatting as you type:** Add an `onChange` handler that formats the raw digits into `(xxx) xxx-xxxx` as the user types. Strip non-digit characters on input, then format:
-- 0-3 digits: show raw
-- 4-6 digits: `(xxx) xxx`
-- 7-10 digits: `(xxx) xxx-xxxx`
+**Auto-formatting as you type:** Add a `handlePhoneChange` handler that formats raw digits into `(xxx) xxx-xxxx`:
+- Strip non-digit characters on each keystroke
+- 0–3 digits: show raw
+- 4–6 digits: `(xxx) xxx`
+- 7–10 digits: `(xxx) xxx-xxxx`
 
-Store the raw digits (no formatting) in the hidden form value for server-side validation. Display the formatted version in the input.
+Use controlled state for the display value. Store raw digits in a hidden input (`name="phone"`) for server-side validation.
 
-This can be done inline in the `AccountForm` component — no need for a separate utility since it's used in one place. If the `Input` component doesn't support controlled value easily, use a local state + hidden input pattern.
+This can be done inline in the `AccountForm` component — no separate utility needed (used in one place only).
 
 ### Browser autofill attributes
 
-All fields use standard `autoComplete` values so browsers and password managers can autofill:
+All fields use standard `autoComplete` values so browsers and password managers autofill correctly:
 
 | Field | `autoComplete` | `type` | `inputMode` |
 |-------|---------------|--------|-------------|
@@ -268,67 +273,105 @@ All fields use standard `autoComplete` values so browsers and password managers 
 | Email | `email` | `email` | `email` |
 | Phone | `tel` | `tel` | `tel` |
 
-Wrap all fields in a `<form>` with `autoComplete="on"`. Include a hidden `<input type="text" autoComplete="name" />` (visually hidden) so browsers can associate the form with contact autofill.
+The `<form>` should have `autoComplete="on"`.
 
 ### Gravatar integration
 
 When the user types their email (debounce ~500ms):
-1. Compute the Gravatar URL client-side (MD5 hash — use a lightweight client-side MD5 or fetch from a server endpoint)
-2. Fetch the URL with `fetch(gravatarUrl, { mode: 'no-cors' })` or use an `<img>` onLoad/onError handler
-3. If image loads: show as preview with "We found your Gravatar" text, pass URL as `existingUrl` to `ImageUpload`
-4. If 404: show nothing, `ImageUpload` shows empty state
+1. Call a server action or API route that returns the Gravatar URL: `getGravatarUrl(email)` (server-side, since MD5 via `crypto` module is Node-only)
+2. Use an `<img>` tag with `onLoad`/`onError` handlers to test the URL
+3. If image loads: show as circular preview with "We found your Gravatar" text
+4. If 404: show nothing
 
-The user can upload a different photo to override the Gravatar.
+The Gravatar URL is stored in a hidden input. On account creation, it's saved as the user's `image` field. No file upload needed — it's just a URL.
 
-**Note:** MD5 in the browser — use a small inline implementation or `crypto.subtle` (which doesn't support MD5). Simplest: call a lightweight server action `getGravatarUrl(email)` that returns the URL, then test it with an `<img>` tag.
+### Server action: `createAccountAndSignIn`
 
-### Server action: `createAccountAndClaimDraft`
-
-**File: `src/app/events/new/account/actions.ts`** (new)
+**File: `src/app/events/new/actions.ts`** (modify — add new action)
 
 ```
-createAccountAndClaimDraft(prevState, formData):
-  1. Parse + validate account fields with accountFieldsSchema
-  2. Return field errors if validation fails
-  3. Read draftToken from cookie
-  4. Load draft event by slug + draftToken (verify they match)
-  5. If no match → return error "Draft not found"
+createAccountAndSignIn(prevState, formData):
+  1. IP-based rate limit check (5 per IP per hour) → return error if exceeded
+  2. Parse + validate account fields with accountFieldsSchema
+  3. Return field errors if validation fails
+  4. Read redirectTo from form data
 
-  6. Check if user exists by email:
+  5. Check if user exists by email:
 
      If email exists in DB:
-       → Update firstName/lastName/phone/image where currently null
-       → Set event.ownerId = existing user's ID
-       → Clear event.draftToken
+       → Update firstName/lastName/phone where currently null
+       → Per-email rate limit check (3 per email per hour) → return error if exceeded
        → Send magic link: signIn('resend', {
            email, redirect: false,
-           redirectTo: `/events/${slug}/confirm`
+           redirectTo
          })
-       → redirect(`/verify?email=${email}&event=${slug}`)
+       → redirect(`/verify?email=${email}&next=${redirectTo}`)
 
      If email is new:
-       → Insert new user (firstName, lastName, email, phone, image, role='user')
-       → Set event.ownerId = new user's ID
-       → Clear event.draftToken
+       → Insert new user (firstName, lastName, email, phone, image=gravatarUrl, role='user')
        → Send magic link (same as above)
-       → redirect(`/verify?email=${email}&event=${slug}`)
-
-  7. Clear the draft_token cookie
+       → redirect(`/verify?email=${email}&next=${redirectTo}`)
 ```
 
-**Key point about existing emails:** When the email already exists, we do NOT create a new account. We link the draft to the existing user, send them a magic link, and let them verify. This handles both "returning user submitting a new event" and "typo'd someone else's email" (they won't be able to verify).
+### Server action: `sendSignInLink`
+
+**File: `src/app/events/new/actions.ts`** (or colocate with AccountForm)
+
+```
+sendSignInLink(prevState, formData):
+  1. IP-based rate limit check
+  2. Validate email
+  3. Per-email rate limit check (3 per email per hour)
+  4. Read redirectTo from form data
+  5. Send magic link: signIn('resend', {
+       email, redirect: false,
+       redirectTo
+     })
+  6. redirect(`/verify?email=${email}&next=${redirectTo}`)
+```
+
+This action does NOT check if the email exists — Auth.js handles "find or create" on magic link verification. If the email doesn't exist, Auth.js creates the user when they click the link.
 
 ---
 
-## Step 3: Verify Page
+## Step 2: Verify Page
 
-Already specified in MVP.2.6. The verify page accepts `?email=...&event=...` and shows event-aware messaging: "Once you verify, you'll review your event before it goes live."
+Already specified in MVP.2.6. Accepts `?email=...&next=...`. Shows: "We sent a magic link to {email}. Click the link to continue." Resend button available.
 
 ---
 
-## Step 4: Magic Link → Confirmation
+## Step 3: Magic Link → Back to Event Form
 
-Auth.js handles this automatically. The `redirectTo` was set to `/events/[slug]/confirm` when calling `signIn()`. After the user clicks the magic link and is authenticated, Auth.js redirects them to the confirmation page.
+Auth.js handles authentication. The `redirectTo` was set to `/events/new`. After clicking the magic link, the user is authenticated and redirected to `/events/new`, which now shows the event form (since `getCurrentUser()` returns a user).
+
+---
+
+## Step 4: Event Form (Logged In)
+
+### EventForm changes
+
+**File: `src/components/events/EventForm.tsx`** (modify)
+
+Minimal change: the `createEvent` server action now saves the event as a **draft** instead of auto-submitting for review. Redirect goes to the confirmation page instead of the event detail page.
+
+Button text: "Preview & Submit"
+
+### Modified server action: `createEvent`
+
+**File: `src/app/events/new/actions.ts`** (modify existing action)
+
+Change:
+1. Create event with `status: 'draft'` (already does this)
+2. **Remove** the automatic `submitEventForReview()` call
+3. Redirect to `/events/${slug}/confirm` instead of `/events/${slug}`
+
+```diff
+- await submitEventForReview(event.id, user.id)
+- redirect(`/events/${event.slug}`)
++ redirect(`/events/${event.slug}/confirm`)
+```
+
+This is the only change to the existing `createEvent` action. Both logged-in and previously-unauthenticated users use the same action.
 
 ---
 
@@ -369,7 +412,7 @@ Server Component:
 
 **File: `src/app/events/[slug]/confirm/actions.ts`** (new)
 
-```ts
+```
 confirmAndSubmit(eventId):
   1. const user = await requireUser()
   2. Load event, verify user owns it
@@ -382,19 +425,57 @@ Reuses the existing `submitEventForReview` function from `src/app/events/new/act
 
 ---
 
+## Security Safeguards
+
+### Threat model
+
+| Attack | Risk | Mitigation |
+|--------|------|-----------|
+| Account creation spam | Flood DB with user records | IP rate limit: **5 accounts per IP per hour** (in-memory Map). Cloudflare Turnstile on form (MVP.5.2). |
+| Magic link email spam | Harass someone's inbox or burn Resend quota | Per-email rate limit: **3 sends per email per hour**. IP rate limit also applies. |
+| Image upload abuse (gore, CSAM, storage) | Harmful content or storage cost attack | Upload endpoint requires auth — no uploads without verified email. Flyer images reviewed by admin before event goes public. |
+| Draft spam from verified users | Many junk draft events | Existing rate limit: 3 pending (draft + pending_review) for new users, 10 for trusted. |
+| Offensive text in events | Gore/slurs in title/description | Admin approval queue — nothing public without review. |
+| Disposable email accounts | Throwaway emails to bypass rate limits | Disposable email domain blocking (MVP.5.3). |
+| Brute force magic link tokens | Guess verification tokens | Auth.js tokens are cryptographically random + expire after 24h. Standard protection. |
+
+### IP rate limiting implementation
+
+**File: `src/lib/ip-rate-limit.ts`** (new)
+
+Simple in-memory sliding window rate limiter:
+
+```ts
+// Map<string, number[]> — key is IP, value is array of timestamps
+// On each request: filter timestamps within window, reject if >= limit
+// Prune old entries periodically to prevent memory leak
+```
+
+Used in `createAccountAndSignIn` and `sendSignInLink` server actions. Get client IP from `headers().get('x-forwarded-for')`.
+
+This is an in-memory Map that resets on deploy — acceptable for a small nonprofit. Upgrade to Vercel KV or Upstash Redis for production hardening (post-MVP).
+
+### Profile photo safety
+
+Profile photos (via Gravatar or future upload) are **not available at account creation time** in the unauthenticated flow. The Gravatar URL is stored as the user's `image` on account creation — this is a read-only URL reference, not a file upload, so no abuse vector.
+
+Direct image uploads require authentication. When upload support is added to account settings (post-MVP), it will be auth-gated automatically.
+
+---
+
 ## Edge Cases
 
-**Email already exists in DB:** Link draft to existing user, send magic link. User authenticates as their existing account. No new account created.
+**Email already exists in DB (create account mode):** Update null profile fields (don't overwrite existing data), send magic link. User authenticates as their existing account. No error shown — from the user's perspective, it works the same as signing in.
 
-**User doesn't verify email:** Event stays as `draft` with an `ownerId` set but unverified. Invisible to public. Future cleanup can handle stale drafts (out of scope).
+**Email already exists in DB (sign-in mode):** Just send magic link. Standard Auth.js flow.
 
-**Anonymous draft with no account creation (user abandons at step 2):** Event stays as `draft` with `ownerId=NULL`. Invisible to all queries. Cleanup job can delete drafts with NULL ownerId older than 7 days.
+**Email doesn't exist in DB (sign-in mode):** Auth.js creates the user on magic link verification (standard adapter behavior). The user won't have firstName/lastName/phone set — they can add these later.
 
-**Rate limiting:** For anonymous drafts (step 1), no rate limit — the draft has no user yet. Rate limit is checked at step 2 when linking to a user. This means someone could spam anonymous drafts, but they're harmless (invisible, no email sent). Add IP-based rate limiting in MVP.5 if needed.
+**Stale drafts:** Authenticated users who create drafts but never confirm them: drafts stay in DB, count toward rate limit. Users can delete or edit their drafts from "My Events" (post-MVP). No cleanup job needed — drafts have owners and are bounded by rate limits.
 
-**Draft token cookie lost (e.g., different browser):** User can't claim the draft. They'd need to start over. This is acceptable — same-browser flow is the expected path.
+**Magic link opened on different device:** User is authenticated on the new device, redirected to `/events/new`. Since they're now logged in, they see the event form. Any draft they created on the original device is accessible via "My Events" or direct URL.
 
-**Logged-in user navigates to /events/new/account:** Redirect to /events/new — they don't need account creation.
+**Logged-in user navigates directly to /events/new:** Sees the event form immediately, no account step.
 
 ---
 
@@ -402,20 +483,20 @@ Reuses the existing `submitEventForReview` function from `src/app/events/new/act
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `src/db/schema/users.ts` | Modify | Add firstName, lastName, phone |
-| `src/db/schema/events.ts` | Modify | Make ownerId nullable, add draftToken |
+| `src/db/schema/users.ts` | Modify | Add firstName, lastName, phone columns |
 | `src/lib/gravatar.ts` | Create | Gravatar URL helper |
+| `src/lib/ip-rate-limit.ts` | Create | In-memory IP rate limiter |
 | `src/lib/schemas/account.ts` | Create | Zod schema for account fields |
-| `src/app/events/new/page.tsx` | Modify | Pass `user` to EventForm |
-| `src/components/events/EventForm.tsx` | Modify | Dual action based on auth state |
-| `src/app/events/new/actions.ts` | Modify | Add `createAnonymousDraft` |
-| `src/app/events/new/account/page.tsx` | Create | Account creation page (step 2) |
-| `src/components/events/AccountForm.tsx` | Create | Account form with phone formatting, Gravatar |
-| `src/app/events/new/account/actions.ts` | Create | `createAccountAndClaimDraft` |
+| `src/app/events/new/page.tsx` | Modify | Show AccountForm or EventForm based on auth |
+| `src/components/events/AccountForm.tsx` | Create | Account creation + sign-in toggle form |
+| `src/components/events/EventForm.tsx` | Modify | Button text → "Preview & Submit" |
+| `src/app/events/new/actions.ts` | Modify | Add `createAccountAndSignIn`, `sendSignInLink`; update `createEvent` to skip auto-submit and redirect to confirm |
 | `src/components/events/EventPreview.tsx` | Create | Shared event preview component |
 | `src/app/events/[slug]/confirm/page.tsx` | Create | Confirmation/preview page |
 | `src/app/events/[slug]/confirm/actions.ts` | Create | `confirmAndSubmit` action |
 | `src/app/events/[slug]/page.tsx` | Modify | Use EventPreview component |
+
+Note: No changes to `src/db/schema/events.ts` — `ownerId` stays NOT NULL, no `draftToken` needed.
 
 ---
 
@@ -424,6 +505,8 @@ Reuses the existing `submitEventForReview` function from `src/app/events/new/act
 1. `pnpm typecheck` passes
 2. `pnpm lint` passes
 3. `pnpm build` succeeds
-4. Manual test (unauthenticated): `/events/new` → fill event → "Next" → `/events/new/account` → fill account fields → submit → `/verify` → click magic link → `/events/[slug]/confirm` → "Submit for Review" → event detail with "pending review" banner
-5. Manual test (existing email): same as above, but at step 2 enter an existing email → magic link sent, no new account created → verify → confirm page works
-6. Manual test (authenticated): `/events/new` → fill event → "Submit for Review" → redirects to event detail page (current behavior unchanged)
+4. Manual test (new user): `/events/new` → see account form → fill in name/email/phone → submit → `/verify` → click magic link → `/events/new` (now logged in) → fill event form → "Preview & Submit" → `/events/[slug]/confirm` → "Submit for Review" → event detail with "pending review" banner
+5. Manual test (existing user, create account mode): enter existing email + name/phone → magic link sent, existing account used → same flow
+6. Manual test (sign-in mode): click "Sign In" → enter email → "Send Login Link" → verify → `/events/new` → event form
+7. Manual test (already logged in): `/events/new` → event form immediately → submit → confirm → submit for review
+8. Rate limit test: submit account creation > 5 times from same IP → error shown
