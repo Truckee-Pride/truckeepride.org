@@ -16,7 +16,13 @@ const STATUS_STYLES: Record<string, string> = {
   cancelled: 'bg-gray-100 text-gray-400',
 }
 
-export function EventsTableBody({ events }: { events: Event[] }) {
+export function EventsTableBody({
+  events,
+  statusFilter,
+}: {
+  events: Event[]
+  statusFilter: string | null
+}) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
 
   function handleRowClick(event: Event) {
@@ -30,6 +36,17 @@ export function EventsTableBody({ events }: { events: Event[] }) {
   return (
     <>
       <tbody>
+        {events.length === 0 ? (
+          <tr>
+            <td colSpan={6} className="px-4 py-12 text-center text-muted">
+              {statusFilter === 'pending_review'
+                ? 'No events pending review.'
+                : statusFilter
+                  ? `No ${statusFilter.replace('_', ' ')} events.`
+                  : 'No events yet.'}
+            </td>
+          </tr>
+        ) : null}
         {events.map((event) => (
           <tr
             key={event.id}

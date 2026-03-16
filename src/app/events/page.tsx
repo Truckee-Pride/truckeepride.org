@@ -1,11 +1,10 @@
 import { and, asc, eq, gte } from 'drizzle-orm'
 import { LayoutWidth } from '@/lib/constants'
-import Link from 'next/link'
-import { CalendarPlus } from 'lucide-react'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { EventCard } from '@/components/EventCard'
 import { Metadata } from 'next'
+import { AddEvent } from '@/components/AddEvent'
 
 export const metadata: Metadata = {
   title: 'Upcoming Events',
@@ -24,17 +23,21 @@ export default async function EventsPage() {
     <main className={LayoutWidth.wide}>
       <div className="mt-8 mb-8 flex items-center justify-between gap-4">
         <h1 className="m-0">Upcoming Events</h1>
-        <Link
-          href="/events/new"
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-inverse no-underline transition-colors hover:bg-brand-hover"
-        >
-          <CalendarPlus size={16} />
-          Add Event
-        </Link>
+        <AddEvent />
       </div>
 
       {upcomingEvents.length === 0 ? (
-        <p className="text-muted">No upcoming events — check back soon!</p>
+        <div className="py-8 text-center">
+          <p className="text-muted">
+            No upcoming events right now — check back soon!
+          </p>
+          <p className="mt-2 text-muted">
+            Have an event to share with the community?
+          </p>
+          <div className="mt-4 flex justify-center">
+            <AddEvent />
+          </div>
+        </div>
       ) : (
         <div className="flex flex-col gap-3">
           {upcomingEvents.map((event, i) => (
