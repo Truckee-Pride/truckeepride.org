@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown'
+import { MARKDOWN_ALLOWED_ELEMENTS } from '@/lib/constants'
 import Image from 'next/image'
 import {
   Baby,
@@ -97,21 +98,7 @@ export function EventDetails({ event }: Props) {
 
       {/* Description (markdown) */}
       <div className="prose mt-8">
-        <ReactMarkdown
-          allowedElements={[
-            'p',
-            'strong',
-            'em',
-            'h2',
-            'h3',
-            'ul',
-            'ol',
-            'li',
-            'blockquote',
-            'a',
-            'br',
-          ]}
-        >
+        <ReactMarkdown allowedElements={[...MARKDOWN_ALLOWED_ELEMENTS]}>
           {event.description}
         </ReactMarkdown>
       </div>

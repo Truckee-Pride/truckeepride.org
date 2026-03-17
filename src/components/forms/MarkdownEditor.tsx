@@ -2,7 +2,6 @@
 
 import { useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import type { MDXEditorMethods } from '@mdxeditor/editor'
 import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
 
@@ -33,7 +32,6 @@ export function MarkdownEditor({
   errors,
   onChange,
 }: Props) {
-  const editorRef = useRef<MDXEditorMethods>(null)
   const hiddenRef = useRef<HTMLInputElement>(null)
 
   const handleChange = useCallback(
@@ -65,11 +63,7 @@ export function MarkdownEditor({
             hasError && 'border-error',
           )}
         >
-          <Editor
-            editorRef={editorRef}
-            markdown={defaultValue}
-            onChange={handleChange}
-          />
+          <Editor markdown={defaultValue} onChange={handleChange} />
           <input
             ref={hiddenRef}
             type="hidden"

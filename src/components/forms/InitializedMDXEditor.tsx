@@ -1,9 +1,7 @@
 'use client'
 
-import type { ForwardedRef } from 'react'
 import {
   MDXEditor,
-  type MDXEditorMethods,
   type MDXEditorProps,
   toolbarPlugin,
   headingsPlugin,
@@ -24,39 +22,31 @@ import {
 import '@mdxeditor/editor/style.css'
 import './mdxeditor-overrides.css'
 
-type Props = MDXEditorProps & {
-  editorRef: ForwardedRef<MDXEditorMethods> | null
-}
+const plugins = [
+  headingsPlugin({ allowedHeadingLevels: [2, 3] }),
+  listsPlugin(),
+  quotePlugin(),
+  linkPlugin(),
+  linkDialogPlugin(),
+  markdownShortcutPlugin(),
+  diffSourcePlugin({ viewMode: 'rich-text' }),
+  toolbarPlugin({
+    toolbarContents: () => (
+      <DiffSourceToggleWrapper>
+        <UndoRedo />
+        <Separator />
+        <BoldItalicUnderlineToggles options={['Bold', 'Italic']} />
+        <Separator />
+        <ListsToggle />
+        <Separator />
+        <BlockTypeSelect />
+        <Separator />
+        <CreateLink />
+      </DiffSourceToggleWrapper>
+    ),
+  }),
+]
 
-export function InitializedMDXEditor({ editorRef, ...props }: Props) {
-  return (
-    <MDXEditor
-      {...props}
-      ref={editorRef}
-      plugins={[
-        headingsPlugin({ allowedHeadingLevels: [2, 3] }),
-        listsPlugin(),
-        quotePlugin(),
-        linkPlugin(),
-        linkDialogPlugin(),
-        markdownShortcutPlugin(),
-        diffSourcePlugin({ viewMode: 'rich-text' }),
-        toolbarPlugin({
-          toolbarContents: () => (
-            <DiffSourceToggleWrapper>
-              <UndoRedo />
-              <Separator />
-              <BoldItalicUnderlineToggles options={['Bold', 'Italic']} />
-              <Separator />
-              <ListsToggle />
-              <Separator />
-              <BlockTypeSelect />
-              <Separator />
-              <CreateLink />
-            </DiffSourceToggleWrapper>
-          ),
-        }),
-      ]}
-    />
-  )
+export function InitializedMDXEditor(props: MDXEditorProps) {
+  return <MDXEditor {...props} plugins={plugins} />
 }
