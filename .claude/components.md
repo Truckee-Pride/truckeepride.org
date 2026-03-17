@@ -34,6 +34,22 @@ Text-only inline `<Link>` navigation (no background fill). Variants: `primary`, 
 
 Both share styles from `src/components/text-button-styles.ts`. Use anywhere you need a styled text action — admin dashboards, forms, detail pages, etc.
 
+### Notice (`src/components/Notice.tsx`)
+
+Inline callout box for system messages. Variants: `warning` (default, amber/yellow) and `danger` (red). Accepts any children — use `<strong>` for emphasis within the message.
+
+```tsx
+// Default: warning (yellow)
+<Notice>
+  <strong>Submitted for review.</strong> Your event will go live once an admin approves it.
+</Notice>
+
+// Danger (red)
+<Notice intent="danger">
+  <strong>This event has been cancelled.</strong>
+</Notice>
+```
+
 ### Form Components (`src/components/forms/`)
 
 Before writing a bare `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`, use these:

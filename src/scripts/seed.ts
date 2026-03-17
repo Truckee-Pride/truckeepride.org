@@ -17,8 +17,11 @@ async function seed() {
 
   await db.insert(schema.users).values({
     id: 'dev-user-id',
-    name: 'Dev Admin',
-    email: 'dev@truckeepride.org',
+    name: 'Legacy Owner',
+    firstName: 'Legacy',
+    lastName: 'Owner',
+    email: 'legacy@truckeepride.org',
+    phone: '+10000000000',
     role: 'admin',
   })
 

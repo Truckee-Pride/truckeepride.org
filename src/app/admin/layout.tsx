@@ -11,7 +11,7 @@ export default async function AdminLayout({
   if (user.role !== 'admin') {
     return (
       <main className={LayoutWidth.admin}>
-        <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+        <h1>Access Denied</h1>
         <p className="text-subtle">
           You don&apos;t have permission to view this page.
         </p>

@@ -1,8 +1,11 @@
 import { signIn } from '@/lib/auth'
+import { cn } from '@/lib/utils'
 import { LayoutWidth } from '@/lib/constants'
+import { Notice } from '@/components/Notice'
 import { Button } from '@/components/Button'
+import type { Metadata } from 'next'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Check Your Email — Truckee Pride',
 }
 
@@ -13,43 +16,49 @@ export default async function VerifyPage({
     email?: string
     event?: string
     callbackUrl?: string
+    next?: string
   }>
 }) {
-  const { email, event, callbackUrl } = await searchParams
+  const { email, event, callbackUrl, next } = await searchParams
+  const redirectTo = next || callbackUrl || '/'
 
   async function handleResend(formData: FormData) {
     'use server'
     const resendEmail = formData.get('email') as string
+    const resendRedirectTo = formData.get('redirectTo') as string
     if (!resendEmail) return
     await signIn('resend', {
       email: resendEmail,
-      redirectTo: callbackUrl || '/',
+      redirectTo: resendRedirectTo || '/',
       redirect: false,
     })
   }
 
   return (
-    <main className={`${LayoutWidth.prose} py-12`}>
-      <h1 className="text-3xl font-bold mb-2">Check your email</h1>
-      <p className="text-subtle mb-4">
+    <main className={cn(LayoutWidth.prose, 'py-12')}>
+      <h1>Check your email</h1>
+      <p>
         We sent a magic link to{' '}
         {email ? <strong>{email}</strong> : 'your email'}. Click the link in the
         email to sign in.
       </p>
 
       {event && (
-        <p className="bg-yellow-50 border border-yellow-400 text-yellow-800 rounded-lg px-4 py-3 mb-4">
+        <Notice>
           Once you verify, you&apos;ll review your event before it goes live.
-        </p>
+        </Notice>
       )}
 
-      <p className="text-subtle mb-6">
-        Didn&apos;t get it? Check your spam folder, or resend the link below.
+      <p className="text-muted">
+        <small>
+          Didn&apos;t get it? Check your spam folder, or resend the link below.
+        </small>
       </p>
 
       {email && (
         <form action={handleResend}>
           <input type="hidden" name="email" value={email} />
+          <input type="hidden" name="redirectTo" value={redirectTo} />
           <Button type="submit">Resend magic link</Button>
         </form>
       )}

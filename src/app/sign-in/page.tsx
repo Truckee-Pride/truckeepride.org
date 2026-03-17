@@ -1,11 +1,13 @@
 import { redirect } from 'next/navigation'
 import { signIn } from '@/lib/auth'
 import { getCurrentUser } from '@/lib/auth-stub'
+import { cn } from '@/lib/utils'
 import { LayoutWidth } from '@/lib/constants'
 import { Input } from '@/components/forms/Input'
 import { Button } from '@/components/Button'
+import type { Metadata } from 'next'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Sign In — Truckee Pride',
 }
 
@@ -37,9 +39,9 @@ export default async function SignInPage({
   }
 
   return (
-    <main className={`${LayoutWidth.prose} py-12`}>
-      <h1 className="text-3xl font-bold mb-2">Sign in to Truckee Pride</h1>
-      <p className="text-subtle mb-8">
+    <main className={cn(LayoutWidth.prose, 'py-12')}>
+      <h1>Sign in to Truckee Pride</h1>
+      <p className="text-subtle">
         Enter your email and we&apos;ll send you a magic link to sign in.
       </p>
 

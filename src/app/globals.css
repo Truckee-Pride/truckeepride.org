@@ -39,6 +39,13 @@
   --error: var(--red-700);
   --error-bg: var(--red-50);
   --error-border: var(--red-200);
+
+  --amber-800: #92400e;
+  --amber-400: #fbbf24;
+  --amber-50: #fffbeb;
+  --warning: var(--amber-800);
+  --warning-bg: var(--amber-50);
+  --warning-border: var(--amber-400);
 }
 
 @theme {
@@ -61,6 +68,9 @@
   --color-error: var(--error);
   --color-error-bg: var(--error-bg);
   --color-error-border: var(--error-border);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
 }
 
 @layer base {

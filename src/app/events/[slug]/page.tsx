@@ -1,16 +1,17 @@
 import { eq } from 'drizzle-orm'
 import { LayoutWidth } from '@/lib/constants'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Edit2 } from 'lucide-react'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
-import { PageHeader } from '@/components/PageHeader'
-import { EventDetails } from '@/components/EventDetails'
+import { EventPreview } from '@/components/events/EventPreview'
 import { Button } from '@/components/Button'
 import { AddToCalendarButton } from './AddToCalendarButton'
 import { getCurrentUser } from '@/lib/auth-stub'
 import { canEditEvent } from '@/lib/permissions'
+import { Notice } from '@/components/Notice'
 
 const PUBLIC_STATUSES = ['approved', 'cancelled']
 
@@ -18,7 +19,7 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>
-}) {
+}): Promise<Metadata> {
   const { slug } = await params
   const event = await db.query.events.findFirst({
     where: eq(events.slug, slug),
@@ -102,24 +103,18 @@ export default async function EventPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {pendingReview && (
-        <div className="bg-yellow-50 border border-yellow-400 text-yellow-800 rounded-lg px-4 py-3 mb-6">
+        <Notice>
           <strong>Submitted for review.</strong> Your event will go live once an
           admin approves it.
-        </div>
+        </Notice>
       )}
       {cancelled && (
-        <div className="bg-red-100 border border-red-400 text-red-800 rounded-lg px-4 py-3 mb-6 font-semibold">
-          This event has been cancelled.
-        </div>
+        <Notice intent="danger">
+          <strong>This event has been cancelled.</strong>
+        </Notice>
       )}
 
-      <PageHeader
-        title={event.title}
-        subtitle={event.shortDescription ?? undefined}
-        emoji={event.emoji ?? undefined}
-      />
-
-      <EventDetails event={event} />
+      <EventPreview event={event} />
 
       {/* Action buttons */}
       {!cancelled && (

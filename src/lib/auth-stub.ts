@@ -9,9 +9,12 @@ export async function getCurrentUser(): Promise<User | null> {
   return {
     id: session.user.id,
     name: session.user.name ?? null,
+    firstName: session.user.name?.split(' ')[0] ?? null,
+    lastName: session.user.name?.split(' ').slice(1).join(' ') ?? null,
     email: session.user.email!,
     emailVerified: null,
     image: session.user.image ?? null,
+    phone: null,
     role:
       (session.user as unknown as { role: 'user' | 'admin' }).role ?? 'user',
     createdAt: new Date(),

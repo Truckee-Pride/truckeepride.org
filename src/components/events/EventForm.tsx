@@ -289,7 +289,7 @@ export function EventForm({ event, action = createEvent }: Props) {
               ? 'Submitting...'
               : event
                 ? 'Save Changes'
-                : 'Submit for Review'}
+                : 'Preview & Submit'}
         </Button>
       </div>
     </form>

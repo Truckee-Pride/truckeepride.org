@@ -105,6 +105,18 @@ app/
 
 ---
 
+## Tailwind CSS Rules
+
+Full conventions in `.claude/tailwind.md`. The most critical rules:
+
+- **Use `cn()` for all className composition.** Never use template literals or string concatenation: `cn(LayoutWidth.prose, 'py-12')` not `` `${LayoutWidth.prose} py-12` ``.
+- **Extract long classNames to named consts.** When a className exceeds ~3 utilities, extract to a descriptively-named `const` above the component return.
+- **Don't fight the design system with typography utilities.** `globals.css` sets font sizes, weights, and spacing for `h1`–`h4`, `p`, `ul`, `ol`, and `li`. Don't add `text-3xl`, `font-bold`, `mb-2`, etc. to these elements — let globals handle it. Only add utilities for **semantic color** (`text-subtle`, `text-muted`) or **context-specific layout** that the element genuinely needs.
+- **Use design tokens, not raw colors.** Prefer `bg-warning-bg`, `text-error`, `bg-brand` over `bg-yellow-50`, `text-red-700`, `bg-pink-500`. Add new tokens to `globals.css` if a color is used more than once.
+- **Never use `!important`** (or Tailwind's `!` prefix). Fix the cascade layer instead.
+
+---
+
 ## Component Library
 
 **Never write a bare `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog in `.claude/components.md`. If no existing component fits, ask before creating a new one.
@@ -114,6 +126,7 @@ Quick reference:
 - Filled action button or link → `Button` (`src/components/Button.tsx`)
 - Inline text button → `TextButton` (`src/components/TextButton.tsx`)
 - Inline text link → `TextLink` (`src/components/TextLink.tsx`)
+- Inline notice/callout box → `Notice` (`src/components/Notice.tsx`) — variants: `warning` (default, yellow), `danger` (red)
 - Form fields (`input`, `textarea`, `select`, `checkbox`) → matching component from `src/components/forms/`
 
 ---
