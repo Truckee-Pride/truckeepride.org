@@ -36,12 +36,7 @@ export default async function Home() {
   return (
     <main className={LayoutWidth.wide}>
       <section className="flex justify-center">
-        <Button
-          href="/donate"
-          className="rounded-none shadow-[4px_4px_0px_0px_#171717] hover:shadow-[2px_2px_0px_0px_#171717] hover:translate-x-0.5 hover:translate-y-0.5 transition-none"
-        >
-          {DONATE_BUTTON_TEXT}
-        </Button>
+        <Button href="/donate">{DONATE_BUTTON_TEXT}</Button>
       </section>
 
       <section>
