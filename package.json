@@ -7,13 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "lint:strict": "eslint --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "driz": "dotenv -e .env.local -- drizzle-kit studio",
     "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
+      "eslint --fix --max-warnings=0",
       "prettier --write"
     ],
     "*.{json,css,md}": "prettier --write"
