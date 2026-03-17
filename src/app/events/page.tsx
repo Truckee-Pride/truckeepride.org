@@ -3,7 +3,7 @@ import { LayoutWidth } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { EventCard } from '@/components/EventCard'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { AddEvent } from '@/components/AddEvent'
 
 export const metadata: Metadata = {

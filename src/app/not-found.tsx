@@ -1,7 +1,8 @@
+import type { Metadata } from 'next'
 import { LayoutWidth } from '@/lib/constants'
 import { Button } from '@/components/Button'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Page Not Found',
 }
 
