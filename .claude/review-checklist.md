@@ -243,78 +243,42 @@ Fix: Remove the memoization unless there's a measured performance issue.
 
 ---
 
-## Simplicity & Maintainability
+## Code Smells
 
-These are judgment-call rules. Unlike the pattern rules above, evaluate each
-question for each changed file. **Auto-fix** when the violation is clear.
+Ask yourself: would a staff engineer approve this PR? Look for these
+common issues in AI-generated code. **Auto-fix** clear violations.
 For borderline cases, note them as "consider simplifying" in the summary
 rather than making changes.
 
-Guiding principle from CLAUDE.md: _"Write code that is simple, clear, and
-easy to delete. A volunteer maintainer with intermediate React skills should
-understand any file in a few minutes."_
+### E1 — Duplicated logic
 
-### E1 — Premature abstraction
+Look for: similar code blocks across changed files, or within the same file.
+  The same 3+ lines appearing twice is a signal.
+Fix: extract a shared function. If it's used across files, put it in a shared
+  module. If within one file, extract a local function.
 
-Look for: utility functions, helpers, or wrapper components used only once
-Ask: Would inlining this make the code clearer?
-Fix: Inline the abstraction back into its single call site.
-Ref: CLAUDE.md — "Don't create a utility unless it's used 3+ times."
+### E2 — Scope creep
 
-### E2 — Component doing too much
+Look for: changes to code unrelated to the task — refactoring, "improvements,"
+  added features, or cleanup beyond what was asked for.
+Fix: revert unrelated changes. Keep the diff focused.
 
-Look for: components over ~150 lines, or components handling multiple unrelated
-  concerns (e.g., data fetching + form + display logic in one component)
-Ask: Would a volunteer React dev understand this in a few minutes?
-Fix: Split into focused components — a Server Component shell for data fetching,
-  a Client Component for interactivity.
+### E3 — Unnecessary files
 
-### E3 — Prop sprawl
+Look for: new files that could be additions to existing files. Utility files
+  with a single export. Wrapper modules that just re-export.
+Fix: colocate in the existing file or directory.
 
-Look for: components accepting 5+ props, or props that seem incompatible
-  (e.g., `isAdmin` alongside `showPublicView`)
-Ask: Should this be two components instead?
-Fix: Break into smaller, composable components. Multiple boolean props for the
-  same concern → single enum prop.
+### E4 — Unclear naming
 
-### E4 — Unnecessary indirection
+Look for: generic names (`data`, `result`, `item`, `info`, `handle`, `stuff`),
+  abbreviations (`evt`, `usr`, `btn`), single-letter variables (except `i`, `j`
+  in loops).
+Fix: rename to describe purpose — `pendingEvents`, `approveEvent`, `ticketPrice`.
 
-Look for: wrapper functions/components that just pass through to another
-  function/component without adding logic. Files that exist only to re-export
-  from another file.
-Ask: Does this layer add value, or is it just ceremony?
-Fix: Remove the wrapper and use the underlying function/component directly.
+### E5 — Over-engineered for the task
 
-### E5 — God file
-
-Look for: files over ~250 lines, or files mixing unrelated concerns
-  (e.g., schema + component + server action all in one large file)
-Ask: Would splitting this make each part easier to understand?
-Fix: Split into focused files, colocated in the same directory.
-
-### E6 — Unclear naming
-
-Look for: single-letter variables (except loop indices), abbreviations
-  (`evt`, `usr`, `btn`), generic names (`data`, `result`, `item`, `info`,
-  `handle`), names that describe implementation rather than purpose
-Ask: Would a reader know what this is without reading the surrounding code?
-Fix: Rename to describe what the thing _is_ or _does_ — `pendingEvents`,
-  `approveEvent`, `ticketPrice`.
-
-### E7 — Speculative generality
-
-Look for: config objects, feature flags, options parameters, generic type
-  parameters, or extensibility hooks that serve no current use case
-Ask: Is this solving a problem that exists today, or one that might exist someday?
-Fix: Remove the generality. Write the simplest code that handles the current
-  requirements.
-Ref: CLAUDE.md — "Don't design for hypothetical future requirements."
-
-### E8 — Unnecessary error handling
-
-Look for: try/catch around code that can't throw in practice, null checks for
-  values that are never null, fallback defaults for required fields, validation
-  of internal (non-user) inputs
-Ask: Can this actually fail in a way that needs handling?
-Fix: Remove defensive code for impossible cases. Only validate at system
-  boundaries (user input, external APIs).
+Look for: config objects nobody configures, options parameters with one caller,
+  generic types used once, try/catch around code that can't throw, null checks
+  for values that are never null, feature flags for nonexistent features.
+Fix: simplify to the minimum the current task requires.
