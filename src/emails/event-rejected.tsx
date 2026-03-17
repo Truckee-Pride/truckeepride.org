@@ -8,7 +8,18 @@ import {
   Hr,
   Preview,
   Heading,
+  Section,
+  Link,
 } from '@react-email/components'
+import {
+  bodyStyle,
+  containerStyle,
+  headingStyle,
+  textStyle,
+  buttonStyle,
+  hrStyle,
+  footerStyle,
+} from './styles'
 
 type Props = {
   eventTitle: string
@@ -35,9 +46,9 @@ export function EventRejectedEmail({
             Thanks for submitting an event to Truckee Pride. We reviewed your
             submission and have a few notes:
           </Text>
-          <div style={reasonBlockStyle}>
+          <Section style={reasonBlockStyle}>
             <Text style={reasonTextStyle}>{rejectionReason}</Text>
-          </div>
+          </Section>
           <Text style={textStyle}>
             You&apos;re welcome to update your event and resubmit for review.
           </Text>
@@ -46,9 +57,9 @@ export function EventRejectedEmail({
           </Button>
           <Text style={textStyle}>
             Questions? Reply to this email or reach us at{' '}
-            <a href="mailto:hello@truckeepride.org" style={linkStyle}>
+            <Link href="mailto:hello@truckeepride.org" style={linkStyle}>
               hello@truckeepride.org
-            </a>
+            </Link>
             .
           </Text>
           <Hr style={hrStyle} />
@@ -59,31 +70,6 @@ export function EventRejectedEmail({
       </Body>
     </Html>
   )
-}
-
-const bodyStyle = {
-  backgroundColor: '#ffffff',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-}
-
-const containerStyle = {
-  maxWidth: '600px',
-  margin: '0 auto',
-  padding: '40px 24px',
-}
-
-const headingStyle = {
-  color: '#171717',
-  fontSize: '24px',
-  fontWeight: '700',
-  margin: '0 0 16px',
-}
-
-const textStyle = {
-  color: '#171717',
-  fontSize: '16px',
-  lineHeight: '24px',
-  margin: '0 0 16px',
 }
 
 const reasonBlockStyle = {
@@ -101,29 +87,6 @@ const reasonTextStyle = {
   margin: '0',
 }
 
-const buttonStyle = {
-  backgroundColor: '#b800bf',
-  color: '#ffffff',
-  padding: '12px 24px',
-  borderRadius: '8px',
-  fontWeight: '600',
-  fontSize: '16px',
-  display: 'inline-block',
-  marginBottom: '24px',
-}
-
 const linkStyle = {
   color: '#b800bf',
-}
-
-const hrStyle = {
-  borderColor: '#e5e7eb',
-  margin: '32px 0',
-}
-
-const footerStyle = {
-  color: '#6b7280',
-  fontSize: '13px',
-  lineHeight: '20px',
-  margin: '0',
 }

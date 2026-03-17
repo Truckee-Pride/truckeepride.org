@@ -9,6 +9,15 @@ import {
   Preview,
   Heading,
 } from '@react-email/components'
+import {
+  bodyStyle,
+  containerStyle,
+  headingStyle,
+  textStyle,
+  buttonStyle,
+  hrStyle,
+  footerStyle,
+} from './styles'
 
 type Props = {
   eventTitle: string
@@ -35,7 +44,7 @@ export function EventApprovedEmail({ eventTitle, eventUrl, ownerName }: Props) {
           </Button>
           <Text style={textStyle}>
             Thank you for contributing to our community! If you need to make any
-            changes, you can edit the event from the page.
+            changes, you can edit the event from the event page.
           </Text>
           <Hr style={hrStyle} />
           <Text style={footerStyle}>
@@ -47,57 +56,9 @@ export function EventApprovedEmail({ eventTitle, eventUrl, ownerName }: Props) {
   )
 }
 
-const bodyStyle = {
-  backgroundColor: '#ffffff',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
-}
-
-const containerStyle = {
-  maxWidth: '600px',
-  margin: '0 auto',
-  padding: '40px 24px',
-}
-
-const headingStyle = {
-  color: '#171717',
-  fontSize: '24px',
-  fontWeight: '700',
-  margin: '0 0 16px',
-}
-
-const textStyle = {
-  color: '#171717',
-  fontSize: '16px',
-  lineHeight: '24px',
-  margin: '0 0 16px',
-}
-
 const eventTitleStyle = {
   color: '#171717',
   fontSize: '20px',
   fontWeight: '700',
   margin: '0 0 24px',
-}
-
-const buttonStyle = {
-  backgroundColor: '#b800bf',
-  color: '#ffffff',
-  padding: '12px 24px',
-  borderRadius: '8px',
-  fontWeight: '600',
-  fontSize: '16px',
-  display: 'inline-block',
-  marginBottom: '24px',
-}
-
-const hrStyle = {
-  borderColor: '#e5e7eb',
-  margin: '32px 0',
-}
-
-const footerStyle = {
-  color: '#6b7280',
-  fontSize: '13px',
-  lineHeight: '20px',
-  margin: '0',
 }
