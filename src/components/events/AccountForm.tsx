@@ -236,18 +236,6 @@ export function AccountForm({ redirectTo }: Props) {
           onChange={handleEmailChange}
         />
 
-        {gravatarUrl && (
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={gravatarUrl}
-              alt="Your Gravatar"
-              className="w-12 h-12 rounded-full"
-            />
-            <span className="text-sm text-muted">We found your Gravatar!</span>
-          </div>
-        )}
-
         <Input
           label="Phone Number"
           name="phoneDisplay"
