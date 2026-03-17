@@ -22,6 +22,7 @@ import {
   DiffSourceToggleWrapper,
 } from '@mdxeditor/editor'
 import '@mdxeditor/editor/style.css'
+import './mdxeditor-overrides.css'
 
 type Props = MDXEditorProps & {
   editorRef: ForwardedRef<MDXEditorMethods> | null
