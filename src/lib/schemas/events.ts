@@ -14,7 +14,14 @@ export const createEventBaseSchema = z.object({
   description: z
     .string()
     .min(1, 'Description is required')
-    .max(5000, 'Description is too long'),
+    .max(5000, 'Description is too long')
+    .refine(
+      (val) =>
+        [...val.matchAll(/\[.+?\]\(([^)]+)\)/g)].every(([, url]) =>
+          /^(https?:\/\/|mailto:)/.test(url),
+        ),
+      'Links must use https://, http://, or mailto:',
+    ),
   locationName: z.string().min(1, 'Location name is required').max(200),
   locationAddress: z.string().max(400).optional(),
   date: z.string().min(1, 'Date is required'),

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
@@ -21,7 +21,6 @@ type Props = {
   description?: string
   errors?: string[]
   onChangeAction?: (value: string) => void
-  showDiff?: boolean
 }
 
 export function MarkdownEditor({
@@ -32,16 +31,13 @@ export function MarkdownEditor({
   description,
   errors,
   onChangeAction,
-  showDiff,
 }: Props) {
-  const hiddenRef = useRef<HTMLInputElement>(null)
+  const [markdown, setMarkdown] = useState(defaultValue)
 
   const handleChange = useCallback(
-    (markdown: string) => {
-      if (hiddenRef.current) {
-        hiddenRef.current.value = markdown
-      }
-      onChangeAction?.(markdown)
+    (value: string) => {
+      setMarkdown(value)
+      onChangeAction?.(value)
     },
     [onChangeAction],
   )
@@ -65,17 +61,8 @@ export function MarkdownEditor({
             hasError && 'border-error',
           )}
         >
-          <Editor
-            markdown={defaultValue}
-            onChange={handleChange}
-            showDiff={showDiff}
-          />
-          <input
-            ref={hiddenRef}
-            type="hidden"
-            name={name}
-            defaultValue={defaultValue}
-          />
+          <Editor markdown={defaultValue} onChange={handleChange} />
+          <input type="hidden" name={name} value={markdown} />
         </div>
       )}
     </FormField>

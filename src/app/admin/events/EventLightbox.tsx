@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { EventDetails } from '@/components/EventDetails'
+import { Notice } from '@/components/Notice'
 import type { Event } from '@/db/schema/events'
 import { LayoutWidth } from '@/lib/constants'
 
@@ -88,6 +89,14 @@ export function EventLightbox({ event, onCloseAction }: Props) {
               )}
             </header>
 
+            {event.status === 'pending_review' &&
+              (event.ticketUrl ||
+                /\[.+?\]\([a-z]+:/.test(event.description ?? '')) && (
+                <Notice intent="warning">
+                  <strong>Before approving:</strong> verify any links in the
+                  description and ticket URL lead to legitimate, safe sites.
+                </Notice>
+              )}
             <EventDetails event={event} />
           </div>
         </div>

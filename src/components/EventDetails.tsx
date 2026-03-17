@@ -76,7 +76,11 @@ export function EventDetails({ event }: Props) {
           <li className="flex items-center gap-2">
             <Ticket size={16} className="shrink-0" />
             {event.ticketUrl ? (
-              <a href={event.ticketUrl} target="_blank" rel="noreferrer">
+              <a
+                href={event.ticketUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Get tickets
               </a>
             ) : (
@@ -98,7 +102,24 @@ export function EventDetails({ event }: Props) {
 
       {/* Description (markdown) */}
       <div className="prose mt-8">
-        <ReactMarkdown allowedElements={[...MARKDOWN_ALLOWED_ELEMENTS]}>
+        <ReactMarkdown
+          allowedElements={[...MARKDOWN_ALLOWED_ELEMENTS]}
+          components={{
+            a: ({ href, children }) => {
+              const safe =
+                href &&
+                (href.startsWith('https://') ||
+                  href.startsWith('http://') ||
+                  href.startsWith('mailto:'))
+              if (!safe) return <>{children}</>
+              return (
+                <a href={href} target="_blank" rel="noopener noreferrer">
+                  {children}
+                </a>
+              )
+            },
+          }}
+        >
           {event.description}
         </ReactMarkdown>
       </div>
