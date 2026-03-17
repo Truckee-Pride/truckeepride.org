@@ -224,7 +224,10 @@ export function FilterSelect({
             )
           })}
           {multiple && hasSelection && (
-            <li className="border-t border-border px-3 pt-1.5 pb-1">
+            <li
+              role="presentation"
+              className="border-t border-border px-3 pt-1.5 pb-1"
+            >
               <TextButton type="button" intent="danger" onClick={handleClear}>
                 Clear all
               </TextButton>
