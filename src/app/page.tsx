@@ -3,35 +3,23 @@ import Link from 'next/link'
 import { and, asc, eq, gte } from 'drizzle-orm'
 import { LayoutWidth } from '@/lib/constants'
 import { db } from '@/lib/db'
-import { events } from '@/db/schema'
+import { events, sponsors } from '@/db/schema'
 import { EventCard } from '@/components/EventCard'
 import { Button } from '@/components/Button'
 import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 
-const sponsors = [
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/66196c1e462acfb2d388edef_TCD-Logo-FullColor%20(1).png',
-    alt: 'Truckee Cultural District',
-  },
-  {
-    src: 'https://cdn.prod.website-files.com/65ce7daae11b51852ee387db/65df7639c337d845f1a33402_Church%20of%20the%20Mountains%20Logo.%20Transparent.png',
-    alt: 'Church of the Mountains',
-  },
-  {
-    src: 'https://cdn.brandfetch.io/idEhX7aFK4/w/820/h/500/theme/dark/logo.png?c=1bxid64Mup7aczewSAYMX&t=1750540338911',
-    alt: "Arc'teryx",
-  },
-]
-
 export default async function Home() {
-  const upcomingEvents = await db.query.events.findMany({
-    where: and(
-      eq(events.status, 'approved'),
-      gte(events.startTime, new Date()),
-    ),
-    orderBy: asc(events.startTime),
-    limit: 5,
-  })
+  const [upcomingEvents, sponsorsList] = await Promise.all([
+    db.query.events.findMany({
+      where: and(
+        eq(events.status, 'approved'),
+        gte(events.startTime, new Date()),
+      ),
+      orderBy: asc(events.startTime),
+      limit: 5,
+    }),
+    db.select().from(sponsors).orderBy(asc(sponsors.sortOrder)),
+  ])
 
   return (
     <main className={LayoutWidth.wide}>
@@ -102,30 +90,32 @@ export default async function Home() {
         </div>
       </section>
 
-      <section>
-        <h2>Thank you to our sponsors!</h2>
-        <p>
-          Truckee Pride is an entirely volunteer and sponsor supported
-          organization. Thank you to all the organizations below for kindly
-          supporting us:
-        </p>
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {sponsors.map((sponsor) => (
-            <div
-              key={sponsor.src}
-              className="flex items-center justify-center py-2"
-            >
-              <Image
-                src={sponsor.src}
-                alt={sponsor.alt}
-                width={120}
-                height={120}
-                className="h-auto w-full max-w-[120px]"
-              />
-            </div>
-          ))}
-        </div>
-      </section>
+      {sponsorsList.length > 0 && (
+        <section>
+          <h2>Thank you to our sponsors!</h2>
+          <p>
+            Truckee Pride is an entirely volunteer and sponsor supported
+            organization. Thank you to all the organizations below for kindly
+            supporting us:
+          </p>
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {sponsorsList.map((sponsor) => (
+              <div
+                key={sponsor.id}
+                className="flex items-center justify-center py-2"
+              >
+                <Image
+                  src={sponsor.imageUrl}
+                  alt={sponsor.alt}
+                  width={120}
+                  height={120}
+                  className="h-auto w-full max-w-[120px]"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   )
 }
