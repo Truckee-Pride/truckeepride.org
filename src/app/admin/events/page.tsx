@@ -54,7 +54,7 @@ export default async function AdminEventsPage({
     <>
       <h1 className="mb-6">Events ({allEvents.length})</h1>
 
-      <div className="overflow-x-auto rounded-lg border border-border">
+      <div className="rounded-lg border border-border">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-surface text-left">

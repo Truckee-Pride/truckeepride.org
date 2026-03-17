@@ -32,6 +32,9 @@ function formatPhone(digits: string): string {
 export function AccountForm({ redirectTo }: Props) {
   const [mode, setMode] = useState<'create' | 'signin'>('create')
   const [sentEmail, setSentEmail] = useState<string | null>(null)
+  const [verifyOriginMode, setVerifyOriginMode] = useState<'create' | 'signin'>(
+    'create',
+  )
   const [createState, createAction, isCreating] = useActionState(
     createAccountAndSignIn,
     initialState,
@@ -96,6 +99,7 @@ export function AccountForm({ redirectTo }: Props) {
   useEffect(() => {
     if (createState.success && createState.email) {
       setSentEmail(createState.email)
+      setVerifyOriginMode('create')
     }
   }, [createState.success, createState.email])
 
@@ -116,13 +120,14 @@ export function AccountForm({ redirectTo }: Props) {
     setMode(mode === 'create' ? 'signin' : 'create')
   }
 
-  function handleCreateAccount() {
+  function handleTryAgain() {
     setSentEmail(null)
-    setMode('create')
+    setMode(verifyOriginMode)
   }
 
   function handleSignInEmailSent(email: string) {
     setSentEmail(email)
+    setVerifyOriginMode('signin')
   }
 
   if (sentEmail) {
@@ -147,14 +152,18 @@ export function AccountForm({ redirectTo }: Props) {
                   : 'Resend login link'}
             </Button>
           </Form>
-          <Button
-            intent="secondary"
-            type="button"
-            onClick={handleCreateAccount}
-          >
-            Create Account
-          </Button>
+          {verifyOriginMode === 'create' && (
+            <Button intent="secondary" type="button" onClick={handleTryAgain}>
+              Create Account
+            </Button>
+          )}
         </div>
+        <p className={toggleSignInModeTextStyles}>
+          Wrong email?{' '}
+          <TextButton type="button" onClick={handleTryAgain}>
+            Try again
+          </TextButton>
+        </p>
       </div>
     )
   }
@@ -172,6 +181,7 @@ export function AccountForm({ redirectTo }: Props) {
           redirectTo={redirectTo}
           className="space-y-4"
           onEmailSentAction={handleSignInEmailSent}
+          defaultEmail={sentEmail ?? undefined}
         />
       </div>
     )

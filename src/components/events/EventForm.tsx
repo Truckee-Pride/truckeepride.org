@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState, useRef } from 'react'
+import { useActionState, useState, useRef, useCallback } from 'react'
 import {
   createEventSchema,
   createEventBaseSchema,
@@ -49,87 +49,83 @@ type Props = {
 }
 
 export function EventForm({ event, action = createEvent }: Props) {
-  const [state, formAction, isPending] = useActionState(action, initialState)
-  const { errors, onFieldChange, setLocalErrors } = useFormErrors(
+  const imageUploadRef = useRef<ImageUploadHandle>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+
+  // Wrap the server action to handle client-side validation and image upload
+  // before handing off to the real action. This keeps everything in one action
+  // flow so Next.js properly handles redirects.
+  const wrappedAction: FormAction = useCallback(
+    async (prev, formData) => {
+      setUploadError(null)
+
+      // Client-side validation
+      const raw = {
+        title: formData.get('title') as string,
+        description: formData.get('description') as string,
+        locationName: formData.get('locationName') as string,
+        locationAddress:
+          (formData.get('locationAddress') as string) || undefined,
+        date: formData.get('date') as string,
+        startTime: formData.get('startTime') as string,
+        endTime: (formData.get('endTime') as string) || undefined,
+        flyerUrl: (formData.get('flyerUrl') as string) || undefined,
+        ticketUrl: (formData.get('ticketUrl') as string) || undefined,
+        shortDescription:
+          (formData.get('shortDescription') as string) || undefined,
+        emoji: (formData.get('emoji') as string) || undefined,
+        requiresTicket: formData.get('requiresTicket') === 'on',
+        ageRestriction: formData.get('ageRestriction') as string,
+        dogsWelcome: formData.get('dogsWelcome') === 'on',
+      }
+
+      const result = createEventSchema.safeParse(raw)
+      if (!result.success) {
+        return {
+          success: false,
+          fieldErrors: result.error.flatten().fieldErrors as Partial<
+            Record<keyof CreateEventInput, string[]>
+          >,
+        }
+      }
+
+      // Upload image if one was selected
+      if (imageUploadRef.current?.needsUpload) {
+        setIsUploading(true)
+        try {
+          const url = await imageUploadRef.current.upload()
+          formData.set('flyerUrl', url ?? '')
+        } catch {
+          setUploadError('Image upload failed. Please try again.')
+          return prev
+        } finally {
+          setIsUploading(false)
+        }
+      }
+
+      return action(prev, formData)
+    },
+    [action],
+  )
+
+  const [state, formAction, isPending] = useActionState(
+    wrappedAction,
+    initialState,
+  )
+  const { errors, onFieldChange } = useFormErrors(
     createEventBaseSchema.shape,
     state.fieldErrors,
   )
   const [requiresTicket, setRequiresTicket] = useState(
     event?.requiresTicket ?? false,
   )
-  const [isUploading, setIsUploading] = useState(false)
-  const imageUploadRef = useRef<ImageUploadHandle>(null)
-  const formRef = useRef<HTMLFormElement>(null)
-  const skipValidationRef = useRef(false)
   const [startTime, setStartTime] = useState(() => {
     const d = event?.startTime
     if (!d) return ''
     const offset = d.getTimezoneOffset()
     return new Date(d.getTime() - offset * 60000).toISOString().slice(11, 16)
   })
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    // Second pass after upload — let the form action proceed
-    if (skipValidationRef.current) {
-      skipValidationRef.current = false
-      return
-    }
-
-    e.preventDefault()
-
-    const formData = new FormData(e.currentTarget)
-    const raw = {
-      title: formData.get('title') as string,
-      description: formData.get('description') as string,
-      locationName: formData.get('locationName') as string,
-      locationAddress: (formData.get('locationAddress') as string) || undefined,
-      date: formData.get('date') as string,
-      startTime: formData.get('startTime') as string,
-      endTime: (formData.get('endTime') as string) || undefined,
-      flyerUrl: (formData.get('flyerUrl') as string) || undefined,
-      ticketUrl: (formData.get('ticketUrl') as string) || undefined,
-      shortDescription:
-        (formData.get('shortDescription') as string) || undefined,
-      emoji: (formData.get('emoji') as string) || undefined,
-      requiresTicket: formData.get('requiresTicket') === 'on',
-      ageRestriction: formData.get('ageRestriction') as string,
-      dogsWelcome: formData.get('dogsWelcome') === 'on',
-    }
-
-    const result = createEventSchema.safeParse(raw)
-    if (!result.success) {
-      setLocalErrors(result.error.flatten().fieldErrors)
-      return
-    }
-
-    setLocalErrors({})
-
-    // Upload image if one was selected
-    if (imageUploadRef.current?.needsUpload) {
-      setIsUploading(true)
-      try {
-        const url = await imageUploadRef.current.upload()
-        // Manually update the hidden input — React state won't re-render
-        // before requestSubmit fires below
-        const hidden = formRef.current?.querySelector<HTMLInputElement>(
-          'input[name="flyerUrl"]',
-        )
-        if (hidden) hidden.value = url ?? ''
-      } catch {
-        setLocalErrors({
-          flyerUrl: ['Image upload failed. Please try again.'],
-        })
-        return
-      } finally {
-        setIsUploading(false)
-      }
-    }
-
-    // Programmatically submit — requestSubmit re-triggers onSubmit,
-    // so set flag to skip validation on the second pass
-    skipValidationRef.current = true
-    formRef.current?.requestSubmit()
-  }
 
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
     onFieldChange('title', e.target.value)
@@ -178,13 +174,8 @@ export function EventForm({ event, action = createEvent }: Props) {
   }
 
   return (
-    <Form
-      ref={formRef}
-      action={formAction}
-      onSubmit={handleSubmit}
-      className="mt-8 max-w-2xl space-y-6"
-    >
-      <FormError message={state.error} />
+    <Form action={formAction} className="mt-8 max-w-2xl space-y-6">
+      <FormError message={state.error || uploadError || undefined} />
 
       <Input
         label="Event Title"

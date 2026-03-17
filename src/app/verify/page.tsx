@@ -4,6 +4,7 @@ import { LayoutWidth } from '@/lib/constants'
 import { Notice } from '@/components/Notice'
 import { Button } from '@/components/Button'
 import { Form } from '@/components/forms/Form'
+import { TextLink } from '@/components/TextLink'
 import type { Metadata } from 'next'
 import { PageHeader } from '@/components/PageHeader'
 
@@ -23,6 +24,10 @@ export default async function VerifyPage({
 }) {
   const { email, event, callbackUrl, next } = await searchParams
   const redirectTo = next || callbackUrl || '/'
+  const backUrl =
+    next?.startsWith('/events') || callbackUrl?.startsWith('/events')
+      ? '/events/new'
+      : '/sign-in'
 
   async function handleResend(formData: FormData) {
     'use server'
@@ -58,16 +63,21 @@ export default async function VerifyPage({
       </p>
 
       {email && (
-        <div className="flex gap-3 flex-wrap">
-          <Form action={handleResend}>
-            <input type="hidden" name="email" value={email} />
-            <input type="hidden" name="redirectTo" value={redirectTo} />
-            <Button type="submit">Resend login link</Button>
-          </Form>
-          <Button intent="secondary" href="/events/new">
-            Create Account
-          </Button>
-        </div>
+        <>
+          <div className="flex gap-3 flex-wrap">
+            <Form action={handleResend}>
+              <input type="hidden" name="email" value={email} />
+              <input type="hidden" name="redirectTo" value={redirectTo} />
+              <Button type="submit">Resend login link</Button>
+            </Form>
+            <Button intent="secondary" href="/events/new">
+              Create Account
+            </Button>
+          </div>
+          <p className="text-sm text-muted">
+            Wrong email? <TextLink href={backUrl}>Try again</TextLink>
+          </p>
+        </>
       )}
     </main>
   )

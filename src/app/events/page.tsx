@@ -5,8 +5,9 @@ import { CalendarPlus } from 'lucide-react'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { EventCard } from '@/components/EventCard'
+import { Metadata } from 'next'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Upcoming Events',
 }
 
@@ -14,7 +15,7 @@ export default async function EventsPage() {
   const upcomingEvents = await db.query.events.findMany({
     where: and(
       eq(events.status, 'approved'),
-      // gte(events.startTime, new Date()),
+      gte(events.startTime, new Date()),
     ),
     orderBy: asc(events.startTime),
   })

@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useState, useEffect } from 'react'
+import { TextButton } from '@/components/TextButton'
 import { Input } from '@/components/forms/Input'
 import { Button } from '@/components/Button'
 import { Form } from '@/components/forms/Form'
@@ -18,6 +19,7 @@ type Props = {
   redirectTo?: string
   autoFocus?: boolean
   className?: string
+  defaultEmail?: string
   // When provided, parent handles the verify UI instead of this component
   onEmailSentAction?: (email: string) => void
 }
@@ -26,6 +28,7 @@ export function SignInForm({
   redirectTo = '/',
   autoFocus,
   className,
+  defaultEmail,
   onEmailSentAction,
 }: Props) {
   const [state, formAction, isPending] = useActionState(
@@ -37,6 +40,7 @@ export function SignInForm({
     initialState,
   )
   const [showVerify, setShowVerify] = useState(false)
+  const [editableEmail, setEditableEmail] = useState(defaultEmail ?? '')
   const { errors, onFieldChange } = useFormErrors(
     { email: accountFieldsSchema.shape.email },
     state.fieldErrors,
@@ -54,9 +58,10 @@ export function SignInForm({
 
   function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
     onFieldChange('email', e.target.value)
+    setEditableEmail(e.target.value)
   }
 
-  function handleCreateAccount() {
+  function handleTryAgain() {
     setShowVerify(false)
   }
 
@@ -84,14 +89,13 @@ export function SignInForm({
                   : 'Resend login link'}
             </Button>
           </Form>
-          <Button
-            intent="secondary"
-            type="button"
-            onClick={handleCreateAccount}
-          >
-            Create Account
-          </Button>
         </div>
+        <p className="text-sm text-muted">
+          Wrong email?{' '}
+          <TextButton type="button" onClick={handleTryAgain}>
+            Try again
+          </TextButton>
+        </p>
       </div>
     )
   }
@@ -110,6 +114,7 @@ export function SignInForm({
         placeholder="you@example.com"
         errors={errors.email}
         autoFocus={autoFocus}
+        value={editableEmail}
         onChange={handleEmailChange}
       />
       <p className="text-subtle text-sm">
