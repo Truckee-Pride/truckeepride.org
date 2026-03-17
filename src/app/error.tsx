@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import { LayoutWidth } from '@/lib/constants'
 import { Button } from '@/components/Button'
-import { TextLink } from '@/components/TextLink'
 
 export default function Error({
   error,
@@ -25,7 +24,9 @@ export default function Error({
         </p>
         <div className="flex items-center justify-center gap-4">
           <Button onClick={reset}>Try again</Button>
-          <TextLink href="/">Go home</TextLink>
+          <Button intent="secondary" href="/">
+            Go home
+          </Button>
         </div>
       </div>
     </main>
