@@ -135,8 +135,8 @@ export function EventForm({ event, action = createEvent }: Props) {
   ) {
     onFieldChange('shortDescription', e.target.value)
   }
-  function handleDescriptionChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    onFieldChange('description', e.target.value)
+  function handleDescriptionChange(value: string) {
+    onFieldChange('description', value)
   }
   function handleLocationNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     onFieldChange('locationName', e.target.value)

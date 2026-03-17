@@ -6,10 +6,11 @@ import type { MDXEditorMethods } from '@mdxeditor/editor'
 import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
 
-const Editor = dynamic(() =>
-  import('./InitializedMDXEditor').then((mod) => ({
-    default: mod.InitializedMDXEditor,
-  })),
+const Editor = dynamic(
+  () =>
+    import('./InitializedMDXEditor').then((mod) => ({
+      default: mod.InitializedMDXEditor,
+    })),
   { ssr: false },
 )
 
@@ -20,6 +21,7 @@ type Props = {
   defaultValue?: string
   description?: string
   errors?: string[]
+  onChange?: (value: string) => void
 }
 
 export function MarkdownEditor({
@@ -29,15 +31,20 @@ export function MarkdownEditor({
   defaultValue = '',
   description,
   errors,
+  onChange,
 }: Props) {
   const editorRef = useRef<MDXEditorMethods>(null)
   const hiddenRef = useRef<HTMLInputElement>(null)
 
-  const handleChange = useCallback((markdown: string) => {
-    if (hiddenRef.current) {
-      hiddenRef.current.value = markdown
-    }
-  }, [])
+  const handleChange = useCallback(
+    (markdown: string) => {
+      if (hiddenRef.current) {
+        hiddenRef.current.value = markdown
+      }
+      onChange?.(markdown)
+    },
+    [onChange],
+  )
 
   return (
     <FormField
