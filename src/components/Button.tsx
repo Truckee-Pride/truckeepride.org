@@ -13,7 +13,8 @@ const baseClasses =
 
 const intentClasses = {
   primary: 'bg-brand text-inverse hover:bg-brand-hover hover:text-inverse',
-  secondary: 'bg-surface text-foreground hover:bg-border hover:text-foreground',
+  secondary:
+    'bg-secondary text-inverse hover:bg-secondary-hover hover:text-inverse',
 }
 
 export function Button({
