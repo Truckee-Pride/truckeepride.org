@@ -171,7 +171,7 @@ export function AccountForm({ redirectTo }: Props) {
         <SignInForm
           redirectTo={redirectTo}
           className="space-y-4"
-          onEmailSent={handleSignInEmailSent}
+          onEmailSentAction={handleSignInEmailSent}
         />
       </div>
     )

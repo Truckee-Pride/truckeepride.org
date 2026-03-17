@@ -19,14 +19,14 @@ type Props = {
   autoFocus?: boolean
   className?: string
   // When provided, parent handles the verify UI instead of this component
-  onEmailSent?: (email: string) => void
+  onEmailSentAction?: (email: string) => void
 }
 
 export function SignInForm({
   redirectTo = '/',
   autoFocus,
   className,
-  onEmailSent,
+  onEmailSentAction,
 }: Props) {
   const [state, formAction, isPending] = useActionState(
     sendSignInLink,
@@ -44,13 +44,13 @@ export function SignInForm({
 
   useEffect(() => {
     if (state.success && state.email) {
-      if (onEmailSent) {
-        onEmailSent(state.email)
+      if (onEmailSentAction) {
+        onEmailSentAction(state.email)
       } else {
         setShowVerify(true)
       }
     }
-  }, [state.success, state.email, onEmailSent])
+  }, [state.success, state.email, onEmailSentAction])
 
   function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
     onFieldChange('email', e.target.value)

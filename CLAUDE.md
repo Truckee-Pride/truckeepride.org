@@ -46,6 +46,7 @@ Use `"latest"` for frequently-updated packages (Drizzle), caret ranges (`"^15"`)
 
 - **Server Components are the default.** Only add `"use client"` when you actually need browser APIs, event handlers, or React state. Never use `useEffect` + `useState` to fetch data — use Server Components instead.
 - **Server Actions** for all form mutations — no separate API routes for UI-driven data mutations. Every Server Action file must start with `"use server"`.
+- **Function props on `'use client'` components must end in `Action`** (e.g. `onEmailSentAction`). Next.js requires this for any function prop that may be passed from a Server Component — TypeScript error ts(71007) will fire otherwise.
 - **Route handlers** (`route.ts`) only for external integrations (webhooks, RSS, etc.).
 - Keep Server Components as thin data-fetching shells; pass data down to smaller Client Components for interactivity.
 - Use `loading.tsx` and `error.tsx` at the route segment level rather than inline loading states.
