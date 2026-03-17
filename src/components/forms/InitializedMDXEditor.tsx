@@ -19,7 +19,7 @@ export function InitializedMDXEditor({ ...props }: MDXEditorProps) {
     headingsPlugin({ allowedHeadingLevels: [2, 3] }),
     listsPlugin(),
     linkPlugin(),
-    linkDialogPlugin(),
+    linkDialogPlugin({ showLinkTitleField: false }),
     toolbarPlugin({
       toolbarContents: () => (
         <>

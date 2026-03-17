@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { SAFE_LINK_PROTOCOL } from '@/lib/constants'
 
 export const AGE_RESTRICTION_OPTIONS = [
   'All ages',
@@ -18,9 +19,9 @@ export const createEventBaseSchema = z.object({
     .refine(
       (val) =>
         [...val.matchAll(/\[.+?\]\(([^)]+)\)/g)].every(([, url]) =>
-          /^(https?:\/\/|mailto:)/.test(url),
+          SAFE_LINK_PROTOCOL.test(url),
         ),
-      'Links must use https://, http://, or mailto:',
+      'Links must use https:// or mailto:',
     ),
   locationName: z.string().min(1, 'Location name is required').max(200),
   locationAddress: z.string().max(400).optional(),
@@ -28,7 +29,15 @@ export const createEventBaseSchema = z.object({
   startTime: z.string().min(1, 'Start time is required'),
   endTime: z.string().optional(),
   flyerUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  ticketUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  ticketUrl: z
+    .string()
+    .url('Must be a valid URL')
+    .refine(
+      (val) => !val || SAFE_LINK_PROTOCOL.test(val),
+      'Ticket URL must use https:// or mailto:',
+    )
+    .optional()
+    .or(z.literal('')),
   shortDescription: z.string().max(500).optional(),
   emoji: z.string().max(10).optional(),
   requiresTicket: z.boolean().optional().default(false),
