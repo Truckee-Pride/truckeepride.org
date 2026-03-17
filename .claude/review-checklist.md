@@ -56,17 +56,22 @@ Add `import { cn } from '@/lib/cn'` if not present.
 
 ### T2 — Extract long className strings
 
-Look for: className with more than ~8 utility classes inline
-Fix: Extract to a named const above the return statement.
+Look for: className with more than 4 utility classes inline
+Fix: Extract to a named `*Styles` const above the return statement.
 Name by what the element _is_, not what it looks like.
+Use an array with `cn()` so each logical group is on its own line (easier to diff).
 
 Before: `<div className="flex items-center gap-2 rounded-lg border p-4 shadow-sm">`
 After:
 
 ```tsx
-const card = 'flex items-center gap-2 rounded-lg border p-4 shadow-sm'
+const cardStyles = cn(
+  'flex items-center gap-2',
+  'rounded-lg border',
+  'p-4 shadow-sm',
+)
 // ...
-<div className={card}>
+<div className={cardStyles}>
 ```
 
 ### T3 — No `!important` or Tailwind `!` prefix
