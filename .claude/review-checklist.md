@@ -185,19 +185,13 @@ Fix: Move to `.env.local` and reference via `process.env.VARIABLE_NAME`.
 
 ## Data Layer
 
-### D1 — Event mutation without audit log
-
-Look for: `db.insert`/`db.update`/`db.delete` on events table without
-  corresponding audit log insert in the same transaction
-Fix: Add audit log entry in the same transaction.
-
-### D2 — Multi-step mutation without transaction
+### D1 — Multi-step mutation without transaction
 
 Look for: Multiple `db.*` calls that should be atomic but aren't wrapped
   in `db.transaction()`
 Fix: Wrap in `db.transaction(async (tx) => { ... })`.
 
-### D3 — Missing revalidation after mutation
+### D2 — Missing revalidation after mutation
 
 Look for: Server Actions with `db.insert`/`db.update`/`db.delete`
   but no `revalidatePath()` or `revalidateTag()`
