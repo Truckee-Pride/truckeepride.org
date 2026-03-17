@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { LayoutWidth } from '@/lib/constants'
 import { Input } from '@/components/forms/Input'
 import { Button } from '@/components/Button'
+import { Form } from '@/components/forms/Form'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -39,13 +40,13 @@ export default async function SignInPage({
   }
 
   return (
-    <main className={cn(LayoutWidth.prose, 'py-12')}>
+    <main className={cn(LayoutWidth.prose)}>
       <h1>Sign in to Truckee Pride</h1>
       <p className="text-subtle">
         Enter your email and we&apos;ll send you a magic link to sign in.
       </p>
 
-      <form action={handleSignIn} className="space-y-4 max-w-sm">
+      <Form action={handleSignIn} className="space-y-4 max-w-sm">
         <input type="hidden" name="callbackUrl" value={callbackUrl ?? ''} />
         <Input
           label="Email address"
@@ -56,7 +57,7 @@ export default async function SignInPage({
           autoFocus
         />
         <Button type="submit">Send magic link</Button>
-      </form>
+      </Form>
     </main>
   )
 }

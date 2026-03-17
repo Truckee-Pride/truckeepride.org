@@ -21,6 +21,7 @@ import {
   type ImageUploadHandle,
 } from '@/components/forms/ImageUpload'
 import { Button } from '@/components/Button'
+import { Form } from '@/components/forms/Form'
 
 type ActionState = {
   success: boolean
@@ -142,11 +143,10 @@ export function EventForm({ event, action = createEvent }: Props) {
   }
 
   return (
-    <form
+    <Form
       ref={formRef}
       action={formAction}
       onSubmit={handleSubmit}
-      noValidate
       className="mt-8 max-w-2xl space-y-6"
     >
       <FormError message={state.error} />
@@ -292,6 +292,6 @@ export function EventForm({ event, action = createEvent }: Props) {
                 : 'Preview & Submit'}
         </Button>
       </div>
-    </form>
+    </Form>
   )
 }

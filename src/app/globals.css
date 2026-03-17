@@ -121,7 +121,8 @@
   p,
   ul,
   ol,
-  section {
+  section,
+  form {
     margin-top: 1rem;
   }
 

@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import { LayoutWidth } from '@/lib/constants'
 import { Notice } from '@/components/Notice'
 import { Button } from '@/components/Button'
+import { Form } from '@/components/forms/Form'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -56,11 +57,11 @@ export default async function VerifyPage({
       </p>
 
       {email && (
-        <form action={handleResend}>
+        <Form action={handleResend}>
           <input type="hidden" name="email" value={email} />
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <Button type="submit">Resend magic link</Button>
-        </form>
+        </Form>
       )}
     </main>
   )

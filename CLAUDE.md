@@ -119,10 +119,11 @@ Full conventions in `.claude/tailwind.md`. The most critical rules:
 
 ## Component Library
 
-**Never write a bare `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog in `.claude/components.md`. If no existing component fits, ask before creating a new one.
+**Never write a bare `<form>`, `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog in `.claude/components.md`. If no existing component fits, ask before creating a new one.
 
 Quick reference:
 
+- Form wrapper → `Form` (`src/components/forms/Form.tsx`)
 - Filled action button or link → `Button` (`src/components/Button.tsx`)
 - Inline text button → `TextButton` (`src/components/TextButton.tsx`)
 - Inline text link → `TextLink` (`src/components/TextLink.tsx`)

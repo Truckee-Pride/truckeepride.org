@@ -4,6 +4,7 @@ import { useActionState, useState, useEffect, useRef } from 'react'
 import { Input } from '@/components/forms/Input'
 import { FormError } from '@/components/forms/FormError'
 import { Button } from '@/components/Button'
+import { Form } from '@/components/forms/Form'
 import { TextButton } from '@/components/TextButton'
 import {
   createAccountAndSignIn,
@@ -12,6 +13,8 @@ import {
 } from '@/app/events/new/actions'
 
 const initialState: AccountActionState = { success: false }
+
+const toggleSignInModeTextStyles = 'text-muted text-sm'
 
 type Props = {
   redirectTo: string
@@ -87,14 +90,14 @@ export function AccountForm({ redirectTo }: Props) {
   if (mode === 'signin') {
     return (
       <div className="mt-8 max-w-sm">
-        <p className="text-sm text-muted mb-6">
+        <p className={toggleSignInModeTextStyles}>
           New here?{' '}
           <TextButton type="button" onClick={handleToggleMode}>
             Create Account
           </TextButton>
         </p>
 
-        <form action={signInAction} autoComplete="on" className="space-y-4">
+        <Form action={signInAction} autoComplete="on" className="space-y-4">
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <FormError message={state.error} />
 
@@ -112,21 +115,21 @@ export function AccountForm({ redirectTo }: Props) {
           <Button type="submit" disabled={isPending}>
             {isPending ? 'Sending...' : 'Send Login Link'}
           </Button>
-        </form>
+        </Form>
       </div>
     )
   }
 
   return (
     <div className="mt-8 max-w-sm">
-      <p className="text-sm text-muted mb-6">
+      <p className={toggleSignInModeTextStyles}>
         Already have an account?{' '}
         <TextButton type="button" onClick={handleToggleMode}>
           Sign In
         </TextButton>
       </p>
 
-      <form action={createAction} autoComplete="on" className="space-y-4">
+      <Form action={createAction} autoComplete="on" className="space-y-4">
         <input type="hidden" name="redirectTo" value={redirectTo} />
         <input type="hidden" name="phone" value={phoneDigits} />
         <input type="hidden" name="gravatarUrl" value={gravatarUrl ?? ''} />
@@ -190,7 +193,7 @@ export function AccountForm({ redirectTo }: Props) {
         <Button type="submit" disabled={isPending}>
           {isPending ? 'Creating Account...' : 'Create Account'}
         </Button>
-      </form>
+      </Form>
     </div>
   )
 }
