@@ -19,6 +19,7 @@ type Props = {
   errors?: string[]
   description?: string
   defaultValue?: string // YYYY-MM-DD
+  onChangeAction?: (value: string) => void
 }
 
 function currentYear() {
@@ -32,6 +33,7 @@ export function DateInput({
   errors,
   description,
   defaultValue,
+  onChangeAction,
 }: Props) {
   const [month, setMonth] = useState(() =>
     defaultValue ? defaultValue.slice(5, 7) : '',
@@ -136,6 +138,15 @@ export function DateInput({
   const hiddenValue = isValidDate()
     ? `${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
     : ''
+
+  const isMountedRef = useRef(false)
+  useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true
+      return
+    }
+    onChangeAction?.(hiddenValue)
+  }, [hiddenValue]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync calendar displayed month when typed segments form a valid month/year
   useEffect(() => {

@@ -3,9 +3,11 @@
 import { useActionState, useState, useRef } from 'react'
 import {
   createEventSchema,
+  createEventBaseSchema,
   AGE_RESTRICTION_OPTIONS,
   type CreateEventInput,
 } from '@/lib/schemas/events'
+import { useFormErrors } from '@/hooks/useFormErrors'
 import type { Event } from '@/db/schema/events'
 import { createEvent } from '@/app/events/new/actions'
 import { Input } from '@/components/forms/Input'
@@ -48,9 +50,10 @@ type Props = {
 
 export function EventForm({ event, action = createEvent }: Props) {
   const [state, formAction, isPending] = useActionState(action, initialState)
-  const [clientErrors, setClientErrors] = useState<
-    Partial<Record<string, string[]>>
-  >({})
+  const { errors, onFieldChange, setLocalErrors } = useFormErrors(
+    createEventBaseSchema.shape,
+    state.fieldErrors,
+  )
   const [requiresTicket, setRequiresTicket] = useState(
     event?.requiresTicket ?? false,
   )
@@ -64,8 +67,6 @@ export function EventForm({ event, action = createEvent }: Props) {
     const offset = d.getTimezoneOffset()
     return new Date(d.getTime() - offset * 60000).toISOString().slice(11, 16)
   })
-
-  const errors = { ...state.fieldErrors, ...clientErrors }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     // Second pass after upload — let the form action proceed
@@ -97,11 +98,11 @@ export function EventForm({ event, action = createEvent }: Props) {
 
     const result = createEventSchema.safeParse(raw)
     if (!result.success) {
-      setClientErrors(result.error.flatten().fieldErrors)
+      setLocalErrors(result.error.flatten().fieldErrors)
       return
     }
 
-    setClientErrors({})
+    setLocalErrors({})
 
     // Upload image if one was selected
     if (imageUploadRef.current?.needsUpload) {
@@ -115,7 +116,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         )
         if (hidden) hidden.value = url ?? ''
       } catch {
-        setClientErrors({
+        setLocalErrors({
           flyerUrl: ['Image upload failed. Please try again.'],
         })
         return
@@ -128,6 +129,40 @@ export function EventForm({ event, action = createEvent }: Props) {
     // so set flag to skip validation on the second pass
     skipValidationRef.current = true
     formRef.current?.requestSubmit()
+  }
+
+  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    onFieldChange('title', e.target.value)
+  }
+  function handleShortDescriptionChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    onFieldChange('shortDescription', e.target.value)
+  }
+  function handleDescriptionChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    onFieldChange('description', e.target.value)
+  }
+  function handleLocationNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    onFieldChange('locationName', e.target.value)
+  }
+  function handleLocationAddressChange(e: React.ChangeEvent<HTMLInputElement>) {
+    onFieldChange('locationAddress', e.target.value)
+  }
+  function handleDateChangeAction(v: string) {
+    onFieldChange('date', v)
+  }
+  function handleStartTimeChange(v: string) {
+    setStartTime(v)
+    onFieldChange('startTime', v)
+  }
+  function handleEndTimeChange(v: string) {
+    onFieldChange('endTime', v)
+  }
+  function handleAgeRestrictionChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    onFieldChange('ageRestriction', e.target.value)
+  }
+  function handleTicketUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
+    onFieldChange('ticketUrl', e.target.value)
   }
 
   function formatDate(date: Date | null | undefined): string {
@@ -160,6 +195,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         placeholder="e.g. Pride Week Kickoff Party"
         description="The main name of your event. Keep it short and descriptive."
         errors={errors.title}
+        onChange={handleTitleChange}
       />
 
       <EmojiPicker
@@ -176,6 +212,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         placeholder="e.g. Live music, food trucks, and community fun"
         description="Shown on home page and events list. One short sentence works best."
         errors={errors.shortDescription}
+        onChange={handleShortDescriptionChange}
       />
 
       <Textarea
@@ -188,6 +225,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         placeholder="e.g. Join us for an evening of live music and dancing at the park. All ages welcome. Bring a blanket and your best dance moves!"
         description="Full details about the event. Include what to expect, what to bring, what to wear, etc."
         errors={errors.description}
+        onChange={handleDescriptionChange}
       />
 
       <div className="grid items-start gap-6 xs:grid-cols-2">
@@ -199,6 +237,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           maxLength={200}
           placeholder="e.g. Truckee Regional Park"
           errors={errors.locationName}
+          onChange={handleLocationNameChange}
         />
         <Input
           label="Address"
@@ -207,6 +246,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           maxLength={400}
           placeholder="e.g. 10981 Truckee Way, Truckee, CA"
           errors={errors.locationAddress}
+          onChange={handleLocationAddressChange}
         />
       </div>
 
@@ -217,6 +257,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           required
           defaultValue={formatDate(event?.startTime)}
           errors={errors.date}
+          onChangeAction={handleDateChangeAction}
         />
         <TimeCombobox
           label="Start Time"
@@ -224,7 +265,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           required
           defaultValue={formatTime(event?.startTime)}
           errors={errors.startTime}
-          onChange={setStartTime}
+          onChange={handleStartTimeChange}
         />
         <TimeCombobox
           label="End Time"
@@ -232,6 +273,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           defaultValue={formatTime(event?.endTime)}
           errors={errors.endTime}
           referenceTime={startTime || undefined}
+          onChange={handleEndTimeChange}
         />
       </div>
 
@@ -252,6 +294,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         className="max-w-xs"
         description="Select if any part of the event has age requirements."
         errors={errors.ageRestriction}
+        onChange={handleAgeRestrictionChange}
       />
 
       <Checkbox
@@ -278,6 +321,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           placeholder="e.g. https://eventbrite.com/your-event"
           description="Link where attendees can buy tickets or RSVP."
           errors={errors.ticketUrl}
+          onChange={handleTicketUrlChange}
         />
       )}
 

@@ -155,6 +155,7 @@ export async function submitEventForReview(
 
 export type AccountActionState = {
   success: boolean
+  email?: string
   error?: string
   fieldErrors?: Partial<Record<string, string[]>>
 }
@@ -255,11 +256,7 @@ export async function createAccountAndSignIn(
     redirect: false,
   })
 
-  const params = new URLSearchParams({
-    email: data.email,
-    next: redirectTo,
-  })
-  redirect(`/verify?${params}`)
+  return { success: true, email: data.email }
 }
 
 export async function sendSignInLink(
@@ -294,12 +291,18 @@ export async function sendSignInLink(
 
   const redirectTo = (formData.get('redirectTo') as string) || '/events/new'
 
-  await signIn('resend', {
-    email,
-    redirectTo,
-    redirect: false,
+  const existing = await db.query.users.findFirst({
+    where: eq(users.email, email),
+    columns: { id: true },
   })
 
-  const params = new URLSearchParams({ email, next: redirectTo })
-  redirect(`/verify?${params}`)
+  if (existing) {
+    await signIn('resend', {
+      email,
+      redirectTo,
+      redirect: false,
+    })
+  }
+
+  return { success: true, email }
 }

@@ -120,9 +120,11 @@ Full conventions in `.claude/tailwind.md`. The most critical rules:
 ## Component Library
 
 **Never write a bare `<form>`, `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog in `.claude/components.md`. If no existing component fits, ask before creating a new one.
+**For every page, you should probably include a PageHeader rather than a bare <h1>**
 
 Quick reference:
 
+- Page Header -> `PageHeader` (`src/components/PageHeader.md`)
 - Form wrapper → `Form` (`src/components/forms/Form.tsx`)
 - Filled action button or link → `Button` (`src/components/Button.tsx`)
 - Inline text button → `TextButton` (`src/components/TextButton.tsx`)

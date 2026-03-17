@@ -6,11 +6,14 @@ import { FormError } from '@/components/forms/FormError'
 import { Button } from '@/components/Button'
 import { Form } from '@/components/forms/Form'
 import { TextButton } from '@/components/TextButton'
+import { SignInForm } from '@/components/forms/SignInForm'
 import {
   createAccountAndSignIn,
   sendSignInLink,
   type AccountActionState,
 } from '@/app/events/new/actions'
+import { accountFieldsSchema } from '@/lib/schemas/account'
+import { useFormErrors } from '@/hooks/useFormErrors'
 
 const initialState: AccountActionState = { success: false }
 
@@ -28,17 +31,23 @@ function formatPhone(digits: string): string {
 
 export function AccountForm({ redirectTo }: Props) {
   const [mode, setMode] = useState<'create' | 'signin'>('create')
+  const [sentEmail, setSentEmail] = useState<string | null>(null)
   const [createState, createAction, isCreating] = useActionState(
     createAccountAndSignIn,
     initialState,
   )
-  const [signInState, signInAction, isSigningIn] = useActionState(
+  const [resendState, resendAction, isResending] = useActionState(
     sendSignInLink,
     initialState,
   )
 
-  const state = mode === 'create' ? createState : signInState
-  const isPending = mode === 'create' ? isCreating : isSigningIn
+  const { errors: createErrors, onFieldChange: onCreateChange } = useFormErrors(
+    accountFieldsSchema.shape,
+    createState.fieldErrors,
+  )
+
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
 
   // Phone formatting
   const [phoneDisplay, setPhoneDisplay] = useState('')
@@ -48,6 +57,7 @@ export function AccountForm({ redirectTo }: Props) {
     const raw = e.target.value.replace(/\D/g, '').slice(0, 10)
     setPhoneDigits(raw)
     setPhoneDisplay(formatPhone(raw))
+    onCreateChange('phone', raw)
   }
 
   // Gravatar preview
@@ -83,8 +93,70 @@ export function AccountForm({ redirectTo }: Props) {
     }
   }, [email])
 
+  useEffect(() => {
+    if (createState.success && createState.email) {
+      setSentEmail(createState.email)
+    }
+  }, [createState.success, createState.email])
+
+  function handleFirstNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setFirstName(e.target.value)
+    onCreateChange('firstName', e.target.value)
+  }
+  function handleLastNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setLastName(e.target.value)
+    onCreateChange('lastName', e.target.value)
+  }
+  function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setEmail(e.target.value)
+    onCreateChange('email', e.target.value)
+  }
+
   function handleToggleMode() {
     setMode(mode === 'create' ? 'signin' : 'create')
+  }
+
+  function handleCreateAccount() {
+    setSentEmail(null)
+    setMode('create')
+  }
+
+  function handleSignInEmailSent(email: string) {
+    setSentEmail(email)
+  }
+
+  if (sentEmail) {
+    return (
+      <div className="mt-8 max-w-sm space-y-4">
+        <p>
+          We sent a login link to <strong>{sentEmail}</strong>. Click the link
+          in your email to continue.
+        </p>
+        <p className="text-muted">
+          <small>Didn&apos;t get it? Check your spam folder, or resend.</small>
+        </p>
+        <div className="flex gap-3 flex-wrap items-start">
+          <Form action={resendAction} className="mt-0">
+            <input type="hidden" name="email" value={sentEmail} />
+            <input type="hidden" name="redirectTo" value={redirectTo} />
+            <Button type="submit" disabled={isResending}>
+              {isResending
+                ? 'Sending...'
+                : resendState.success
+                  ? 'Sent!'
+                  : 'Resend login link'}
+            </Button>
+          </Form>
+          <Button
+            intent="secondary"
+            type="button"
+            onClick={handleCreateAccount}
+          >
+            Create Account
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   if (mode === 'signin') {
@@ -96,26 +168,11 @@ export function AccountForm({ redirectTo }: Props) {
             Create Account
           </TextButton>
         </p>
-
-        <Form action={signInAction} autoComplete="on" className="space-y-4">
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <FormError message={state.error} />
-
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            inputMode="email"
-            placeholder="you@example.com"
-            errors={state.fieldErrors?.email}
-          />
-
-          <Button type="submit" disabled={isPending}>
-            {isPending ? 'Sending...' : 'Send Login Link'}
-          </Button>
-        </Form>
+        <SignInForm
+          redirectTo={redirectTo}
+          className="space-y-4"
+          onEmailSent={handleSignInEmailSent}
+        />
       </div>
     )
   }
@@ -133,7 +190,7 @@ export function AccountForm({ redirectTo }: Props) {
         <input type="hidden" name="redirectTo" value={redirectTo} />
         <input type="hidden" name="phone" value={phoneDigits} />
         <input type="hidden" name="gravatarUrl" value={gravatarUrl ?? ''} />
-        <FormError message={state.error} />
+        <FormError message={createState.error} />
 
         <div className="grid gap-4 grid-cols-2">
           <Input
@@ -141,14 +198,18 @@ export function AccountForm({ redirectTo }: Props) {
             name="firstName"
             required
             autoComplete="given-name"
-            errors={state.fieldErrors?.firstName}
+            errors={createErrors.firstName}
+            value={firstName}
+            onChange={handleFirstNameChange}
           />
           <Input
             label="Last Name"
             name="lastName"
             required
             autoComplete="family-name"
-            errors={state.fieldErrors?.lastName}
+            errors={createErrors.lastName}
+            value={lastName}
+            onChange={handleLastNameChange}
           />
         </div>
 
@@ -160,9 +221,9 @@ export function AccountForm({ redirectTo }: Props) {
           autoComplete="email"
           inputMode="email"
           placeholder="you@example.com"
-          errors={state.fieldErrors?.email}
+          errors={createErrors.email}
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
         />
 
         {gravatarUrl && (
@@ -187,11 +248,11 @@ export function AccountForm({ redirectTo }: Props) {
           placeholder="(555) 555-1234"
           value={phoneDisplay}
           onChange={handlePhoneChange}
-          errors={state.fieldErrors?.phone}
+          errors={createErrors.phone}
         />
 
-        <Button type="submit" disabled={isPending}>
-          {isPending ? 'Creating Account...' : 'Create Account'}
+        <Button type="submit" disabled={isCreating}>
+          {isCreating ? 'Creating Account...' : 'Create Account'}
         </Button>
       </Form>
     </div>
