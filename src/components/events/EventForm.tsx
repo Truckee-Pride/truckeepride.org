@@ -135,6 +135,7 @@ export function EventForm({ event, action = createEvent }: Props) {
   ) {
     onFieldChange('shortDescription', e.target.value)
   }
+  // MDXEditor onChange gives a string directly, unlike native inputs
   function handleDescriptionChange(value: string) {
     onFieldChange('description', value)
   }

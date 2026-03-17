@@ -6,7 +6,6 @@ import {
   toolbarPlugin,
   headingsPlugin,
   listsPlugin,
-  quotePlugin,
   linkPlugin,
   linkDialogPlugin,
   markdownShortcutPlugin,
@@ -25,7 +24,6 @@ import './mdxeditor-overrides.css'
 const plugins = [
   headingsPlugin({ allowedHeadingLevels: [2, 3] }),
   listsPlugin(),
-  quotePlugin(),
   linkPlugin(),
   linkDialogPlugin(),
   markdownShortcutPlugin(),

@@ -27,7 +27,5 @@ export const MARKDOWN_ALLOWED_ELEMENTS = [
   'ul',
   'ol',
   'li',
-  'blockquote',
   'a',
-  'br',
 ] as const
