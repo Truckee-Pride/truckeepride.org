@@ -12,7 +12,8 @@ Do not flag formatting issues (Prettier handles those).
 
 ### C1 — No bare `<button>` elements
 
-Look for: `<button` in JSX (not inside a component definition in `src/components/`)
+Look for: `<button` in JSX
+Exception: allowed in `src/components/` files that are clearly the design system wrapper for `<button>` — i.e., the filename is `Button.tsx`, `TextButton.tsx`, or similar. Any other file, including other components in `src/components/`, must use `<Button>` or `<TextButton>`.
 Fix: Replace with `<Button>` (filled action) or `<TextButton>` (inline text action).
 Add import from `@/components/Button` or `@/components/TextButton`.
 If it has an `href`, use `<Button href="...">`.
@@ -20,6 +21,7 @@ If it has an `href`, use `<Button href="...">`.
 ### C2 — No bare `<a>` or styled `<Link>`
 
 Look for: `<a ` in JSX, or `<Link` with className/styling props
+Exception: allowed in `src/components/` files that are clearly the design system wrapper for `<a>` — i.e., the filename is `TextLink.tsx`, `Button.tsx` (when rendering as a link), or similar.
 Fix: Replace with `<TextLink href="...">` for inline text links,
 or `<Button href="...">` for CTA-style links.
 Add import from `@/components/TextLink` or `@/components/Button`.
@@ -28,7 +30,7 @@ Plain unstyled `<Link>` wrapping a component (not text) is OK.
 ### C3 — No bare form elements
 
 Look for: `<input`, `<textarea`, `<select`, `<input type="checkbox"` in JSX
-(not inside component definitions in `src/components/forms/`)
+Exception: allowed in `src/components/forms/` files that are clearly the design system wrapper for that element — i.e., `Input.tsx` may use `<input>`, `Textarea.tsx` may use `<textarea>`, etc. Any other file must use the component.
 Fix: Replace with the matching component from `@/components/forms/`:
 
 - `<input>` → `<Input>` (add label, name, errors props)
@@ -48,10 +50,10 @@ Fix: Replace with `<Image>` from `next/image`. Add width/height or fill prop.
 
 ### T1 — No template literals for className
 
-Look for: `` className={`...`} `` or `` className={`${...}`} ``
+Look for: ``className={`...`}`` or ``className={`${...}`}``
 Fix: Convert to `cn()` from `clsx`. Example:
-  Before: `` className={`foo ${x ? 'bar' : ''}`} ``
-  After:  `className={cn('foo', x && 'bar')}`
+Before: ``className={`foo ${x ? 'bar' : ''}`}``
+After: `className={cn('foo', x && 'bar')}`
 Add `import { cn } from '@/lib/cn'` if not present.
 
 ### T2 — Extract long className strings
@@ -89,14 +91,14 @@ add one to `globals.css` under `@theme` and use the new token name.
 ### T5 — Use cva for component variants
 
 Look for: Ternary expressions inside className choosing between style sets,
-  e.g., `className={cn(intent === 'primary' ? 'bg-pink' : 'bg-red')}`
+e.g., `className={cn(intent === 'primary' ? 'bg-pink' : 'bg-red')}`
 Fix: Convert to `cva()` from `class-variance-authority` with a `variants` object.
 See `.claude/tailwind.md` for the full pattern.
 
 ### T6 — Group responsive/state variants
 
 Look for: className with 3+ modifier prefixes (sm:, hover:, focus:, dark:, etc.)
-  all on one line
+all on one line
 Fix: Extract to a const using `cn()` with each group on its own line:
 
 ```tsx
@@ -114,7 +116,7 @@ const styles = cn(
 ### N1 — Unnecessary `"use client"`
 
 Look for: `'use client'` at top of file that uses no browser APIs,
-  no event handlers, no React state/effects
+no event handlers, no React state/effects
 Fix: Remove the directive. Convert to Server Component.
 
 ### N2 — useEffect + useState for data fetching
@@ -158,7 +160,7 @@ Fix: Use `typeof table.$inferSelect` for Drizzle, `z.infer<typeof schema>` for Z
 ### S1 — Inline arrow function event handler in JSX
 
 Look for: `onClick={() => ...}`, `onChange={(e) => ...}` with multi-statement body
-  (single function calls like `onClick={() => setOpen(true)}` are OK)
+(single function calls like `onClick={() => setOpen(true)}` are OK)
 Fix: Extract to a named `handleX` function above the return.
 
 ### S2 — Commented-out code
@@ -173,7 +175,7 @@ Fix: Delete the commented-out code entirely.
 ### A1 — Permission check only in UI
 
 Look for: Server Actions that modify data without calling `auth()`
-  or checking user role/ownership
+or checking user role/ownership
 Fix: Add `auth()` call and role/ownership check at the start of the action.
 
 ### A2 — Hardcoded secret
@@ -188,13 +190,13 @@ Fix: Move to `.env.local` and reference via `process.env.VARIABLE_NAME`.
 ### D1 — Multi-step mutation without transaction
 
 Look for: Multiple `db.*` calls that should be atomic but aren't wrapped
-  in `db.transaction()`
+in `db.transaction()`
 Fix: Wrap in `db.transaction(async (tx) => { ... })`.
 
 ### D2 — Missing revalidation after mutation
 
 Look for: Server Actions with `db.insert`/`db.update`/`db.delete`
-  but no `revalidatePath()` or `revalidateTag()`
+but no `revalidatePath()` or `revalidateTag()`
 Fix: Add appropriate `revalidatePath('/events')` or similar after the mutation.
 
 ---
@@ -204,7 +206,7 @@ Fix: Add appropriate `revalidatePath('/events')` or similar after the mutation.
 ### A11Y1 — Image without meaningful alt text
 
 Look for: `<Image` with `alt=""` or missing `alt` prop
-  (empty alt is OK only for purely decorative images)
+(empty alt is OK only for purely decorative images)
 Fix: Add descriptive alt text.
 
 ### A11Y2 — Non-semantic interactive element
@@ -215,7 +217,7 @@ Fix: Use `<Button>` or `<TextButton>` component instead.
 ### A11Y3 — Missing semantic landmarks
 
 Look for: `<div>` used where `<nav>`, `<main>`, `<article>`, `<section>`,
-  `<header>`, `<footer>` would be appropriate
+`<header>`, `<footer>` would be appropriate
 Fix: Replace with the appropriate semantic element.
 
 ---
@@ -253,32 +255,32 @@ rather than making changes.
 ### E1 — Duplicated logic
 
 Look for: similar code blocks across changed files, or within the same file.
-  The same 3+ lines appearing twice is a signal.
+The same 3+ lines appearing twice is a signal.
 Fix: extract a shared function. If it's used across files, put it in a shared
-  module. If within one file, extract a local function.
+module. If within one file, extract a local function.
 
 ### E2 — Scope creep
 
 Look for: changes to code unrelated to the task — refactoring, "improvements,"
-  added features, or cleanup beyond what was asked for.
+added features, or cleanup beyond what was asked for.
 Fix: revert unrelated changes. Keep the diff focused.
 
 ### E3 — Unnecessary files
 
 Look for: new files that could be additions to existing files. Utility files
-  with a single export. Wrapper modules that just re-export.
+with a single export. Wrapper modules that just re-export.
 Fix: colocate in the existing file or directory.
 
 ### E4 — Unclear naming
 
 Look for: generic names (`data`, `result`, `item`, `info`, `handle`, `stuff`),
-  abbreviations (`evt`, `usr`, `btn`), single-letter variables (except `i`, `j`
-  in loops).
+abbreviations (`evt`, `usr`, `btn`), single-letter variables (except `i`, `j`
+in loops).
 Fix: rename to describe purpose — `pendingEvents`, `approveEvent`, `ticketPrice`.
 
 ### E5 — Over-engineered for the task
 
 Look for: config objects nobody configures, options parameters with one caller,
-  generic types used once, try/catch around code that can't throw, null checks
-  for values that are never null, feature flags for nonexistent features.
+generic types used once, try/catch around code that can't throw, null checks
+for values that are never null, feature flags for nonexistent features.
 Fix: simplify to the minimum the current task requires.
