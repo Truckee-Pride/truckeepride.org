@@ -46,6 +46,8 @@ Use `"latest"` for frequently-updated packages (Drizzle), caret ranges (`"^15"`)
 
 - **Server Components are the default.** Only add `"use client"` when you actually need browser APIs, event handlers, or React state. Never use `useEffect` + `useState` to fetch data — use Server Components instead.
 - **Server Actions** for all form mutations — no separate API routes for UI-driven data mutations. Every Server Action file must start with `"use server"`.
+- **Never use `onSubmit` to intercept a form that calls a server action.** Intercepting with `e.preventDefault()` and then re-triggering submission (via `requestSubmit()` or calling the action directly) breaks Next.js's redirect handling or causes first-click bugs. Instead, wrap the server action in a client function passed to `useActionState` — do validation, image uploads, etc. inside the wrapper, then call the real action at the end. This keeps everything in one action flow so `redirect()` and `isPending` work correctly. See `EventForm.tsx` for the pattern.
+- **Function props on `'use client'` components must end in `Action`** (e.g. `onEmailSentAction`). Next.js requires this for any function prop that may be passed from a Server Component — TypeScript error ts(71007) will fire otherwise.
 - **Route handlers** (`route.ts`) only for external integrations (webhooks, RSS, etc.).
 - Keep Server Components as thin data-fetching shells; pass data down to smaller Client Components for interactivity.
 - Use `loading.tsx` and `error.tsx` at the route segment level rather than inline loading states.
@@ -105,15 +107,31 @@ app/
 
 ---
 
+## Tailwind CSS Rules
+
+Full conventions in `.claude/tailwind.md`. The most critical rules:
+
+- **Use `cn()` for all className composition.** Never use template literals or string concatenation: `cn(LayoutWidth.prose, 'py-12')` not `` `${LayoutWidth.prose} py-12` ``.
+- **Extract long classNames to named consts.** When a className exceeds ~3 utilities, extract to a descriptively-named `const` above the component return.
+- **Don't fight the design system with typography utilities.** `globals.css` sets font sizes, weights, and spacing for `h1`–`h4`, `p`, `ul`, `ol`, and `li`. Don't add `text-3xl`, `font-bold`, `mb-2`, etc. to these elements — let globals handle it. Only add utilities for **semantic color** (`text-subtle`, `text-muted`) or **context-specific layout** that the element genuinely needs.
+- **Use design tokens, not raw colors.** Prefer `bg-warning-bg`, `text-error`, `bg-brand` over `bg-yellow-50`, `text-red-700`, `bg-pink-500`. Add new tokens to `globals.css` if a color is used more than once.
+- **Never use `!important`** (or Tailwind's `!` prefix). Fix the cascade layer instead.
+
+---
+
 ## Component Library
 
-**Never write a bare `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog in `.claude/components.md`. If no existing component fits, ask before creating a new one.
+**Never write a bare `<form>`, `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog in `.claude/components.md`. If no existing component fits, ask before creating a new one.
+**For every page, you should probably include a PageHeader rather than a bare <h1>**
 
 Quick reference:
 
+- Page Header -> `PageHeader` (`src/components/PageHeader.md`)
+- Form wrapper → `Form` (`src/components/forms/Form.tsx`)
 - Filled action button or link → `Button` (`src/components/Button.tsx`)
 - Inline text button → `TextButton` (`src/components/TextButton.tsx`)
 - Inline text link → `TextLink` (`src/components/TextLink.tsx`)
+- Inline notice/callout box → `Notice` (`src/components/Notice.tsx`) — variants: `warning` (default, yellow), `danger` (red)
 - Form fields (`input`, `textarea`, `select`, `checkbox`) → matching component from `src/components/forms/`
 
 ---

@@ -35,7 +35,7 @@ export function FormField({
   const fieldProps = { inputId, hasError, describedBy }
 
   return (
-    <div className="grid">
+    <div className="grid self-start">
       <div className="mb-1">
         <label htmlFor={inputId} className={labelStyles}>
           {label}

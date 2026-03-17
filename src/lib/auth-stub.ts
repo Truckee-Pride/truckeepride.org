@@ -1,19 +1,30 @@
+import { redirect } from 'next/navigation'
+import { auth } from './auth'
 import type { User } from '@/db/schema/users'
 
-// Stub session for development — replace with real auth() in Phase 3.
-// This returns a hardcoded admin user so all authenticated routes work locally.
-
-const DEV_USER: User = {
-  id: 'dev-user-id',
-  name: 'Dev Admin',
-  email: 'dev@truckeepride.org',
-  emailVerified: null,
-  image: null,
-  role: 'admin',
-  createdAt: new Date('2025-01-01'),
-  updatedAt: new Date('2025-01-01'),
+/** Returns the current user or null if unauthenticated. */
+export async function getCurrentUser(): Promise<User | null> {
+  const session = await auth()
+  if (!session?.user?.id) return null
+  return {
+    id: session.user.id,
+    name: session.user.name ?? null,
+    firstName: session.user.name?.split(' ')[0] ?? null,
+    lastName: session.user.name?.split(' ').slice(1).join(' ') ?? null,
+    email: session.user.email!,
+    emailVerified: null,
+    image: session.user.image ?? null,
+    phone: null,
+    role:
+      (session.user as unknown as { role: 'user' | 'admin' }).role ?? 'user',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
 }
 
-export async function getCurrentUser(): Promise<User> {
-  return DEV_USER
+/** Returns the current user or redirects to sign-in. */
+export async function requireUser(): Promise<User> {
+  const user = await getCurrentUser()
+  if (!user) redirect('/sign-in')
+  return user
 }

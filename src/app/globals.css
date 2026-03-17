@@ -8,6 +8,8 @@
   --neutral-500: #6b7280;
   --neutral-400: #9ca3af;
   --neutral-200: #e5e7eb;
+  --neutral-700: #374151;
+  --neutral-600: #4b5563;
   --neutral-50: #f9fafb;
   --blue-600: #2563eb;
   --blue-700: #1d4ed8;
@@ -28,6 +30,10 @@
   --brand: var(--pink-500);
   --brand-hover: var(--pink-400);
 
+  /* Secondary action */
+  --secondary: var(--neutral-600);
+  --secondary-hover: var(--neutral-700);
+
   /* Links */
   --link: var(--blue-600);
   --link-hover: var(--blue-700);
@@ -39,6 +45,13 @@
   --error: var(--red-700);
   --error-bg: var(--red-50);
   --error-border: var(--red-200);
+
+  --amber-800: #92400e;
+  --amber-400: #fbbf24;
+  --amber-50: #fffbeb;
+  --warning: var(--amber-800);
+  --warning-bg: var(--amber-50);
+  --warning-border: var(--amber-400);
 }
 
 @theme {
@@ -56,11 +69,16 @@
   --color-inverse: var(--text-inverse);
   --color-brand: var(--brand);
   --color-brand-hover: var(--brand-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
   --color-link: var(--link);
   --color-link-hover: var(--link-hover);
   --color-error: var(--error);
   --color-error-bg: var(--error-bg);
   --color-error-border: var(--error-border);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
 }
 
 @layer base {
@@ -111,7 +129,8 @@
   p,
   ul,
   ol,
-  section {
+  section,
+  form {
     margin-top: 1rem;
   }
 

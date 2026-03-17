@@ -13,19 +13,6 @@
   - Generate API key → add `AUTH_RESEND_KEY` to `.env.local`
   - Generate auth secret → `openssl rand -base64 32` → add `AUTH_SECRET` to `.env.local`
   - Sandbox limitation: can only send to your own Resend account email, from `onboarding@resend.dev`
-- [ ] **MVP.2.4** Replace `getCurrentUser()` stub with real `auth()` session. Export two helpers:
-  - `getCurrentUser(): Promise<User | null>` — wraps `auth()`, returns null if unauthenticated
-  - `requireUser(): Promise<User>` — redirects to `/sign-in` if not authenticated
-- [ ] **MVP.2.5** Sign-in page `/sign-in`: email input → magic link. Accept `callbackUrl` search param for post-auth redirect.
-- [ ] **MVP.2.6** Verify page `/verify`: "Check your email" + resend link. Accept `?email=...&event=...` search params; show event-aware messaging when `event` param is present ("Once you verify, you'll review your event before it goes live.").
-- [ ] **MVP.2.7** Auth middleware (`src/middleware.ts`): protect `/events/*/edit`, `/admin/*` → redirect to `/sign-in`. Note: `/events/new` is **not** protected (unauthenticated users need access for the multi-step submission flow).
-- [ ] **MVP.2.8** Admin guard in `/admin/layout.tsx`: check `role === 'admin'`, show 403
-- [ ] **MVP.2.9** Visibility gating: pending/draft/rejected events only visible to owner + admins (page + generateMetadata) (`src/app/events/[slug]/page.tsx`)
-- [ ] **MVP.2.10** Permission checks in all server actions:
-  - `submitEventForReview`: verify calling user owns the event
-  - `approveEvent` / `rejectEvent`: verify `user.role === 'admin'`
-- [ ] **MVP.2.11** Minimal header nav with auth UI: Events, Create Event (logged in), Admin (admin), Sign In / Sign Out (`src/app/Header.tsx`)
-- [ ] **MVP.2.12** Multi-step event submission flow for unauthenticated users — see `multistep-event-flow.md` for full spec
 - [ ] **MVP.2.13** Edit Profile page (`/profile/edit`) — let users update their name, email, etc.
 
 ---

@@ -2,12 +2,12 @@
 
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { getCurrentUser } from '@/lib/auth-stub'
+import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
 import { auditLog, events } from '@/db/schema'
 
 export async function approveEvent(id: string) {
-  const user = await getCurrentUser()
+  const user = await requireUser()
   if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
 
   await db.transaction(async (tx) => {
@@ -28,7 +28,7 @@ export async function approveEvent(id: string) {
 }
 
 export async function rejectEvent(id: string, reason: string) {
-  const user = await getCurrentUser()
+  const user = await requireUser()
   if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
 
   const trimmed = reason.trim()
@@ -52,7 +52,7 @@ export async function rejectEvent(id: string, reason: string) {
 }
 
 export async function deleteEvent(id: string) {
-  const user = await getCurrentUser()
+  const user = await requireUser()
   if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
 
   await db.transaction(async (tx) => {
