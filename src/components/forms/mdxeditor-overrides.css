@@ -1,5 +1,9 @@
 /* MDXEditor theme overrides — imported by InitializedMDXEditor */
 
+.mdxeditor-form-field {
+  --editor-min-height: 8rem;
+}
+
 .mdxeditor-form-field .mdxeditor {
   --accentBase: var(--brand);
   --accentBgSubtle: var(--neutral-50);
@@ -22,10 +26,15 @@
 }
 
 .mdxeditor-form-field .mdxeditor-root-contenteditable {
-  min-height: 8rem;
+  min-height: var(--editor-min-height);
   font-size: 1rem;
   line-height: 1.5;
   padding: 0;
+  cursor: text;
+}
+
+.mdxeditor-form-field .mdxeditor-root-contenteditable [contenteditable] {
+  min-height: var(--editor-min-height);
 }
 
 .mdxeditor-form-field .mdxeditor-root-contenteditable p {
@@ -38,5 +47,5 @@
 }
 
 .mdxeditor-form-field .mdxeditor-source-editor {
-  min-height: 8rem;
+  min-height: var(--editor-min-height);
 }
