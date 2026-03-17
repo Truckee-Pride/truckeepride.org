@@ -16,7 +16,13 @@ const STATUS_STYLES: Record<string, string> = {
   cancelled: 'bg-gray-100 text-gray-400',
 }
 
-export function EventsTableBody({ events }: { events: Event[] }) {
+export function EventsTableBody({
+  events,
+  statusFilter,
+}: {
+  events: Event[]
+  statusFilter: string | null
+}) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
 
   function handleRowClick(event: Event) {
@@ -30,54 +36,66 @@ export function EventsTableBody({ events }: { events: Event[] }) {
   return (
     <>
       <tbody>
-        {events.map((event) => (
-          <tr
-            key={event.id}
-            className="border-b border-border last:border-0 hover:bg-surface cursor-pointer"
-            onClick={() => handleRowClick(event)}
-          >
-            <td className="px-4 py-3 font-medium">
-              {event.emoji && <span className="mr-1">{event.emoji}</span>}
-              {event.title}
-            </td>
-            <td className="px-4 py-3">
-              <span
-                className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[event.status] ?? 'bg-gray-100 text-gray-600'}`}
-              >
-                {event.status.replace('_', ' ')}
-              </span>
-            </td>
-            <td className="px-4 py-3 text-muted whitespace-nowrap">
-              {event.startTime.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </td>
-            <td className="px-4 py-3 text-muted">{event.locationName}</td>
-            <td className="px-4 py-3 text-muted whitespace-nowrap">
-              {event.createdAt.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </td>
-            <td
-              className="px-4 py-3 text-right whitespace-nowrap space-x-3"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {event.status === 'pending_review' && (
-                <>
-                  <ApproveEventButton id={event.id} title={event.title} />
-                  <RejectEventButton id={event.id} title={event.title} />
-                </>
-              )}
-              <TextLink href={`/events/${event.slug}`}>View</TextLink>
-              <TextLink href={`/events/${event.slug}/edit`}>Edit</TextLink>
-              <DeleteEventButton id={event.id} title={event.title} />
+        {events.length === 0 ? (
+          <tr>
+            <td colSpan={6} className="px-4 py-12 text-center text-muted">
+              {statusFilter === 'pending_review'
+                ? 'No events pending review.'
+                : statusFilter
+                  ? `No ${statusFilter.replace('_', ' ')} events.`
+                  : 'No events yet.'}
             </td>
           </tr>
-        ))}
+        ) : (
+          events.map((event) => (
+            <tr
+              key={event.id}
+              className="border-b border-border last:border-0 hover:bg-surface cursor-pointer"
+              onClick={() => handleRowClick(event)}
+            >
+              <td className="px-4 py-3 font-medium">
+                {event.emoji && <span className="mr-1">{event.emoji}</span>}
+                {event.title}
+              </td>
+              <td className="px-4 py-3">
+                <span
+                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[event.status] ?? 'bg-gray-100 text-gray-600'}`}
+                >
+                  {event.status.replace('_', ' ')}
+                </span>
+              </td>
+              <td className="px-4 py-3 text-muted whitespace-nowrap">
+                {event.startTime.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </td>
+              <td className="px-4 py-3 text-muted">{event.locationName}</td>
+              <td className="px-4 py-3 text-muted whitespace-nowrap">
+                {event.createdAt.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </td>
+              <td
+                className="px-4 py-3 text-right whitespace-nowrap space-x-3"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {event.status === 'pending_review' && (
+                  <>
+                    <ApproveEventButton id={event.id} title={event.title} />
+                    <RejectEventButton id={event.id} title={event.title} />
+                  </>
+                )}
+                <TextLink href={`/events/${event.slug}`}>View</TextLink>
+                <TextLink href={`/events/${event.slug}/edit`}>Edit</TextLink>
+                <DeleteEventButton id={event.id} title={event.title} />
+              </td>
+            </tr>
+          ))
+        )}
       </tbody>
 
       {selectedEvent && (

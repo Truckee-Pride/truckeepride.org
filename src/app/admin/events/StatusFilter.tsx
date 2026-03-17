@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useRef, useState, useEffect } from 'react'
+import { ChevronUp, ChevronDown } from 'lucide-react'
 
 const STATUSES = [
   { value: '', label: 'All' },
@@ -11,6 +12,8 @@ const STATUSES = [
   { value: 'rejected', label: 'Rejected' },
   { value: 'cancelled', label: 'Cancelled' },
 ] as const
+
+const chevronStyles = 'size-4 text-subtle'
 
 export function StatusFilter() {
   const router = useRouter()
@@ -49,7 +52,13 @@ export function StatusFilter() {
         className={`inline-flex items-center gap-1 font-medium cursor-pointer no-underline hover:underline ${current ? 'text-brand' : 'text-foreground'}`}
       >
         {current ? `Status: ${activeLabel}` : 'Status'}
-        <span className="text-xs">{open ? '\u25B2' : '\u25BC'}</span>
+        <span className="text-xs">
+          {open ? (
+            <ChevronUp aria-hidden className={chevronStyles} />
+          ) : (
+            <ChevronDown aria-hidden className={chevronStyles} />
+          )}
+        </span>
       </button>
       {open && (
         <div className="absolute z-10 mt-1 left-0 rounded-lg border border-border bg-background shadow-lg py-1 min-w-[140px]">

@@ -102,7 +102,7 @@ export default async function AdminEventsPage({
               </th>
             </tr>
           </thead>
-          <EventsTableBody events={allEvents} />
+          <EventsTableBody events={allEvents} statusFilter={statusFilter} />
         </table>
       </div>
     </>

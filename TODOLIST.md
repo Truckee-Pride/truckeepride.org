@@ -29,14 +29,6 @@
 
 ---
 
-## MVP.4.x: Errors and polish
-
-**Goal: Error handling, empty states, domain setup, go live.**
-
-- [ ] **MVP.4.1** Root `error.tsx` boundary — friendly message, no stack traces
-- [ ] **MVP.4.2** Root `not-found.tsx` — branded 404 page
-- [ ] **MVP.4.3** Empty states: no events on list page, no pending approvals, no user events
-
 ---
 
 ## MVP.5.x: Abuse Prevention
