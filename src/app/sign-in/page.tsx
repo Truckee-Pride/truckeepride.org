@@ -43,7 +43,7 @@ export default async function SignInPage({
     <main className={cn(LayoutWidth.prose)}>
       <h1>Sign in to Truckee Pride</h1>
       <p className="text-subtle">
-        Enter your email and we&apos;ll send you a magic link to sign in.
+        Enter your email and we&apos;ll send you a login link to sign in.
       </p>
 
       <Form action={handleSignIn} className="space-y-4 max-w-sm">
@@ -56,7 +56,7 @@ export default async function SignInPage({
           placeholder="you@example.com"
           autoFocus
         />
-        <Button type="submit">Send magic link</Button>
+        <Button type="submit">Send login link</Button>
       </Form>
     </main>
   )

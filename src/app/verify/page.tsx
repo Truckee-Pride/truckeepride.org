@@ -39,7 +39,7 @@ export default async function VerifyPage({
     <main className={cn(LayoutWidth.prose, 'py-12')}>
       <h1>Check your email</h1>
       <p>
-        We sent a magic link to{' '}
+        We sent a login link to{' '}
         {email ? <strong>{email}</strong> : 'your email'}. Click the link in the
         email to sign in.
       </p>
@@ -60,7 +60,7 @@ export default async function VerifyPage({
         <Form action={handleResend}>
           <input type="hidden" name="email" value={email} />
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <Button type="submit">Resend magic link</Button>
+          <Button type="submit">Resend login link</Button>
         </Form>
       )}
     </main>
