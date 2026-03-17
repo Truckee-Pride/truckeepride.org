@@ -214,7 +214,8 @@ export function EventForm({ event, action = createEvent }: Props) {
         defaultValue={event?.description ?? ''}
         description="Full details about the event. Supports bold, italic, lists, links, and headings."
         errors={errors.description}
-        onChange={handleDescriptionChange}
+        onChangeAction={handleDescriptionChange}
+        showDiff={event != null}
       />
 
       <div className="grid items-start gap-6 xs:grid-cols-2">

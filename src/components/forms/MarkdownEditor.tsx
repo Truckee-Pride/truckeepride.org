@@ -20,7 +20,8 @@ type Props = {
   defaultValue?: string
   description?: string
   errors?: string[]
-  onChange?: (value: string) => void
+  onChangeAction?: (value: string) => void
+  showDiff?: boolean
 }
 
 export function MarkdownEditor({
@@ -30,7 +31,8 @@ export function MarkdownEditor({
   defaultValue = '',
   description,
   errors,
-  onChange,
+  onChangeAction,
+  showDiff,
 }: Props) {
   const hiddenRef = useRef<HTMLInputElement>(null)
 
@@ -39,9 +41,9 @@ export function MarkdownEditor({
       if (hiddenRef.current) {
         hiddenRef.current.value = markdown
       }
-      onChange?.(markdown)
+      onChangeAction?.(markdown)
     },
-    [onChange],
+    [onChangeAction],
   )
 
   return (
@@ -63,7 +65,11 @@ export function MarkdownEditor({
             hasError && 'border-error',
           )}
         >
-          <Editor markdown={defaultValue} onChange={handleChange} />
+          <Editor
+            markdown={defaultValue}
+            onChange={handleChange}
+            showDiff={showDiff}
+          />
           <input
             ref={hiddenRef}
             type="hidden"

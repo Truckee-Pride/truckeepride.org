@@ -129,7 +129,7 @@ export default async function EventPage({
               locationAddress={event.locationAddress ?? null}
             />
             {canEdit && (
-              <Button href={`/events/${event.slug}/edit`}>
+              <Button intent="secondary" href={`/events/${event.slug}/edit`}>
                 <Edit2 className="inline-block mr-2 -mt-0.5" size={20} />
                 Edit Event
               </Button>

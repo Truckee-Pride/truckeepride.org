@@ -41,7 +41,7 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
   ) {
     const [fileState, setFileState] = useState<FileState | null>(null)
     const [blobUrl, setBlobUrl] = useState<string | null>(null)
-    const [showExisting, setShowExisting] = useState(!!existingUrl)
+    const [showExisting, setShowExisting] = useState(existingUrl != null)
     const [uploading, setUploading] = useState(false)
     const [uploadProgress, setUploadProgress] = useState(0)
     const [error, setError] = useState<string | null>(null)
@@ -136,7 +136,7 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
     }
 
     useImperativeHandle(ref, () => ({
-      needsUpload: !!fileState && !blobUrl,
+      needsUpload: fileState != null && !blobUrl,
       upload: async () => {
         // Nothing selected — use existing or empty
         if (!fileState) return showExisting && existingUrl ? existingUrl : null

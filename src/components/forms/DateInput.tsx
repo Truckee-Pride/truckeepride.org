@@ -216,7 +216,7 @@ export function DateInput({
     setter(cleaned)
   }
 
-  const hasError = !!errors?.length
+  const hasError = errors != null && errors.length > 0
 
   const calendarStart = new Date(today.getFullYear(), today.getMonth())
   const calendarEnd = new Date(
