@@ -17,7 +17,7 @@ export default async function NewEventPage() {
       <main className={LayoutWidth.wide}>
         <PageHeader
           title="Submit Event"
-          subtitle="Create an account to submit your event for review."
+          subtitle="Enter your contact information to submit your event for review."
         />
         <AccountForm redirectTo="/events/new" />
       </main>
