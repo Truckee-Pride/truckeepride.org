@@ -13,12 +13,12 @@ export async function addSponsor(formData: FormData) {
   if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
 
   const imageUrl = formData.get('imageUrl')?.toString().trim() ?? ''
-  const alt = formData.get('alt')?.toString().trim() ?? ''
+  const name = formData.get('name')?.toString().trim() ?? ''
 
   if (!imageUrl) return { success: false, error: 'Image is required' }
-  if (!alt) return { success: false, error: 'Sponsor name is required' }
+  if (!name) return { success: false, error: 'Sponsor name is required' }
 
-  await db.insert(sponsors).values({ imageUrl, alt, sortOrder: 0 })
+  await db.insert(sponsors).values({ imageUrl, name, sortOrder: 0 })
 
   revalidatePath('/admin/sponsors')
   revalidatePath('/')
@@ -43,6 +43,17 @@ export async function deleteSponsor(id: number) {
   }
 
   await db.delete(sponsors).where(eq(sponsors.id, id))
+
+  revalidatePath('/admin/sponsors')
+  revalidatePath('/')
+  return { success: true }
+}
+
+export async function toggleSponsor(id: number, enabled: boolean) {
+  const user = await requireUser()
+  if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
+
+  await db.update(sponsors).set({ enabled }).where(eq(sponsors.id, id))
 
   revalidatePath('/admin/sponsors')
   revalidatePath('/')

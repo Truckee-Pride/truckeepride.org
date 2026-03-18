@@ -63,7 +63,7 @@ export function AddSponsorForm() {
       />
       <Input
         label="Sponsor name"
-        name="alt"
+        name="name"
         placeholder="e.g. Truckee Cultural District"
         required
       />
