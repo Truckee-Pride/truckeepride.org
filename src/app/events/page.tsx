@@ -68,7 +68,7 @@ export default async function EventsPage({
     orderBy: time === 'past' ? desc(events.startTime) : asc(events.startTime),
   })
 
-  const hasFilters = tagList.length > 0 || !!ageFilter
+  const hasFilters = tagList.length > 0 || ageFilter != null
 
   return (
     <main className={LayoutWidth.wide}>

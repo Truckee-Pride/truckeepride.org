@@ -1,11 +1,7 @@
 import { asc, desc } from 'drizzle-orm'
-import Link from 'next/link'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
-import { TextLink } from '@/components/TextLink'
-import { DeleteEventButton } from './DeleteEventButton'
-import { ApproveEventButton } from './ApproveEventButton'
-import { RejectEventButton } from './RejectEventButton'
+import { AdminEventsTable } from './AdminEventsTable'
 
 const SORT_FIELDS = ['title', 'startTime', 'locationName', 'createdAt'] as const
 type SortField = (typeof SORT_FIELDS)[number]
@@ -22,14 +18,6 @@ function getOrderBy(sort: SortField, dir: 'asc' | 'desc') {
     case 'createdAt':
       return fn(events.createdAt)
   }
-}
-
-const STATUS_STYLES: Record<string, string> = {
-  approved: 'bg-green-100 text-green-800',
-  pending_review: 'bg-amber-100 text-amber-800',
-  draft: 'bg-gray-100 text-gray-600',
-  rejected: 'bg-red-100 text-red-700',
-  cancelled: 'bg-gray-100 text-gray-400',
 }
 
 export default async function AdminEventsPage({
@@ -50,134 +38,11 @@ export default async function AdminEventsPage({
   return (
     <>
       <h1 className="mb-6">All Events ({allEvents.length})</h1>
-
-      {allEvents.length === 0 ? (
-        <p className="text-muted">No events have been created yet.</p>
-      ) : (
-        <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-surface text-left">
-                <Th>
-                  <SortLink
-                    field="title"
-                    current={sort}
-                    dir={dir}
-                    label="Title"
-                  />
-                </Th>
-                <Th>Status</Th>
-                <Th>
-                  <SortLink
-                    field="startTime"
-                    current={sort}
-                    dir={dir}
-                    label="Date"
-                  />
-                </Th>
-                <Th>
-                  <SortLink
-                    field="locationName"
-                    current={sort}
-                    dir={dir}
-                    label="Location"
-                  />
-                </Th>
-                <Th>
-                  <SortLink
-                    field="createdAt"
-                    current={sort}
-                    dir={dir}
-                    label="Added"
-                  />
-                </Th>
-                <th className="px-4 py-3 text-right text-muted font-medium">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {allEvents.map((event) => (
-                <tr
-                  key={event.id}
-                  className="border-b border-border last:border-0 hover:bg-surface"
-                >
-                  <td className="px-4 py-3 font-medium">
-                    {event.emoji && <span className="mr-1">{event.emoji}</span>}
-                    {event.title}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[event.status] ?? 'bg-gray-100 text-gray-600'}`}
-                    >
-                      {event.status.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-muted whitespace-nowrap">
-                    {event.startTime.toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </td>
-                  <td className="px-4 py-3 text-muted">{event.locationName}</td>
-                  <td className="px-4 py-3 text-muted whitespace-nowrap">
-                    {event.createdAt.toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </td>
-                  <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
-                    {event.status === 'pending_review' && (
-                      <>
-                        <ApproveEventButton id={event.id} title={event.title} />
-                        <RejectEventButton id={event.id} title={event.title} />
-                      </>
-                    )}
-                    <TextLink href={`/events/${event.slug}`}>View</TextLink>
-                    <TextLink href={`/events/${event.slug}/edit`}>
-                      Edit
-                    </TextLink>
-                    <DeleteEventButton id={event.id} title={event.title} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <AdminEventsTable
+        events={allEvents}
+        columns={['status', 'date', 'location', 'submitted']}
+        emptyMessage="No events have been created yet."
+      />
     </>
-  )
-}
-
-function Th({ children }: { children: React.ReactNode }) {
-  return <th className="px-4 py-3 font-medium">{children}</th>
-}
-
-function SortLink({
-  field,
-  current,
-  dir,
-  label,
-}: {
-  field: SortField
-  current: SortField
-  dir: 'asc' | 'desc'
-  label: string
-}) {
-  const isActive = field === current
-  const nextDir = isActive && dir === 'asc' ? 'desc' : 'asc'
-  const params = new URLSearchParams()
-  params.set('sort', field)
-  params.set('dir', nextDir)
-  return (
-    <Link
-      href={`/admin/events?${params.toString()}`}
-      className={`no-underline hover:underline inline-flex items-center gap-1 ${isActive ? 'text-brand' : 'text-foreground'}`}
-    >
-      {label}
-      {isActive && <span>{dir === 'asc' ? '\u2191' : '\u2193'}</span>}
-    </Link>
   )
 }
