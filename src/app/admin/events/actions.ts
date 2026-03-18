@@ -7,6 +7,8 @@ import { db } from '@/lib/db'
 import { auditLog, events, users } from '@/db/schema'
 import { sendEventApprovedEmail, sendEventRejectedEmail } from '@/lib/email'
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://truckeepride.org'
+
 async function getEventWithOwner(id: string) {
   const rows = await db
     .select({
@@ -43,12 +45,11 @@ export async function approveEvent(id: string) {
     })
   })
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://truckeepride.org'
   await sendEventApprovedEmail({
     to: event.ownerEmail,
     ownerName: event.ownerName,
     eventTitle: event.title,
-    eventUrl: `${baseUrl}/events/${event.slug}`,
+    eventUrl: `${BASE_URL}/events/${event.slug}`,
   })
 
   revalidatePath('/admin/events')
@@ -78,12 +79,11 @@ export async function rejectEvent(id: string, reason: string) {
     })
   })
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://truckeepride.org'
   await sendEventRejectedEmail({
     to: event.ownerEmail,
     ownerName: event.ownerName,
     eventTitle: event.title,
-    editUrl: `${baseUrl}/events/${event.id}/edit`,
+    editUrl: `${BASE_URL}/events/${event.id}/edit`,
     rejectionReason: trimmed,
   })
 

@@ -1,5 +1,3 @@
-'use server'
-
 import { render } from '@react-email/components'
 import { Resend } from 'resend'
 import { EventApprovedEmail } from '@/emails/event-approved'
