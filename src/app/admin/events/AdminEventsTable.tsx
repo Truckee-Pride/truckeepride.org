@@ -4,6 +4,15 @@ import { ApproveEventButton } from './ApproveEventButton'
 import { RejectEventButton } from './RejectEventButton'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/db/schema/events'
+import {
+  tableWrapperStyles,
+  headerRowStyles,
+  bodyRowStyles,
+  thStyles,
+  tdStyles,
+  tdMutedStyles,
+  actionCellStyles,
+} from '../table-styles'
 
 const STATUS_STYLES: Record<string, string> = {
   approved: 'bg-green-100 text-green-800',
@@ -17,27 +26,6 @@ const statusBadgeStyles = cn(
   'inline-block rounded-full px-2 py-0.5',
   'text-xs font-medium capitalize',
 )
-
-const actionCellStyles = cn(
-  'px-4 py-3 text-right',
-  'whitespace-nowrap space-x-3',
-)
-
-const tableWrapperStyles = cn(
-  'overflow-x-auto rounded-lg',
-  'border border-border',
-)
-
-const headerRowStyles = cn('border-b border-border', 'bg-surface text-left')
-
-const bodyRowStyles = cn(
-  'border-b border-border',
-  'last:border-0 hover:bg-surface',
-)
-
-const thStyles = 'px-4 py-3 font-medium'
-const tdStyles = 'px-4 py-3'
-const tdMutedStyles = 'px-4 py-3 text-muted whitespace-nowrap'
 
 type Column = 'status' | 'date' | 'location' | 'submitted'
 

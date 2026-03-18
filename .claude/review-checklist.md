@@ -109,6 +109,28 @@ const styles = cn(
 )
 ```
 
+### T7 — Admin tables must use shared table styles
+
+Look for: Inline table classNames in `src/app/admin/` files — e.g.
+`className="overflow-x-auto rounded-lg border border-border"` on a table wrapper,
+or `className="px-4 py-3 font-medium"` on `<th>` / `<td>` elements.
+Fix: Import and use the named consts from `src/app/admin/table-styles.ts`:
+
+```tsx
+import {
+  tableWrapperStyles,
+  headerRowStyles,
+  bodyRowStyles,
+  thStyles,
+  tdStyles,
+  tdMutedStyles,
+  actionCellStyles,
+} from '../table-styles'
+```
+
+Use `cn(thStyles, 'text-right text-muted')` to extend a base style for a
+specific cell.
+
 ---
 
 ## Next.js / App Router
