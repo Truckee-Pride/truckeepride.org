@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
@@ -15,14 +15,9 @@ import {
   reorderCarouselPhotos,
   deleteCarouselPhoto,
 } from './actions'
+import type { carouselPhotos } from '@/db/schema'
 
-type Photo = {
-  id: string
-  src: string
-  alt: string
-  sortOrder: number
-  createdAt: Date
-}
+type Photo = typeof carouselPhotos.$inferSelect
 
 type Props = {
   initialPhotos: Photo[]
@@ -47,6 +42,8 @@ const deleteBtn = cn(
   'transition-colors hover:bg-red-600',
 )
 
+const photoGrid = cn('grid grid-cols-2 gap-4', 'sm:grid-cols-3 md:grid-cols-4')
+
 export function AdminCarousel({ initialPhotos }: Props) {
   const router = useRouter()
   const imageUploadRef = useRef<ImageUploadHandle>(null)
@@ -56,7 +53,7 @@ export function AdminCarousel({ initialPhotos }: Props) {
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const [dropIndex, setDropIndex] = useState<number | null>(null)
 
-  const handleAdd = useCallback(async () => {
+  async function handleAdd() {
     if (!imageUploadRef.current?.needsUpload) return
     if (!altText.trim()) return
 
@@ -73,7 +70,7 @@ export function AdminCarousel({ initialPhotos }: Props) {
     } finally {
       setAdding(false)
     }
-  }, [altText, router])
+  }
 
   function handleDragStart(index: number) {
     return () => setDragIndex(index)
@@ -152,7 +149,7 @@ export function AdminCarousel({ initialPhotos }: Props) {
         {photos.length === 0 ? (
           <p className="text-muted">No carousel photos yet.</p>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+          <div className={photoGrid}>
             {photos.map((photo, index) => (
               <div
                 key={photo.id}

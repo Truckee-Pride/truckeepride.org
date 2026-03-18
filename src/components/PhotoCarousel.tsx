@@ -25,6 +25,11 @@ const arrowBase = cn(
   'transition-colors hover:bg-black/70',
 )
 
+const dotContainer = cn(
+  'absolute bottom-3 left-1/2 z-10',
+  'flex -translate-x-1/2 gap-2',
+)
+
 const dotBase = 'h-2.5 w-2.5 rounded-full transition-colors'
 
 export function PhotoCarousel({ photos }: Props) {
@@ -76,7 +81,7 @@ export function PhotoCarousel({ photos }: Props) {
             <ChevronRight />
           </button>
 
-          <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+          <div className={dotContainer}>
             {photos.map((photo, i) => (
               <button
                 key={photo.id}
