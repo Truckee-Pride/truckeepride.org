@@ -17,15 +17,6 @@
 
 ---
 
-## MVP.3.x: Email
-
-**Goal: Magic link emails for auth + notification emails for approval workflow.**
-
-- [ ] **MVP.3.2** Email utility wrapping Resend SDK (`src/lib/email.ts`)
-- [ ] **MVP.3.6** Wire approve/reject actions to send emails (`src/app/admin/events/actions.ts`)
-
----
-
 ---
 
 ## MVP.5.x: Abuse Prevention

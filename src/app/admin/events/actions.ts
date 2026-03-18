@@ -4,11 +4,31 @@ import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
-import { auditLog, events } from '@/db/schema'
+import { auditLog, events, users } from '@/db/schema'
+import { sendEventApprovedEmail, sendEventRejectedEmail } from '@/lib/email'
+
+async function getEventWithOwner(id: string) {
+  const rows = await db
+    .select({
+      id: events.id,
+      slug: events.slug,
+      title: events.title,
+      ownerEmail: users.email,
+      ownerName: users.name,
+    })
+    .from(events)
+    .innerJoin(users, eq(events.ownerId, users.id))
+    .where(eq(events.id, id))
+    .limit(1)
+  return rows[0] ?? null
+}
 
 export async function approveEvent(id: string) {
   const user = await requireUser()
   if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
+
+  const event = await getEventWithOwner(id)
+  if (!event) return { success: false, error: 'Event not found' }
 
   await db.transaction(async (tx) => {
     await tx
@@ -23,6 +43,14 @@ export async function approveEvent(id: string) {
     })
   })
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://truckeepride.org'
+  await sendEventApprovedEmail({
+    to: event.ownerEmail,
+    ownerName: event.ownerName,
+    eventTitle: event.title,
+    eventUrl: `${baseUrl}/events/${event.slug}`,
+  })
+
   revalidatePath('/admin/events')
   return { success: true }
 }
@@ -33,6 +61,9 @@ export async function rejectEvent(id: string, reason: string) {
 
   const trimmed = reason.trim()
   if (!trimmed) return { success: false, error: 'Rejection reason is required' }
+
+  const event = await getEventWithOwner(id)
+  if (!event) return { success: false, error: 'Event not found' }
 
   await db.transaction(async (tx) => {
     await tx
@@ -45,6 +76,15 @@ export async function rejectEvent(id: string, reason: string) {
       targetType: 'event',
       targetId: id,
     })
+  })
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://truckeepride.org'
+  await sendEventRejectedEmail({
+    to: event.ownerEmail,
+    ownerName: event.ownerName,
+    eventTitle: event.title,
+    editUrl: `${baseUrl}/events/${event.id}/edit`,
+    rejectionReason: trimmed,
   })
 
   revalidatePath('/admin/events')
