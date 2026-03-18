@@ -21,7 +21,11 @@ export default async function Home() {
       orderBy: asc(events.startTime),
       limit: 5,
     }),
-    db.select().from(sponsors).orderBy(asc(sponsors.sortOrder)),
+    db
+      .select()
+      .from(sponsors)
+      .where(eq(sponsors.enabled, true))
+      .orderBy(asc(sponsors.name)),
   ])
 
   return (
@@ -109,7 +113,7 @@ export default async function Home() {
               >
                 <Image
                   src={sponsor.imageUrl}
-                  alt={sponsor.alt}
+                  alt={sponsor.name}
                   width={120}
                   height={120}
                   className="h-auto w-full max-w-[120px]"

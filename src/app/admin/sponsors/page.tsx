@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { sponsors } from '@/db/schema'
 import { PageHeader } from '@/components/PageHeader'
 import { DeleteSponsorButton } from './DeleteSponsorButton'
+import { ToggleSponsorButton } from './ToggleSponsorButton'
 import { AddSponsorForm } from './AddSponsorForm'
 
 const sponsorRowClasses =
@@ -14,7 +15,7 @@ export default async function AdminSponsorsPage() {
   const sponsorsList = await db
     .select()
     .from(sponsors)
-    .orderBy(asc(sponsors.sortOrder))
+    .orderBy(asc(sponsors.name))
 
   return (
     <div className="space-y-8">
@@ -33,18 +34,29 @@ export default async function AdminSponsorsPage() {
               <li key={sponsor.id} className={sponsorRowClasses}>
                 <Image
                   src={sponsor.imageUrl}
-                  alt={sponsor.alt}
+                  alt={sponsor.name}
                   width={80}
                   height={80}
                   className={sponsorImageClasses}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium">{sponsor.alt}</p>
+                  <p className="font-medium">
+                    {sponsor.name}
+                    {!sponsor.enabled && (
+                      <span className="ml-2 text-sm text-muted">
+                        (disabled)
+                      </span>
+                    )}
+                  </p>
                   <p className="truncate text-sm text-muted">
                     {sponsor.imageUrl}
                   </p>
                 </div>
-                <DeleteSponsorButton id={sponsor.id} alt={sponsor.alt} />
+                <ToggleSponsorButton
+                  id={sponsor.id}
+                  enabled={sponsor.enabled}
+                />
+                <DeleteSponsorButton id={sponsor.id} name={sponsor.name} />
               </li>
             ))}
           </ul>

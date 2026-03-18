@@ -59,7 +59,7 @@ async function seedSponsors() {
     console.log(`Inserting ${sponsor.alt} into DB...`)
     await db.insert(schema.sponsors).values({
       imageUrl: blob.url,
-      alt: sponsor.alt,
+      name: sponsor.alt,
       sortOrder: sponsor.sortOrder,
     })
 
