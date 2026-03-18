@@ -14,5 +14,5 @@ export async function canEditEvent(user: User, event: Event): Promise<boolean> {
       eq(eventOwners.userId, user.id),
     ),
   })
-  return !!additionalOwner
+  return additionalOwner != null
 }

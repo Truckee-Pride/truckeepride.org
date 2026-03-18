@@ -27,7 +27,7 @@ export function FormField({
   const inputId = `field-${name}`
   const errorId = `${inputId}-error`
   const descId = description ? `${inputId}-desc` : undefined
-  const hasError = !!errors?.length
+  const hasError = errors != null && errors.length > 0
 
   const describedBy =
     [hasError && errorId, descId].filter(Boolean).join(' ') || undefined

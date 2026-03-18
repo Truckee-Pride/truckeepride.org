@@ -234,6 +234,24 @@ Fix: Add Zod schema and parse input with `.safeParse()`.
 Look for: Forms that call `fetch()` in an onSubmit handler
 Fix: Convert to `useActionState` with a Server Action.
 
+### F3 — Uncontrolled input in a `useActionState` form
+
+Look for: `<Input`, `<Select`, `<Textarea` with `defaultValue=` inside a form
+that uses `useActionState`. Components that manage their own internal state
+(like `DateInput`, `TimeCombobox`, `MarkdownEditor`, `EmojiPicker`) are exempt —
+they use `defaultValue` only for initialization and survive form reset.
+Fix: Convert to a controlled input: add `useState` for the field value,
+pass `value=` instead of `defaultValue=`, and update state in the `onChange`
+handler. See `AccountForm.tsx` or `EventForm.tsx` for the pattern.
+
+### F4 — Hidden input with `defaultValue` in a custom form component
+
+Look for: `<input type="hidden" defaultValue=` inside components that manage
+their own state (e.g. rich text editors, date pickers, custom selectors)
+Fix: Use `value=` (controlled) on the hidden input so it stays in sync with
+the component's internal state and survives React 19 form reset.
+See `MarkdownEditor.tsx` for the pattern.
+
 ---
 
 ## Performance

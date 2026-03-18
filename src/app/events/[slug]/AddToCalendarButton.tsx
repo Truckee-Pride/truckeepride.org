@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { CalendarPlus } from 'lucide-react'
 import { Button } from '@/components/Button'
 
 type Props = {
@@ -83,11 +82,11 @@ export function AddToCalendarButton(props: Props) {
   return (
     <div ref={ref} className="relative inline-block">
       <Button
+        icon="calendar-plus"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="true"
         aria-expanded={open}
       >
-        <CalendarPlus className="inline-block mr-2 -mt-0.5" size={20} />
         Add to Calendar
       </Button>
 

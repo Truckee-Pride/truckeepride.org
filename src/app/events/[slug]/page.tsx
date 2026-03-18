@@ -3,7 +3,6 @@ import { LayoutWidth } from '@/lib/constants'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { Edit2 } from 'lucide-react'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { EventPreview } from '@/components/events/EventPreview'
@@ -128,15 +127,18 @@ export default async function EventPage({
               locationName={event.locationName}
               locationAddress={event.locationAddress ?? null}
             />
-            {canEdit && (
-              <Button href={`/events/${event.slug}/edit`}>
-                <Edit2 className="inline-block mr-2 -mt-0.5" size={20} />
-                Edit Event
+            {event.ticketUrl && (
+              <Button icon="ticket" href={event.ticketUrl}>
+                Get Tickets
               </Button>
             )}
-            {event.ticketUrl && (
-              <Button onClick={() => window.open(event.ticketUrl!, '_blank')}>
-                Get Tickets →
+            {canEdit && (
+              <Button
+                intent="secondary"
+                icon="edit-2"
+                href={`/events/${event.slug}/edit`}
+              >
+                Edit Event
               </Button>
             )}
           </div>

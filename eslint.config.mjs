@@ -20,6 +20,17 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'UnaryExpression[operator="!"][argument.type="UnaryExpression"][argument.operator="!"]',
+          message: 'Avoid !!value — use value != null to check for null/undefined.',
+        },
+      ],
+    },
+  },
 ];
 
 export default eslintConfig;

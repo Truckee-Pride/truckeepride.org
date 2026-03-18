@@ -5,6 +5,7 @@ import {
   createEventSchema,
   createEventBaseSchema,
   AGE_RESTRICTION_OPTIONS,
+  type AgeRestriction,
   type CreateEventInput,
 } from '@/lib/schemas/events'
 import { useFormErrors } from '@/hooks/useFormErrors'
@@ -12,7 +13,7 @@ import type { Event } from '@/db/schema/events'
 import { createEvent } from '@/app/events/new/actions'
 import { Input } from '@/components/forms/Input'
 import { DateInput } from '@/components/forms/DateInput'
-import { Textarea } from '@/components/forms/Textarea'
+import { MarkdownEditor } from '@/components/forms/MarkdownEditor'
 import { Select } from '@/components/forms/Select'
 import { Checkbox } from '@/components/forms/Checkbox'
 import { FormError } from '@/components/forms/FormError'
@@ -48,10 +49,41 @@ type Props = {
   action?: FormAction
 }
 
+function formatDate(date: Date | null | undefined): string {
+  if (!date) return ''
+  return date.toISOString().slice(0, 10)
+}
+
+function formatTime(date: Date | null | undefined): string {
+  if (!date) return ''
+  const offset = date.getTimezoneOffset()
+  const local = new Date(date.getTime() - offset * 60000)
+  return local.toISOString().slice(11, 16)
+}
+
 export function EventForm({ event, action = createEvent }: Props) {
   const imageUploadRef = useRef<ImageUploadHandle>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
+
+  // Controlled field state — React 19 resets forms after actions complete,
+  // so we use value= (not defaultValue=) to preserve input across failures.
+  const [title, setTitle] = useState(event?.title ?? '')
+  const [shortDescription, setShortDescription] = useState(
+    event?.shortDescription ?? '',
+  )
+  const [locationName, setLocationName] = useState(event?.locationName ?? '')
+  const [locationAddress, setLocationAddress] = useState(
+    event?.locationAddress ?? '',
+  )
+  const [startTime, setStartTime] = useState(formatTime(event?.startTime))
+  const [ageRestriction, setAgeRestriction] = useState(
+    event?.ageRestriction ?? 'All ages',
+  )
+  const [ticketUrl, setTicketUrl] = useState(event?.ticketUrl ?? '')
+  const [requiresTicket, setRequiresTicket] = useState(
+    event?.requiresTicket ?? false,
+  )
 
   // Wrap the server action to handle client-side validation and image upload
   // before handing off to the real action. This keeps everything in one action
@@ -117,34 +149,30 @@ export function EventForm({ event, action = createEvent }: Props) {
     createEventBaseSchema.shape,
     state.fieldErrors,
   )
-  const [requiresTicket, setRequiresTicket] = useState(
-    event?.requiresTicket ?? false,
-  )
-  const [startTime, setStartTime] = useState(() => {
-    const d = event?.startTime
-    if (!d) return ''
-    const offset = d.getTimezoneOffset()
-    return new Date(d.getTime() - offset * 60000).toISOString().slice(11, 16)
-  })
 
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setTitle(e.target.value)
     onFieldChange('title', e.target.value)
   }
   function handleShortDescriptionChange(
     e: React.ChangeEvent<HTMLInputElement>,
   ) {
+    setShortDescription(e.target.value)
     onFieldChange('shortDescription', e.target.value)
   }
-  function handleDescriptionChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    onFieldChange('description', e.target.value)
+  // MDXEditor onChange gives a string directly, unlike native inputs
+  function handleDescriptionChange(value: string) {
+    onFieldChange('description', value)
   }
   function handleLocationNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setLocationName(e.target.value)
     onFieldChange('locationName', e.target.value)
   }
   function handleLocationAddressChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setLocationAddress(e.target.value)
     onFieldChange('locationAddress', e.target.value)
   }
-  function handleDateChangeAction(v: string) {
+  function handleDateChange(v: string) {
     onFieldChange('date', v)
   }
   function handleStartTimeChange(v: string) {
@@ -155,22 +183,12 @@ export function EventForm({ event, action = createEvent }: Props) {
     onFieldChange('endTime', v)
   }
   function handleAgeRestrictionChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    setAgeRestriction(e.target.value as AgeRestriction)
     onFieldChange('ageRestriction', e.target.value)
   }
   function handleTicketUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setTicketUrl(e.target.value)
     onFieldChange('ticketUrl', e.target.value)
-  }
-
-  function formatDate(date: Date | null | undefined): string {
-    if (!date) return ''
-    return date.toISOString().slice(0, 10)
-  }
-
-  function formatTime(date: Date | null | undefined): string {
-    if (!date) return ''
-    const offset = date.getTimezoneOffset()
-    const local = new Date(date.getTime() - offset * 60000)
-    return local.toISOString().slice(11, 16)
   }
 
   return (
@@ -181,7 +199,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         label="Event Title"
         name="title"
         required
-        defaultValue={event?.title}
+        value={title}
         maxLength={200}
         placeholder="e.g. Pride Week Kickoff Party"
         description="The main name of your event. Keep it short and descriptive."
@@ -198,7 +216,7 @@ export function EventForm({ event, action = createEvent }: Props) {
       <Input
         label="Short Description"
         name="shortDescription"
-        defaultValue={event?.shortDescription ?? ''}
+        value={shortDescription}
         maxLength={500}
         placeholder="e.g. Live music, food trucks, and community fun"
         description="Shown on home page and events list. One short sentence works best."
@@ -206,17 +224,14 @@ export function EventForm({ event, action = createEvent }: Props) {
         onChange={handleShortDescriptionChange}
       />
 
-      <Textarea
+      <MarkdownEditor
         label="Description"
         name="description"
         required
-        defaultValue={event?.description}
-        maxLength={5000}
-        rows={5}
-        placeholder="e.g. Join us for an evening of live music and dancing at the park. All ages welcome. Bring a blanket and your best dance moves!"
-        description="Full details about the event. Include what to expect, what to bring, what to wear, etc."
+        defaultValue={event?.description ?? ''}
+        description="Full details about the event. Supports bold, italic, lists, links, and headings."
         errors={errors.description}
-        onChange={handleDescriptionChange}
+        onChangeAction={handleDescriptionChange}
       />
 
       <div className="grid items-start gap-6 xs:grid-cols-2">
@@ -224,7 +239,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           label="Location Name"
           name="locationName"
           required
-          defaultValue={event?.locationName}
+          value={locationName}
           maxLength={200}
           placeholder="e.g. Truckee Regional Park"
           errors={errors.locationName}
@@ -233,7 +248,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         <Input
           label="Address"
           name="locationAddress"
-          defaultValue={event?.locationAddress ?? ''}
+          value={locationAddress}
           maxLength={400}
           placeholder="e.g. 10981 Truckee Way, Truckee, CA"
           errors={errors.locationAddress}
@@ -248,7 +263,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           required
           defaultValue={formatDate(event?.startTime)}
           errors={errors.date}
-          onChangeAction={handleDateChangeAction}
+          onChangeAction={handleDateChange}
         />
         <TimeCombobox
           label="Start Time"
@@ -281,7 +296,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         name="ageRestriction"
         required
         options={ageRestrictionOptions}
-        defaultValue={event?.ageRestriction ?? 'All ages'}
+        value={ageRestriction}
         className="max-w-xs"
         description="Select if any part of the event has age requirements."
         errors={errors.ageRestriction}
@@ -308,7 +323,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           label="Ticket URL"
           name="ticketUrl"
           type="url"
-          defaultValue={event?.ticketUrl ?? ''}
+          value={ticketUrl}
           placeholder="e.g. https://eventbrite.com/your-event"
           description="Link where attendees can buy tickets or RSVP."
           errors={errors.ticketUrl}

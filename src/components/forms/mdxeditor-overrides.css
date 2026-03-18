@@ -1,0 +1,119 @@
+/* MDXEditor theme overrides — imported by InitializedMDXEditor */
+
+.mdxeditor-form-field {
+  --editor-min-height: 8rem;
+}
+
+.mdxeditor-form-field .mdxeditor {
+  --accentBase: var(--brand);
+  --accentBgSubtle: var(--neutral-50);
+  --accentLine: var(--brand);
+  --accentSolid: var(--brand);
+  --accentSolidHover: var(--brand);
+  --accentBorder: var(--brand);
+  --accentText: var(--brand);
+  --baseBase: var(--background);
+  --baseLine: var(--border);
+  --baseSolidHover: var(--secondary);
+  --baseText: var(--foreground);
+  --baseTextHighContrast: var(--foreground);
+  font-family: inherit;
+  border: none;
+  border-radius: 0;
+}
+
+/* Link dialog renders in a portal outside .mdxeditor-form-field — override vars and styles here */
+.mdxeditor-popup-container {
+  --accentSolid: var(--brand);
+  --accentSolidHover: var(--brand);
+  --accentBorder: var(--brand);
+  --baseSolidHover: var(--secondary);
+  --baseBase: var(--background);
+  font-family: inherit;
+}
+
+.mdxeditor-popup-container button[type='submit'],
+.mdxeditor-popup-container button[type='reset'] {
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  color: var(--text-inverse);
+  transition:
+    background-color 150ms ease,
+    box-shadow 300ms ease,
+    transform 300ms ease;
+}
+
+.mdxeditor-popup-container button[type='submit'] {
+  background-color: var(--brand);
+}
+
+.mdxeditor-popup-container button[type='submit']:hover {
+  background-color: var(--brand-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(var(--hover-lift));
+}
+
+.mdxeditor-popup-container button[type='reset'] {
+  background-color: var(--secondary);
+}
+
+.mdxeditor-popup-container button[type='reset']:hover {
+  background-color: var(--secondary-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(var(--hover-lift));
+}
+
+.mdxeditor-popup-container input {
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--background);
+  color: var(--foreground);
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.mdxeditor-popup-container input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px var(--brand);
+}
+
+.mdxeditor-form-field [role='toolbar'] button {
+  cursor: pointer;
+}
+
+.mdxeditor-form-field [role='toolbar'] {
+  border-radius: 0.375rem 0.375rem 0 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--neutral-50);
+}
+
+.mdxeditor-form-field .mdxeditor-root-contenteditable {
+  min-height: var(--editor-min-height);
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0;
+  cursor: text;
+}
+
+.mdxeditor-form-field .mdxeditor-root-contenteditable [contenteditable] {
+  min-height: var(--editor-min-height);
+}
+
+.mdxeditor-form-field .mdxeditor-root-contenteditable p {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.mdxeditor-form-field .mdxeditor-root-contenteditable p:first-child {
+  margin-top: 0;
+}
+
+.mdxeditor-form-field .mdxeditor-source-editor {
+  min-height: var(--editor-min-height);
+}
