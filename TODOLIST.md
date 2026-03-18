@@ -81,6 +81,7 @@ See `event-form-polish.md` for full specs.
 
 ## Deferred to Post-MVP
 
+- [ ] Google Maps links and autocomplete in events form
 - [ ] "My Events" tab/filter on `/events` page: show user's own events with status badges
 - [ ] Admin event owners page (`src/app/admin/events/[id]/owners/page.tsx`) — use Drizzle Studio until then
 - [ ] Admin user management `/admin/users` — use Drizzle Studio until then
@@ -89,7 +90,6 @@ See `event-form-polish.md` for full specs.
 - [ ] On event address do the fancy google search bar and then display a google maps link
 - [ ] About page, Get Involved page
 - [ ] `loading.tsx` skeletons
-- [ ] Make it easy for admin to toggle sponsor logos and add new ones (we do this each year based on their sponsorship)
 - [ ] Fancy React Email templates (replace plain text)
 - [ ] Design system & visual polish (Dialog, Toast, responsive pass, accessibility audit)
 - [ ] SEO: OG images/metadata
