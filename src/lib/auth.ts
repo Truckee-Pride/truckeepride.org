@@ -12,7 +12,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verificationTokensTable: verificationTokens,
   }),
   session: { strategy: 'database' },
-  providers: [Resend({ from: 'onboarding@resend.dev' })],
+  providers: [Resend({ from: process.env.EMAIL_FROM })],
   callbacks: {
     session({ session, user }) {
       session.user.id = user.id
