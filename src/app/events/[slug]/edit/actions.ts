@@ -81,7 +81,7 @@ export async function updateEvent(
 
   // Delete old blob if flyer was replaced or removed
   const oldFlyerUrl = event.flyerUrl
-  const newFlyerUrl = data.flyerUrl || null
+  const newFlyerUrl = data.flyerUrl ?? null
   if (oldFlyerUrl && isBlobUrl(oldFlyerUrl) && oldFlyerUrl !== newFlyerUrl) {
     try {
       await del(oldFlyerUrl)
@@ -102,8 +102,8 @@ export async function updateEvent(
       locationAddress: data.locationAddress ?? null,
       startTime,
       endTime,
-      flyerUrl: data.flyerUrl || null,
-      ticketUrl: data.ticketUrl || null,
+      flyerUrl: data.flyerUrl ?? null,
+      ticketUrl: data.ticketUrl ?? null,
       shortDescription: data.shortDescription,
       emoji: data.emoji,
       requiresTicket: data.requiresTicket,

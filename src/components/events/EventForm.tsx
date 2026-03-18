@@ -193,7 +193,7 @@ export function EventForm({ event, action = createEvent }: Props) {
 
   return (
     <Form action={formAction} className="mt-8 max-w-2xl space-y-6">
-      <FormError message={state.error || uploadError || undefined} />
+      <FormError message={state.error ?? uploadError ?? undefined} />
 
       <Input
         label="Event Title"

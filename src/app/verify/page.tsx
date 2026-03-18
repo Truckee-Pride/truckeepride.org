@@ -23,7 +23,7 @@ export default async function VerifyPage({
   }>
 }) {
   const { email, event, callbackUrl, next } = await searchParams
-  const redirectTo = next || callbackUrl || '/'
+  const redirectTo = next ?? callbackUrl ?? '/'
   const backUrl =
     next?.startsWith('/events') || callbackUrl?.startsWith('/events')
       ? '/events/new'

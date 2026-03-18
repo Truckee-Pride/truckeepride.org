@@ -90,7 +90,7 @@ export function EventLightbox({ event, onCloseAction }: Props) {
             </header>
 
             {event.status === 'pending_review' &&
-              (event.ticketUrl ||
+              (event.ticketUrl ??
                 /\[.+?\]\([a-z]+:/.test(event.description ?? '')) && (
                 <Notice intent="warning">
                   <strong>Before approving:</strong> verify any links in the

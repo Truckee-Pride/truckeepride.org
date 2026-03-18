@@ -168,7 +168,7 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
 
     // Hidden input value: blob URL > existing URL > empty
     const hiddenValue =
-      blobUrl || (showExisting && existingUrl ? existingUrl : '')
+      blobUrl ?? (showExisting && existingUrl ? existingUrl : '')
 
     const allErrors = [...(externalErrors ?? []), ...(error ? [error] : [])]
 
