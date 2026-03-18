@@ -8,6 +8,7 @@ import { AddSponsorForm } from './AddSponsorForm'
 
 const sponsorRowClasses =
   'flex items-center gap-4 rounded-lg border border-border bg-surface p-4'
+const sponsorImageClasses = 'h-16 w-16 flex-shrink-0 rounded object-contain'
 
 export default async function AdminSponsorsPage() {
   const sponsorsList = await db
@@ -35,7 +36,7 @@ export default async function AdminSponsorsPage() {
                   alt={sponsor.alt}
                   width={80}
                   height={80}
-                  className="h-16 w-16 flex-shrink-0 rounded object-contain"
+                  className={sponsorImageClasses}
                 />
                 <div className="min-w-0 flex-1">
                   <p className="font-medium">{sponsor.alt}</p>

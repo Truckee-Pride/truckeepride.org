@@ -8,6 +8,9 @@ import { EventCard } from '@/components/EventCard'
 import { Button } from '@/components/Button'
 import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 
+const sponsorsGridClasses =
+  'grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
+
 export default async function Home() {
   const [upcomingEvents, sponsorsList] = await Promise.all([
     db.query.events.findMany({
@@ -98,7 +101,7 @@ export default async function Home() {
             organization. Thank you to all the organizations below for kindly
             supporting us:
           </p>
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className={sponsorsGridClasses}>
             {sponsorsList.map((sponsor) => (
               <div
                 key={sponsor.id}
