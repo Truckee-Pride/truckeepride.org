@@ -220,6 +220,9 @@ pnpm lint
 pnpm typecheck
 pnpm build
 
+# Scripts (require .env.local)
+npx dotenv -e .env.local -- tsx src/scripts/<script>.ts
+
 # Package management
 pnpm add <pkg>               # Add dependency
 pnpm add -D <pkg>            # Add dev dependency
