@@ -13,13 +13,22 @@ const STATUS_STYLES: Record<string, string> = {
   cancelled: 'bg-gray-100 text-gray-400',
 }
 
+const statusBadgeStyles = cn(
+  'inline-block rounded-full px-2 py-0.5',
+  'text-xs font-medium capitalize',
+)
+
+const actionCellStyles = cn(
+  'px-4 py-3 text-right',
+  'whitespace-nowrap space-x-3',
+)
+
 type Column = 'status' | 'date' | 'location' | 'submitted'
 
 type Props = {
   events: Event[]
   columns?: Column[]
   emptyMessage?: string
-  headerSlot?: React.ReactNode
 }
 
 const DEFAULT_COLUMNS: Column[] = ['date', 'location']
@@ -28,7 +37,6 @@ export function AdminEventsTable({
   events: eventList,
   columns = DEFAULT_COLUMNS,
   emptyMessage = 'No events found.',
-  headerSlot,
 }: Props) {
   const showStatus = columns.includes('status')
   const showDate = columns.includes('date')
@@ -44,7 +52,7 @@ export function AdminEventsTable({
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border bg-surface text-left">
-            <th className="px-4 py-3 font-medium">{headerSlot ?? 'Title'}</th>
+            <th className="px-4 py-3 font-medium">Title</th>
             {showStatus && <th className="px-4 py-3 font-medium">Status</th>}
             {showDate && <th className="px-4 py-3 font-medium">Date</th>}
             {showLocation && (
@@ -72,7 +80,7 @@ export function AdminEventsTable({
                 <td className="px-4 py-3">
                   <span
                     className={cn(
-                      'inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize',
+                      statusBadgeStyles,
                       STATUS_STYLES[event.status] ??
                         'bg-gray-100 text-gray-600',
                     )}
@@ -102,7 +110,7 @@ export function AdminEventsTable({
                   })}
                 </td>
               )}
-              <td className="px-4 py-3 text-right whitespace-nowrap space-x-3">
+              <td className={actionCellStyles}>
                 {event.status === 'pending_review' && (
                   <>
                     <ApproveEventButton id={event.id} title={event.title} />

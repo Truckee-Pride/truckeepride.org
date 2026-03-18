@@ -7,6 +7,12 @@ import { TextButton } from '@/components/TextButton'
 
 type Option = { value: string; label: string }
 
+const dropdownStyles = cn(
+  'absolute left-0 z-10 mt-1 min-w-[180px]',
+  'list-none rounded-xl border border-border',
+  'bg-background p-1 shadow-lg',
+)
+
 type Props = {
   label: string
   options: Option[]
@@ -184,11 +190,17 @@ export function FilterSelect({
           role="listbox"
           aria-label={label}
           aria-multiselectable={multiple || undefined}
-          className="absolute left-0 z-10 mt-1 min-w-[180px] list-none rounded-xl border border-border bg-background p-1 shadow-lg"
+          className={dropdownStyles}
         >
           {allOptions.map((opt, i) => {
             const isSelected = selectedSet.has(opt.value)
             const isActive = i === activeIndex
+
+            function handleOptionMouseDown(e: React.MouseEvent) {
+              e.preventDefault()
+              selectOption(opt.value)
+            }
+
             return (
               <li
                 key={opt.value}
@@ -196,10 +208,7 @@ export function FilterSelect({
                 role="option"
                 aria-selected={isSelected}
                 onMouseEnter={() => setActiveIndex(i)}
-                onMouseDown={(e) => {
-                  e.preventDefault()
-                  selectOption(opt.value)
-                }}
+                onMouseDown={handleOptionMouseDown}
                 className={cn(
                   'flex min-h-[2.75rem] cursor-pointer items-center gap-2 rounded-lg px-3 text-sm',
                   isActive && 'bg-surface',
