@@ -23,6 +23,22 @@ const actionCellStyles = cn(
   'whitespace-nowrap space-x-3',
 )
 
+const tableWrapperStyles = cn(
+  'overflow-x-auto rounded-lg',
+  'border border-border',
+)
+
+const headerRowStyles = cn('border-b border-border', 'bg-surface text-left')
+
+const bodyRowStyles = cn(
+  'border-b border-border',
+  'last:border-0 hover:bg-surface',
+)
+
+const thStyles = 'px-4 py-3 font-medium'
+const tdStyles = 'px-4 py-3'
+const tdMutedStyles = 'px-4 py-3 text-muted whitespace-nowrap'
+
 type Column = 'status' | 'date' | 'location' | 'submitted'
 
 type Props = {
@@ -48,36 +64,27 @@ export function AdminEventsTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-border">
+    <div className={tableWrapperStyles}>
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border bg-surface text-left">
-            <th className="px-4 py-3 font-medium">Title</th>
-            {showStatus && <th className="px-4 py-3 font-medium">Status</th>}
-            {showDate && <th className="px-4 py-3 font-medium">Date</th>}
-            {showLocation && (
-              <th className="px-4 py-3 font-medium">Location</th>
-            )}
-            {showSubmitted && (
-              <th className="px-4 py-3 font-medium">Submitted</th>
-            )}
-            <th className="px-4 py-3 text-right text-muted font-medium">
-              Actions
-            </th>
+          <tr className={headerRowStyles}>
+            <th className={thStyles}>Title</th>
+            {showStatus && <th className={thStyles}>Status</th>}
+            {showDate && <th className={thStyles}>Date</th>}
+            {showLocation && <th className={thStyles}>Location</th>}
+            {showSubmitted && <th className={thStyles}>Submitted</th>}
+            <th className={cn(thStyles, 'text-right text-muted')}>Actions</th>
           </tr>
         </thead>
         <tbody>
           {eventList.map((event) => (
-            <tr
-              key={event.id}
-              className="border-b border-border last:border-0 hover:bg-surface"
-            >
-              <td className="px-4 py-3 font-medium">
+            <tr key={event.id} className={bodyRowStyles}>
+              <td className={cn(tdStyles, 'font-medium')}>
                 {event.emoji && <span className="mr-1">{event.emoji}</span>}
                 {event.title}
               </td>
               {showStatus && (
-                <td className="px-4 py-3">
+                <td className={tdStyles}>
                   <span
                     className={cn(
                       statusBadgeStyles,
@@ -90,7 +97,7 @@ export function AdminEventsTable({
                 </td>
               )}
               {showDate && (
-                <td className="px-4 py-3 text-muted whitespace-nowrap">
+                <td className={tdMutedStyles}>
                   {event.startTime.toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -99,10 +106,12 @@ export function AdminEventsTable({
                 </td>
               )}
               {showLocation && (
-                <td className="px-4 py-3 text-muted">{event.locationName}</td>
+                <td className={cn(tdStyles, 'text-muted')}>
+                  {event.locationName}
+                </td>
               )}
               {showSubmitted && (
-                <td className="px-4 py-3 text-muted whitespace-nowrap">
+                <td className={tdMutedStyles}>
                   {event.createdAt.toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
