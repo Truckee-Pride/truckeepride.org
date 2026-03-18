@@ -83,6 +83,10 @@
   box-shadow: 0 0 0 1px var(--brand);
 }
 
+.mdxeditor-form-field [role='toolbar'] button {
+  cursor: pointer;
+}
+
 .mdxeditor-form-field [role='toolbar'] {
   border-radius: 0.375rem 0.375rem 0 0;
   border-bottom: 1px solid var(--border);
