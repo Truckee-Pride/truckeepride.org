@@ -2,8 +2,9 @@ import Link from 'next/link'
 import { and, asc, eq, gte } from 'drizzle-orm'
 import { LayoutWidth } from '@/lib/constants'
 import { db } from '@/lib/db'
-import { events, sponsors } from '@/db/schema'
+import { events, sponsors, carouselPhotos } from '@/db/schema'
 import { EventCard } from '@/components/EventCard'
+import { PhotoCarousel } from '@/components/PhotoCarousel'
 import { Button } from '@/components/Button'
 import { SponsorLogo } from '@/components/SponsorLogo'
 import { DONATE_BUTTON_TEXT } from '@/lib/constants'
@@ -11,7 +12,7 @@ import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 const sponsorsGridClasses = 'grid grid-cols-2 gap-8 sm:grid-cols-3'
 
 export default async function Home() {
-  const [upcomingEvents, sponsorsList] = await Promise.all([
+  const [upcomingEvents, sponsorsList, photos] = await Promise.all([
     db.query.events.findMany({
       where: and(
         eq(events.status, 'approved'),
@@ -25,6 +26,14 @@ export default async function Home() {
       .from(sponsors)
       .where(eq(sponsors.enabled, true))
       .orderBy(asc(sponsors.name)),
+    db
+      .select({
+        id: carouselPhotos.id,
+        src: carouselPhotos.src,
+        alt: carouselPhotos.alt,
+      })
+      .from(carouselPhotos)
+      .orderBy(asc(carouselPhotos.sortOrder)),
   ])
 
   return (
@@ -94,6 +103,10 @@ export default async function Home() {
         <div className="mt-8">
           <Link href="/events">View all events →</Link>
         </div>
+      </section>
+
+      <section>
+        <PhotoCarousel photos={photos} />
       </section>
 
       {sponsorsList.length > 0 && (

@@ -23,12 +23,20 @@ export async function NavBar() {
   return (
     <nav className={navBar}>
       {user?.role === 'admin' && (
-        <TextLink
-          href="/admin/events"
-          className="text-inverse hover:text-inverse"
-        >
-          Admin
-        </TextLink>
+        <>
+          <TextLink
+            href="/admin/events"
+            className="text-inverse hover:text-inverse"
+          >
+            Admin
+          </TextLink>
+          <TextLink
+            href="/admin/carousel"
+            className="text-inverse hover:text-inverse"
+          >
+            Carousel
+          </TextLink>
+        </>
       )}
       {user && (
         <Form action={handleSignOut} className="mt-0">

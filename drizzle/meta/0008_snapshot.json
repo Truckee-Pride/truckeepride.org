@@ -1,5 +1,5 @@
 {
-  "id": "a1b2c3d4-0008-calm-medusa-snapshot00008",
+  "id": "ec9c407e-74c1-45ea-9e78-1a0a7baef467",
   "prevId": "61aeed5f-ce18-4c93-8213-0865fa83b937",
   "version": "7",
   "dialect": "postgresql",
@@ -267,13 +267,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'All ages'"
-        },
-        "vibe_tags": {
-          "name": "vibe_tags",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'"
         },
         "dogs_welcome": {
           "name": "dogs_welcome",
@@ -567,6 +560,52 @@
           "columns": ["identifier", "token"]
         }
       },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.carousel_photos": {
+      "name": "carousel_photos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "src": {
+          "name": "src",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alt": {
+          "name": "alt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},

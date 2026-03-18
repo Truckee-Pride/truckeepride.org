@@ -17,7 +17,6 @@
 ## MVP.7: Tidy
 
 - [ ] Send admins emails when events are submitted
-- [ ] Bring back the photo carousel to the homepage! Put it below the calendar
 - [ ] In the Meta tags (for seo) make sure each event page has its time, date, maybe location (not address) in the description
 - [ ] Add vibe tags to event pages
 
@@ -49,5 +48,4 @@
 - [ ] SEO: OG images/metadata
 - [ ] Analytics: Vercel Analytics and/or Plausible
 - [ ] Performance: Lighthouse, Core Web Vitals
-- [ ] Make it easy for admins to edit the photo carousel image options
 - [ ] Make repeat events maintain an nice slug in 2027

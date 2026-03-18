@@ -61,64 +61,8 @@
     {
       "idx": 8,
       "version": "7",
-      "when": 1773690539521,
-      "tag": "0008_calm_medusa",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1773948420828,
-      "tag": "0009_lyrical_miss_america",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1774051200000,
-      "tag": "0010_messy_fantastic_four",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1774051200001,
-      "tag": "0011_sponsors_name_enabled",
-      "breakpoints": true
-    },
-    {
-      "idx": 12,
-      "version": "7",
-      "when": 1774051200002,
-      "tag": "0012_outstanding_lyja",
-      "breakpoints": true
-    },
-    {
-      "idx": 13,
-      "version": "7",
-      "when": 1774051200003,
-      "tag": "0013_daffy_cerebro",
-      "breakpoints": true
-    },
-    {
-      "idx": 14,
-      "version": "7",
-      "when": 1742428800000,
-      "tag": "0014_rename_pending_review",
-      "breakpoints": true
-    },
-    {
-      "idx": 15,
-      "version": "7",
-      "when": 1774112677964,
-      "tag": "0015_flowery_falcon",
-      "breakpoints": true
-    },
-    {
-      "idx": 16,
-      "version": "7",
-      "when": 1774127240371,
-      "tag": "0016_backfill_user_name",
+      "when": 1773875129026,
+      "tag": "0008_keen_sleeper",
       "breakpoints": true
     }
   ]
