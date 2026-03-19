@@ -57,7 +57,12 @@ export function AccountForm({ redirectTo }: Props) {
   const [phoneDigits, setPhoneDigits] = useState('')
 
   function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const raw = e.target.value.replace(/\D/g, '').slice(0, 10)
+    let raw = e.target.value.replace(/\D/g, '')
+    // Strip leading US country code (+1) from autofill
+    if (raw.length === 11 && raw.startsWith('1')) {
+      raw = raw.slice(1)
+    }
+    raw = raw.slice(0, 10)
     setPhoneDigits(raw)
     setPhoneDisplay(formatPhone(raw))
     onCreateChange('phone', raw)
