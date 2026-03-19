@@ -42,6 +42,10 @@ export function Footer() {
         Truckee Tahoe Pride Foundation is a registered 501(c)3 non-profit. EIN
         994735689
       </small>
+      <small>
+        Looking for the Wolverines? Visit{' '}
+        <a href="https://truckeepride.com">TruckeePride.com</a>
+      </small>
     </footer>
   )
 }
