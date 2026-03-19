@@ -88,18 +88,21 @@ export function TimeCombobox({
   const [period, setPeriod] = useState<'AM' | 'PM'>(initial.period)
   const [open, setOpen] = useState(false)
   const [isEmpty, setIsEmpty] = useState(!defaultValue && !required)
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
 
   const containerRef = useRef<HTMLDivElement>(null)
-  const selectedRef = useRef<HTMLLIElement>(null)
+  const highlightedRef = useRef<HTMLLIElement>(null)
   const hourRef = useRef<HTMLInputElement>(null)
   const minuteRef = useRef<HTMLInputElement>(null)
   const periodRef = useRef<HTMLInputElement>(null)
+  const clearRef = useRef<HTMLButtonElement>(null)
   const digitBuffer = useRef<number | null>(null)
   const digitTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   const value24 = to24h(hour, minute, period)
   const hourText = String(hour).padStart(2, '0')
   const minuteText = String(minute).padStart(2, '0')
+  const showClear = clearable && !isEmpty
 
   // --- Effects ---
 
@@ -123,12 +126,22 @@ export function TimeCombobox({
     }
   }, [open])
 
+  // Set highlighted index to current selection when dropdown opens
   useEffect(() => {
-    if (open)
+    if (open) {
+      const idx = TIME_OPTIONS.findIndex((opt) => opt.value === value24)
+      setHighlightedIndex(idx >= 0 ? idx : 0)
+    }
+  }, [open, value24])
+
+  // Scroll highlighted item into view
+  useEffect(() => {
+    if (open) {
       requestAnimationFrame(() =>
-        selectedRef.current?.scrollIntoView({ block: 'nearest' }),
+        highlightedRef.current?.scrollIntoView({ block: 'nearest' }),
       )
-  }, [open])
+    }
+  }, [open, highlightedIndex])
 
   // --- Handlers ---
 
@@ -218,7 +231,29 @@ export function TimeCombobox({
     selectAll(ref.current)
   }
 
+  // Shared handler for dropdown list navigation — returns true if handled
+  function handleDropdownKeys(e: KeyboardEvent): boolean {
+    if (!open) return false
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setHighlightedIndex((i) => (i < TIME_OPTIONS.length - 1 ? i + 1 : 0))
+        return true
+      case 'ArrowUp':
+        e.preventDefault()
+        setHighlightedIndex((i) => (i > 0 ? i - 1 : TIME_OPTIONS.length - 1))
+        return true
+      case 'Enter':
+        e.preventDefault()
+        if (highlightedIndex >= 0) handleSelect(TIME_OPTIONS[highlightedIndex])
+        return true
+      default:
+        return false
+    }
+  }
+
   function handleHourKeyDown(e: KeyboardEvent) {
+    if (handleDropdownKeys(e)) return
     switch (e.key) {
       case 'ArrowUp':
         e.preventDefault()
@@ -241,6 +276,7 @@ export function TimeCombobox({
         focusSegment(periodRef)
         break
       case 'Tab':
+        setOpen(false)
         break
       default:
         e.preventDefault()
@@ -249,6 +285,7 @@ export function TimeCombobox({
   }
 
   function handleMinuteKeyDown(e: KeyboardEvent) {
+    if (handleDropdownKeys(e)) return
     switch (e.key) {
       case 'ArrowUp':
         e.preventDefault()
@@ -271,6 +308,7 @@ export function TimeCombobox({
         focusSegment(hourRef)
         break
       case 'Tab':
+        setOpen(false)
         break
       default:
         e.preventDefault()
@@ -279,6 +317,7 @@ export function TimeCombobox({
   }
 
   function handlePeriodKeyDown(e: KeyboardEvent) {
+    if (handleDropdownKeys(e)) return
     switch (e.key) {
       case 'ArrowUp':
       case 'ArrowDown':
@@ -307,6 +346,7 @@ export function TimeCombobox({
         selectAll(periodRef.current)
         break
       case 'Tab':
+        setOpen(false)
         break
       default:
         e.preventDefault()
@@ -318,10 +358,9 @@ export function TimeCombobox({
     setHour(12)
     setMinute(0)
     setPeriod('PM')
+    setOpen(false)
     onChange?.('')
   }
-
-  const showClear = clearable && !isEmpty
 
   // --- Styles ---
 
@@ -336,17 +375,6 @@ export function TimeCombobox({
         required={required}
         description={description}
         errors={errors}
-        labelAction={
-          showClear ? (
-            <TextButton
-              type="button"
-              intent="danger"
-              onClick={handleClearEndTime}
-            >
-              Clear
-            </TextButton>
-          ) : undefined
-        }
       >
         {({ inputId, hasError, describedBy }) => (
           <div className="relative">
@@ -359,6 +387,11 @@ export function TimeCombobox({
               aria-haspopup="listbox"
               aria-expanded={open}
               aria-controls={`${inputId}-listbox`}
+              aria-activedescendant={
+                open && highlightedIndex >= 0
+                  ? `${inputId}-option-${highlightedIndex}`
+                  : undefined
+              }
               aria-invalid={hasError || undefined}
               aria-describedby={describedBy}
               onClick={() => {
@@ -404,6 +437,7 @@ export function TimeCombobox({
                     ref={minuteRef}
                     type="text"
                     inputMode="numeric"
+                    tabIndex={-1}
                     value={minuteText}
                     readOnly
                     aria-label="Minute"
@@ -415,6 +449,7 @@ export function TimeCombobox({
                   <input
                     ref={periodRef}
                     type="text"
+                    tabIndex={-1}
                     value={period}
                     readOnly
                     aria-label="AM or PM"
@@ -436,19 +471,22 @@ export function TimeCombobox({
                 aria-label={label}
                 className="absolute top-full z-10 mt-1 max-h-60 w-full list-none overflow-y-auto rounded-xl border border-border bg-background p-1 shadow-lg"
               >
-                {TIME_OPTIONS.map((opt) => {
+                {TIME_OPTIONS.map((opt, index) => {
                   const isSelected = opt.value === value24
+                  const isHighlighted = index === highlightedIndex
                   const duration =
                     referenceTime && formatDuration(referenceTime, opt.value)
                   return (
                     <li
                       key={opt.value}
-                      ref={isSelected ? selectedRef : undefined}
+                      id={`${inputId}-option-${index}`}
+                      ref={isHighlighted ? highlightedRef : undefined}
                       role="option"
                       aria-selected={isSelected}
                     >
                       <button
                         type="button"
+                        tabIndex={-1}
                         onMouseDown={(e) => {
                           e.preventDefault()
                           handleSelect(opt)
@@ -457,7 +495,9 @@ export function TimeCombobox({
                           'flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-left text-base',
                           isSelected
                             ? 'bg-brand font-medium text-inverse'
-                            : 'hover:bg-surface',
+                            : isHighlighted
+                              ? 'bg-brand/20'
+                              : 'hover:bg-surface',
                         )}
                       >
                         <span>{opt.label}</span>
@@ -476,6 +516,18 @@ export function TimeCombobox({
                   )
                 })}
               </ul>
+            )}
+
+            {showClear && (
+              <TextButton
+                ref={clearRef}
+                type="button"
+                intent="danger"
+                onClick={handleClearEndTime}
+                className="absolute -top-7 right-0"
+              >
+                Clear
+              </TextButton>
             )}
           </div>
         )}

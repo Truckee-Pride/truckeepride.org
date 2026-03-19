@@ -7,6 +7,7 @@ interface TextButtonProps
     TextButtonVariants {
   children: React.ReactNode
   className?: string
+  ref?: React.Ref<HTMLButtonElement>
 }
 
 export function TextButton({
@@ -14,10 +15,12 @@ export function TextButton({
   className,
   disabled,
   children,
+  ref,
   ...props
 }: TextButtonProps) {
   return (
     <button
+      ref={ref}
       className={cn(
         textButtonStyles({ intent }),
         disabled && 'opacity-50 cursor-default hover:no-underline',
