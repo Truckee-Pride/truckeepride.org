@@ -21,7 +21,7 @@ export function Button({
   intent = 'primary',
   icon,
   children,
-  className,
+  className = '',
   ...rest
 }: ButtonProps) {
   const classes = cn(buttonBaseClasses, buttonIntentClasses[intent], className)

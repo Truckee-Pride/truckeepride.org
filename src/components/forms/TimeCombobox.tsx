@@ -330,11 +330,10 @@ export function TimeCombobox({
 
             <div
               id={inputId}
-              role="combobox"
+              role="group"
               aria-label={label}
               aria-haspopup="listbox"
               aria-expanded={open}
-              aria-controls={`${inputId}-listbox`}
               aria-invalid={hasError || undefined}
               aria-describedby={describedBy}
               onClick={() => {
@@ -407,7 +406,6 @@ export function TimeCombobox({
 
             {open && (
               <ul
-                id={`${inputId}-listbox`}
                 role="listbox"
                 aria-label={label}
                 className="absolute top-full z-10 mt-1 max-h-60 w-full list-none overflow-y-auto rounded-xl border border-border bg-background p-1 shadow-lg"
