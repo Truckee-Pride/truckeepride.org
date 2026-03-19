@@ -44,6 +44,11 @@ Fix: Replace with the matching component from `@/components/forms/`:
 Look for: `<img` in JSX
 Fix: Replace with `<Image>` from `next/image`. Add width/height or fill prop.
 
+### C5 - Use <PageHeader> instead of <h1> at the top of a page.
+
+Look for: <h1> at or near the top of a component. Only apply this rule if the <h1> would be the first <h1> on its page.
+Fix: Replace with <PageHeader> and use the `subtitle` prop if there's an adjacent paragraph below the <h1> that looks like a description or explanation of the page.
+
 ---
 
 ## Tailwind
@@ -108,6 +113,28 @@ const styles = cn(
   'hover:interactive focus:interactive',
 )
 ```
+
+### T7 — Admin tables must use shared table styles
+
+Look for: Inline table classNames in `src/app/admin/` files — e.g.
+`className="overflow-x-auto rounded-lg border border-border"` on a table wrapper,
+or `className="px-4 py-3 font-medium"` on `<th>` / `<td>` elements.
+Fix: Import and use the named consts from `src/app/admin/table-styles.ts`:
+
+```tsx
+import {
+  tableWrapperStyles,
+  headerRowStyles,
+  bodyRowStyles,
+  thStyles,
+  tdStyles,
+  tdMutedStyles,
+  actionCellStyles,
+} from '../table-styles'
+```
+
+Use `cn(thStyles, 'text-right text-muted')` to extend a base style for a
+specific cell.
 
 ---
 

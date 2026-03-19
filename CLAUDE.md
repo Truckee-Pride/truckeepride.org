@@ -120,6 +120,40 @@ Full conventions in `.claude/tailwind.md`. The most critical rules:
 
 ---
 
+## Admin Table Styles
+
+All admin data tables must use the shared style constants from `src/app/admin/table-styles.ts`. Never write inline table classNames in admin pages — import the named consts instead.
+
+```tsx
+import {
+  tableWrapperStyles,
+  headerRowStyles,
+  bodyRowStyles,
+  thStyles,
+  tdStyles,
+  tdMutedStyles,
+  actionCellStyles,
+} from '../table-styles'
+
+// Use like:
+;<div className={tableWrapperStyles}>
+  <table className="w-full text-sm">
+    <thead>
+      <tr className={headerRowStyles}>
+        <th className={thStyles}>...</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className={bodyRowStyles}>
+        <td className={tdStyles}>...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
+---
+
 ## Component Library
 
 **Never write a bare `<form>`, `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog in `.claude/components.md`. If no existing component fits, ask before creating a new one.
@@ -144,9 +178,9 @@ Quick reference:
 pnpm dev                     # Start dev server
 
 # Database
-npx drizzle-kit generate     # Generate migration from schema changes
-npx drizzle-kit migrate      # Apply migrations
-npx drizzle-kit studio       # Visual DB browser (localhost:4983)
+pnpm exec dotenv -e .env.local -- npx drizzle-kit generate     # Generate migration from schema changes
+pnpm exec dotenv -e .env.local -- npx drizzle-kit migrate      # Apply migrations
+pnpm exec dotenv -e .env.local -- npx drizzle-kit studio       # Visual DB browser (localhost:4983)
 
 # Checks
 pnpm lint

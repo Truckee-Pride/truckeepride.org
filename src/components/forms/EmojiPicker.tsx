@@ -3,16 +3,26 @@
 import { useState, useRef, useEffect } from 'react'
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
+import { SmilePlus } from 'lucide-react'
 import { FormField } from './FormField'
-import { TextButton } from '@/components/TextButton'
 
 type Props = {
   name: string
   label: string
   defaultValue?: string
+  errors?: string[]
+  required?: boolean
+  onChangeAction?: (value: string) => void
 }
 
-export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
+export function EmojiPicker({
+  name,
+  label,
+  defaultValue = '',
+  errors,
+  required,
+  onChangeAction,
+}: Props) {
   const [emoji, setEmoji] = useState(defaultValue)
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -44,7 +54,7 @@ export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
 
   return (
     <div ref={containerRef}>
-      <FormField label={label} name={name}>
+      <FormField label={label} name={name} required={required} errors={errors}>
         {() => (
           <>
             <input type="hidden" name={name} value={emoji} />
@@ -54,17 +64,8 @@ export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
                 onClick={() => setOpen(!open)}
                 className="flex h-10 w-10 items-center justify-center rounded-md border border-border bg-background text-xl transition-colors hover:bg-surface hover:cursor-pointer"
               >
-                {emoji || '🏳️‍🌈'}
+                {emoji || <SmilePlus className="h-5 w-5 text-muted" />}
               </button>
-              {emoji && (
-                <TextButton
-                  type="button"
-                  intent="danger"
-                  onClick={() => setEmoji('')}
-                >
-                  Clear
-                </TextButton>
-              )}
             </div>
           </>
         )}
@@ -75,6 +76,7 @@ export function EmojiPicker({ name, label, defaultValue = '' }: Props) {
             data={data}
             onEmojiSelect={(emojiData: { native: string }) => {
               setEmoji(emojiData.native)
+              onChangeAction?.(emojiData.native)
               setOpen(false)
             }}
             theme="light"

@@ -13,7 +13,7 @@ const PRIDE_COLORS = [
   '#c4b5fd', // violet
 ]
 
-function formatCardDate(start: Date, end: Date | null): string {
+function formatCardDate(start: Date): string {
   const tz = 'America/Los_Angeles'
   const date = new Intl.DateTimeFormat('en-US', {
     timeZone: tz,
@@ -53,7 +53,7 @@ export function EventCard({ event, colorIndex }: Props) {
           </h3>
           <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
             <Calendar size={13} className="shrink-0" />
-            {formatCardDate(event.startTime, event.endTime ?? null)}
+            {formatCardDate(event.startTime)}
           </p>
           <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
             <MapPin size={13} className="shrink-0" />

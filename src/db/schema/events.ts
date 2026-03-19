@@ -39,12 +39,13 @@ export const events = pgTable('events', {
   endTime: timestamp('end_time', { mode: 'date' }),
   flyerUrl: text('flyer_url'),
   ticketUrl: text('ticket_url'),
-  shortDescription: text('short_description'),
-  emoji: text('emoji'),
+  shortDescription: text('short_description').notNull(),
+  emoji: text('emoji').notNull(),
   requiresTicket: boolean('requires_ticket').default(false).notNull(),
   ageRestriction: ageRestrictionEnum('age_restriction')
     .default('All ages')
     .notNull(),
+  vibeTags: text('vibe_tags').array().default([]).notNull(),
   dogsWelcome: boolean('dogs_welcome').default(false).notNull(),
   status: eventStatusEnum('status').default('draft').notNull(),
   rejectionReason: text('rejection_reason'),

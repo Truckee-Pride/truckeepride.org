@@ -6,11 +6,27 @@ import { DayPicker } from 'react-day-picker'
 import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
 
-const segmentBase = cn(
-  'bg-transparent text-center text-base text-foreground',
-  'focus:outline-none',
-  'selection:bg-brand/20',
-)
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+function parseDefaultValue(value: string | undefined): Date | undefined {
+  if (!value) return undefined
+  const date = new Date(value + 'T00:00:00')
+  return isNaN(date.getTime()) ? undefined : date
+}
+
+function toHiddenValue(date: Date | undefined): string {
+  if (!date) return ''
+  const y = String(date.getFullYear()).padStart(4, '0')
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
 
 type Props = {
   label: string
@@ -22,9 +38,8 @@ type Props = {
   onChangeAction?: (value: string) => void
 }
 
-function currentYear() {
-  return new Date().getFullYear()
-}
+const PLACEHOLDER = 'Sat, Jun 7'
+const DEFAULT_CALENDAR_MONTH = new Date(2026, 5) // June 2026
 
 export function DateInput({
   label,
@@ -35,39 +50,19 @@ export function DateInput({
   defaultValue,
   onChangeAction,
 }: Props) {
-  const [month, setMonth] = useState(() =>
-    defaultValue ? defaultValue.slice(5, 7) : '',
-  )
-  const [day, setDay] = useState(() =>
-    defaultValue ? defaultValue.slice(8, 10) : '',
-  )
-  const [year, setYear] = useState(() =>
-    defaultValue ? defaultValue.slice(0, 4) : '',
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(() =>
+    parseDefaultValue(defaultValue),
   )
   const [open, setOpen] = useState(false)
   const [displayedMonth, setDisplayedMonth] = useState<Date>(() => {
-    if (defaultValue) return new Date(defaultValue + 'T00:00:00')
-    return new Date()
+    if (defaultValue) {
+      const parsed = parseDefaultValue(defaultValue)
+      if (parsed) return new Date(parsed.getFullYear(), parsed.getMonth())
+    }
+    return DEFAULT_CALENDAR_MONTH
   })
 
-  // Track last valid values for revert-on-blur
-  const lastValid = useRef(
-    defaultValue
-      ? {
-          month: defaultValue.slice(5, 7),
-          day: defaultValue.slice(8, 10),
-          year: defaultValue.slice(0, 4),
-        }
-      : { month: '', day: '', year: '' },
-  )
-
   const containerRef = useRef<HTMLDivElement>(null)
-  const monthRef = useRef<HTMLInputElement>(null)
-  const dayRef = useRef<HTMLInputElement>(null)
-  const yearRef = useRef<HTMLInputElement>(null)
-
-  const thisYear = currentYear()
-  const nextYear = thisYear + 1
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -95,49 +90,7 @@ export function DateInput({
     }
   }, [open])
 
-  function isValidDate(
-    m = parseInt(month, 10),
-    d = parseInt(day, 10),
-    y = parseInt(year, 10),
-  ): boolean {
-    if (!m || !d || !y) return false
-    if (m < 1 || m > 12) return false
-    if (d < 1 || d > 31) return false
-    if (y !== thisYear && y !== nextYear) return false
-    // Check the date actually exists (e.g. no Feb 30)
-    const date = new Date(y, m - 1, d)
-    if (
-      date.getFullYear() !== y ||
-      date.getMonth() !== m - 1 ||
-      date.getDate() !== d
-    )
-      return false
-    // Must be between today and one year from today
-    if (date < today || date > oneYearFromToday) return false
-    return true
-  }
-
-  // Save valid state whenever segments form a valid date
-  if (isValidDate()) {
-    lastValid.current = { month, day, year }
-  }
-
-  function revertIfInvalid() {
-    if (!month && !day && !year) return // allow fully empty
-    if (!isValidDate()) {
-      setMonth(lastValid.current.month)
-      setDay(lastValid.current.day)
-      setYear(lastValid.current.year)
-    }
-  }
-
-  const parsedDate = isValidDate()
-    ? new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10))
-    : undefined
-
-  const hiddenValue = isValidDate()
-    ? `${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-    : ''
+  const hiddenValue = toHiddenValue(selectedDate)
 
   const isMountedRef = useRef(false)
   useEffect(() => {
@@ -148,75 +101,20 @@ export function DateInput({
     onChangeAction?.(hiddenValue)
   }, [hiddenValue]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sync calendar displayed month when typed segments form a valid month/year
-  useEffect(() => {
-    const m = parseInt(month, 10)
-    const y = parseInt(year, 10)
-    if (m >= 1 && m <= 12 && (y === thisYear || y === nextYear)) {
-      setDisplayedMonth(new Date(y, m - 1))
-    }
-  }, [month, year, thisYear, nextYear])
-
   function handleDaySelect(selected: Date | undefined) {
     if (!selected) return
-    setMonth(String(selected.getMonth() + 1).padStart(2, '0'))
-    setDay(String(selected.getDate()).padStart(2, '0'))
-    setYear(String(selected.getFullYear()))
+    setSelectedDate(selected)
     setOpen(false)
   }
 
-  function handleKeyDown(
-    e: React.KeyboardEvent<HTMLInputElement>,
-    maxLength: number,
-    nextRef?: React.RefObject<HTMLInputElement | null>,
-  ) {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      setOpen(false)
-      return
-    }
-
-    // Allow navigation keys
-    if (
-      ['Tab', 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight'].includes(e.key)
-    ) {
-      return
-    }
-
-    // Block non-numeric keys
-    if (!/^[0-9]$/.test(e.key)) {
-      e.preventDefault()
-      return
-    }
-
-    // Auto-advance to next field when full
-    const input = e.currentTarget
-    const selStart = input.selectionStart ?? 0
-    const selEnd = input.selectionEnd ?? 0
-    const hasSelection = selEnd - selStart > 0
-    const wouldBeFull = !hasSelection && input.value.length >= maxLength
-
-    if (wouldBeFull && nextRef?.current) {
-      e.preventDefault()
-      const setter =
-        nextRef === dayRef ? setDay : nextRef === yearRef ? setYear : setMonth
-      setter(e.key)
-      nextRef.current.focus()
-      requestAnimationFrame(() => {
-        nextRef.current?.setSelectionRange(1, 1)
-      })
-    }
+  function handleButtonClick() {
+    setOpen((o) => !o)
   }
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement>,
-    setter: (v: string) => void,
-  ) {
-    const cleaned = e.target.value.replace(/\D/g, '')
-    setter(cleaned)
-  }
-
-  const hasError = errors != null && errors.length > 0
+  const dateButtonStyles = cn(
+    'flex h-10 w-full cursor-pointer items-center rounded-md border border-border bg-background px-3',
+    'focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none',
+  )
 
   const calendarStart = new Date(today.getFullYear(), today.getMonth())
   const calendarEnd = new Date(
@@ -229,7 +127,6 @@ export function DateInput({
     <div
       ref={containerRef}
       onBlur={(e) => {
-        // Close calendar when focus leaves the entire container
         if (!containerRef.current?.contains(e.relatedTarget as Node)) {
           setOpen(false)
         }
@@ -245,84 +142,25 @@ export function DateInput({
         {({ inputId, hasError: fieldHasError, describedBy }) => (
           <div className="relative">
             <input type="hidden" name={name} value={hiddenValue} />
-            <div
-              className={cn(
-                'flex h-10 w-full items-center rounded-md border border-border bg-background px-3',
-                'focus-within:border-brand focus-within:ring-1 focus-within:ring-brand',
-                fieldHasError && 'border-error',
-              )}
+            <button
+              id={inputId}
+              type="button"
+              aria-label="Open calendar"
+              aria-describedby={describedBy}
+              onClick={handleButtonClick}
+              className={cn(dateButtonStyles, fieldHasError && 'border-error')}
             >
-              <input
-                ref={monthRef}
-                id={inputId}
-                type="text"
-                inputMode="numeric"
-                aria-label="Month"
-                aria-invalid={hasError || undefined}
-                aria-describedby={describedBy}
-                placeholder="MM"
-                maxLength={2}
-                value={month}
-                className={cn(segmentBase, 'w-[2ch]')}
-                onKeyDown={(e) => handleKeyDown(e, 2, dayRef)}
-                onChange={(e) => handleChange(e, setMonth)}
-                onBlur={revertIfInvalid}
-                onFocus={(e) => {
-                  e.target.select()
-                  setOpen(true)
-                }}
-              />
-              <span className="mx-[0.25ch] text-muted">/</span>
-              <input
-                ref={dayRef}
-                type="text"
-                inputMode="numeric"
-                aria-label="Day"
-                placeholder="DD"
-                maxLength={2}
-                value={day}
-                className={cn(segmentBase, 'w-[2ch]')}
-                onKeyDown={(e) => handleKeyDown(e, 2, yearRef)}
-                onChange={(e) => handleChange(e, setDay)}
-                onBlur={revertIfInvalid}
-                onFocus={(e) => {
-                  e.target.select()
-                  setOpen(true)
-                }}
-              />
-              <span className="mx-[0.25ch] text-muted">/</span>
-              <input
-                ref={yearRef}
-                type="text"
-                inputMode="numeric"
-                aria-label="Year"
-                placeholder="YYYY"
-                maxLength={4}
-                value={year}
-                className={cn(segmentBase, 'w-[4ch]')}
-                onKeyDown={(e) => handleKeyDown(e, 4)}
-                onChange={(e) => handleChange(e, setYear)}
-                onBlur={revertIfInvalid}
-                onFocus={(e) => {
-                  e.target.select()
-                  setOpen(true)
-                }}
-              />
-              <button
-                type="button"
-                aria-label="Open calendar"
-                onClick={() => setOpen((o) => !o)}
-                className="ml-auto cursor-pointer text-subtle hover:text-muted"
-              >
-                <Calendar aria-hidden className="size-4" />
-              </button>
-            </div>
+              <span className={selectedDate ? 'text-foreground' : 'text-muted'}>
+                {selectedDate ? formatDate(selectedDate) : PLACEHOLDER}
+              </span>
+              <Calendar aria-hidden className="ml-auto size-4 text-subtle" />
+            </button>
 
             {open && (
               <div className="absolute top-full z-10 mt-1 rounded-xl border border-border bg-background p-2 shadow-lg">
                 <DayPicker
                   mode="single"
-                  selected={parsedDate}
+                  selected={selectedDate}
                   onSelect={handleDaySelect}
                   month={displayedMonth}
                   onMonthChange={setDisplayedMonth}
@@ -343,9 +181,9 @@ export function DateInput({
                       'cursor-pointer text-muted hover:bg-surface hover:text-foreground',
                     ),
                     month_grid: 'mt-1 border-collapse',
-                    weekdays: 'flex',
+                    weekdays: '',
                     weekday: 'w-9 text-center text-sm font-medium text-muted',
-                    week: 'flex',
+                    week: '',
                     day: 'p-0 text-center',
                     day_button: cn(
                       'inline-flex size-9 items-center justify-center rounded-lg',

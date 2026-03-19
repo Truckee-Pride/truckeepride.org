@@ -13,6 +13,7 @@ type Props = {
   required?: boolean
   description?: string
   errors?: string[]
+  labelAction?: React.ReactNode
   children: (fieldProps: FieldProps) => React.ReactNode
 }
 
@@ -22,6 +23,7 @@ export function FormField({
   required,
   description,
   errors,
+  labelAction,
   children,
 }: Props) {
   const inputId = `field-${name}`
@@ -37,14 +39,17 @@ export function FormField({
   return (
     <div className="grid self-start">
       <div className="mb-1">
-        <label htmlFor={inputId} className={labelStyles}>
-          {label}
-          {!required && (
-            <span className="ml-1.5 text-base font-normal text-muted">
-              (optional)
-            </span>
-          )}
-        </label>
+        <div className="flex items-baseline justify-between">
+          <label htmlFor={inputId} className={labelStyles}>
+            {label}
+            {!required && (
+              <span className="ml-1.5 text-base font-normal text-muted">
+                (optional)
+              </span>
+            )}
+          </label>
+          {labelAction}
+        </div>
         {description && (
           <p id={descId} className={`${descriptionStyles} -mt-1`}>
             {description}

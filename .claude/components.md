@@ -50,6 +50,34 @@ Inline callout box for system messages. Variants: `warning` (default, amber/yell
 </Notice>
 ```
 
+### ToggleGroup (`src/components/ToggleGroup.tsx`)
+
+Segmented control for mutually exclusive options. Uses `role="radiogroup"` with roving tabindex for WCAG 2.1 AA compliance. Arrow keys navigate between options.
+
+```tsx
+<ToggleGroup
+  label="Filter by time"
+  options={[
+    { value: 'upcoming', label: 'Upcoming' },
+    { value: 'past', label: 'Past' },
+  ]}
+  value={time}
+  onChange={handleTimeChange}
+/>
+```
+
+### FilterSelect (`src/components/FilterSelect.tsx`)
+
+Dropdown select for filter UIs. Supports single-select and multi-select via `multiple` prop. Uses `role="combobox"` + `role="listbox"` with full keyboard navigation (arrow keys, Home/End, Escape).
+
+```tsx
+// Single-select
+<FilterSelect label="Age" options={ageOptions} value={age} onChange={setAge} />
+
+// Multi-select
+<FilterSelect label="Vibes" options={tagOptions} value={tags} onChange={setTags} multiple />
+```
+
 ### Form Components (`src/components/forms/`)
 
 Before writing a bare `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`, use these:

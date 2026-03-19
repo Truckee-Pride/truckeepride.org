@@ -57,6 +57,20 @@
       "when": 1773704875238,
       "tag": "0007_motionless_rogue",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1773690539521,
+      "tag": "0008_calm_medusa",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1773948420828,
+      "tag": "0009_lyrical_miss_america",
+      "breakpoints": true
     }
   ]
 }

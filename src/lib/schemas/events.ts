@@ -1,6 +1,15 @@
 import { z } from 'zod'
 import { SAFE_LINK_PROTOCOL } from '@/lib/constants'
 
+export const VIBE_TAGS = [
+  'Sporty',
+  'Crafty',
+  'Family Focused',
+  'Smarty Pants',
+  "Let's Dance",
+] as const
+export type VibeTag = (typeof VIBE_TAGS)[number]
+
 export const AGE_RESTRICTION_OPTIONS = [
   'All ages',
   '18+',
@@ -38,8 +47,14 @@ export const createEventBaseSchema = z.object({
     )
     .optional()
     .or(z.literal('')),
-  shortDescription: z.string().max(500).optional(),
-  emoji: z.string().max(10).optional(),
+  shortDescription: z
+    .string()
+    .trim()
+    .min(1, 'Short description is required')
+    .min(10, 'Please add a short description (10–150 characters)')
+    .max(150, 'Short description must be 150 characters or fewer'),
+  emoji: z.string().trim().min(1, 'Please pick an emoji').max(10),
+  vibeTags: z.array(z.enum(VIBE_TAGS)).default([]),
   requiresTicket: z.boolean().optional().default(false),
   ageRestriction: z.enum(AGE_RESTRICTION_OPTIONS).default('All ages'),
   dogsWelcome: z.boolean().optional().default(false),
