@@ -4,21 +4,6 @@
 
 ---
 
-## MVP.2.x: Authentication
-
-**Goal: Replace auth stub with real Auth.js magic link auth. Protect routes and gate visibility.**
-
-- [ ] **MVP.2.0** Resend sandbox setup for dev/testing:
-  - Create Resend account (free tier: 3k emails/month, 100/day)
-  - Generate API key → add `AUTH_RESEND_KEY` to `.env.local`
-  - Generate auth secret → `openssl rand -base64 32` → add `AUTH_SECRET` to `.env.local`
-  - Sandbox limitation: can only send to your own Resend account email, from `onboarding@resend.dev`
-- [ ] **MVP.2.13** Edit Profile page (`/profile/edit`) — let users update their name, email, etc.
-
----
-
----
-
 ## MVP.5.x: Abuse Prevention
 
 **Goal: Protect event submission from spam, bots, and targeted harassment.**
@@ -29,10 +14,9 @@
 
 ---
 
----
-
 ## MVP.7: Tidy
 
+- [ ] Send admins emails when events are submitted
 - [ ] Hide all sponsor logos except Cultural District, Church of the mountains, Arcteryx
 - [ ] Hide lodge offer section (the link is out of date)
 - [ ] All pages should have container with a little left and right margin on mobile
@@ -42,6 +26,7 @@
 - [ ] Bring back the photo carousel to the homepage! Put it below the calendar
 - [ ] Make the donate button look like original (color hard shadow, 2d, hard edges)
 - [ ] In the Meta tags (for seo) make sure each event page has its time, date, maybe location (not address) in the description
+- [ ] Add vibe tags to event pages
 
 ## MVP.8: Launch
 
@@ -59,11 +44,11 @@
 
 - [ ] Google Maps links and autocomplete in events form
 - [ ] "My Events" tab/filter on `/events` page: show user's own events with status badges
+- [ ] Audit Log
 - [ ] Admin event owners page (`src/app/admin/events/[id]/owners/page.tsx`) — use Drizzle Studio until then
 - [ ] Admin user management `/admin/users` — use Drizzle Studio until then
 - [ ] Rate limiting on sign-in
 - [ ] Full site nav: Get Involved, About, Donate links, mobile hamburger
-- [ ] On event address do the fancy google search bar and then display a google maps link
 - [ ] About page, Get Involved page
 - [ ] `loading.tsx` skeletons
 - [ ] Fancy React Email templates (replace plain text)
