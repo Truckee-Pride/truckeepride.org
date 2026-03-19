@@ -45,12 +45,16 @@ export async function approveEvent(id: string) {
     })
   })
 
-  await sendEventApprovedEmail({
-    to: event.ownerEmail,
-    ownerName: event.ownerName,
-    eventTitle: event.title,
-    eventUrl: `${BASE_URL}/events/${event.slug}`,
-  })
+  try {
+    await sendEventApprovedEmail({
+      to: event.ownerEmail,
+      ownerName: event.ownerName,
+      eventTitle: event.title,
+      eventUrl: `${BASE_URL}/events/${event.slug}`,
+    })
+  } catch (err) {
+    console.error('Failed to send approval email:', err)
+  }
 
   revalidatePath('/admin/events')
   return { success: true }
@@ -79,13 +83,17 @@ export async function rejectEvent(id: string, reason: string) {
     })
   })
 
-  await sendEventRejectedEmail({
-    to: event.ownerEmail,
-    ownerName: event.ownerName,
-    eventTitle: event.title,
-    editUrl: `${BASE_URL}/events/${event.id}/edit`,
-    rejectionReason: trimmed,
-  })
+  try {
+    await sendEventRejectedEmail({
+      to: event.ownerEmail,
+      ownerName: event.ownerName,
+      eventTitle: event.title,
+      editUrl: `${BASE_URL}/events/${event.id}/edit`,
+      rejectionReason: trimmed,
+    })
+  } catch (err) {
+    console.error('Failed to send rejection email:', err)
+  }
 
   revalidatePath('/admin/events')
   return { success: true }
