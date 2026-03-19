@@ -35,10 +35,10 @@ export function Button({
     : null
 
   const content = (
-    <>
-      {Icon && <Icon className="inline-block mr-2 -mt-0.5" size={20} />}
+    <div className="flex items-start gap-2">
+      {Icon && <Icon className="inline-block shrink-0 mt-1" size={20} />}
       {children}
-    </>
+    </div>
   )
 
   if (href) {

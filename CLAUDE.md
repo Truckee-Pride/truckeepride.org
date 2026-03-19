@@ -178,9 +178,9 @@ Quick reference:
 pnpm dev                     # Start dev server
 
 # Database
-npx drizzle-kit generate     # Generate migration from schema changes
-npx drizzle-kit migrate      # Apply migrations
-npx drizzle-kit studio       # Visual DB browser (localhost:4983)
+pnpm exec dotenv -e .env.local -- npx drizzle-kit generate     # Generate migration from schema changes
+pnpm exec dotenv -e .env.local -- npx drizzle-kit migrate      # Apply migrations
+pnpm exec dotenv -e .env.local -- npx drizzle-kit studio       # Visual DB browser (localhost:4983)
 
 # Checks
 pnpm lint

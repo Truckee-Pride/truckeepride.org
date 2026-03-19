@@ -2,6 +2,7 @@ import { asc, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { AdminEventsTable } from '../AdminEventsTable'
+import { PageHeader } from '@/components/PageHeader'
 
 export default async function PendingEventsPage() {
   const pendingEvents = await db.query.events.findMany({
@@ -11,7 +12,7 @@ export default async function PendingEventsPage() {
 
   return (
     <>
-      <h1 className="mb-6">Pending Events ({pendingEvents.length})</h1>
+      <PageHeader title={`Pending Events (${pendingEvents.length})`} />
       <AdminEventsTable
         events={pendingEvents}
         columns={['date', 'location', 'submitted']}

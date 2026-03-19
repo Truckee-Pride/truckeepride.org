@@ -10,6 +10,7 @@ import {
   type CreateEventInput,
 } from '@/lib/schemas/events'
 import { useFormErrors } from '@/hooks/useFormErrors'
+import { useDraft } from '@/hooks/useDraft'
 import type { Event } from '@/db/schema/events'
 import { createEvent } from '@/app/events/new/actions'
 import { Input } from '@/components/forms/Input'
@@ -62,28 +63,62 @@ function formatTime(date: Date | null | undefined): string {
   return local.toISOString().slice(11, 16)
 }
 
+type EventDraft = {
+  title: string
+  shortDescription: string
+  description: string
+  emoji: string
+  locationName: string
+  locationAddress: string
+  date: string
+  startTime: string
+  endTime: string
+  ageRestriction: string
+  ticketUrl: string
+  requiresTicket: boolean
+  dogsWelcome: boolean
+  vibeTags: string[]
+}
+
 export function EventForm({ event, action = createEvent }: Props) {
   const imageUploadRef = useRef<ImageUploadHandle>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
 
+  const { draft, updateDraft, clearDraft } = useDraft<EventDraft>(
+    'event-draft',
+    !event,
+  )
+
   // Controlled field state — React 19 resets forms after actions complete,
   // so we use value= (not defaultValue=) to preserve input across failures.
-  const [title, setTitle] = useState(event?.title ?? '')
+  const [title, setTitle] = useState(draft.title ?? event?.title ?? '')
   const [shortDescription, setShortDescription] = useState(
-    event?.shortDescription ?? '',
+    draft.shortDescription ?? event?.shortDescription ?? '',
   )
-  const [locationName, setLocationName] = useState(event?.locationName ?? '')
+  const [locationName, setLocationName] = useState(
+    draft.locationName ?? event?.locationName ?? '',
+  )
   const [locationAddress, setLocationAddress] = useState(
-    event?.locationAddress ?? '',
+    draft.locationAddress ?? event?.locationAddress ?? '',
   )
-  const [startTime, setStartTime] = useState(formatTime(event?.startTime))
+  const [startTime, setStartTime] = useState(
+    draft.startTime ?? formatTime(event?.startTime),
+  )
   const [ageRestriction, setAgeRestriction] = useState(
-    event?.ageRestriction ?? 'All ages',
+    draft.ageRestriction ?? event?.ageRestriction ?? 'All ages',
   )
-  const [ticketUrl, setTicketUrl] = useState(event?.ticketUrl ?? '')
+  const [ticketUrl, setTicketUrl] = useState(
+    draft.ticketUrl ?? event?.ticketUrl ?? '',
+  )
   const [requiresTicket, setRequiresTicket] = useState(
-    event?.requiresTicket ?? false,
+    draft.requiresTicket ?? event?.requiresTicket ?? false,
+  )
+  const [dogsWelcome, setDogsWelcome] = useState(
+    draft.dogsWelcome ?? event?.dogsWelcome ?? false,
+  )
+  const [vibeTags, setVibeTags] = useState<Set<string>>(
+    () => new Set(draft.vibeTags ?? event?.vibeTags ?? []),
   )
 
   // Wrap the server action to handle client-side validation and image upload
@@ -105,9 +140,8 @@ export function EventForm({ event, action = createEvent }: Props) {
         endTime: (formData.get('endTime') as string) || undefined,
         flyerUrl: (formData.get('flyerUrl') as string) || undefined,
         ticketUrl: (formData.get('ticketUrl') as string) || undefined,
-        shortDescription:
-          (formData.get('shortDescription') as string) || undefined,
-        emoji: (formData.get('emoji') as string) || undefined,
+        shortDescription: (formData.get('shortDescription') as string) ?? '',
+        emoji: (formData.get('emoji') as string) ?? '',
         requiresTicket: formData.get('requiresTicket') === 'on',
         ageRestriction: formData.get('ageRestriction') as string,
         dogsWelcome: formData.get('dogsWelcome') === 'on',
@@ -137,9 +171,10 @@ export function EventForm({ event, action = createEvent }: Props) {
         }
       }
 
+      clearDraft()
       return action(prev, formData)
     },
-    [action],
+    [action, clearDraft],
   )
 
   const [state, formAction, isPending] = useActionState(
@@ -151,47 +186,76 @@ export function EventForm({ event, action = createEvent }: Props) {
     state.fieldErrors,
   )
 
-  const defaultVibeTags = new Set(event?.vibeTags ?? [])
-
   function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setTitle(e.target.value)
     onFieldChange('title', e.target.value)
+    updateDraft('title', e.target.value)
   }
   function handleShortDescriptionChange(
     e: React.ChangeEvent<HTMLInputElement>,
   ) {
     setShortDescription(e.target.value)
     onFieldChange('shortDescription', e.target.value)
+    updateDraft('shortDescription', e.target.value)
   }
   // MDXEditor onChange gives a string directly, unlike native inputs
   function handleDescriptionChange(value: string) {
     onFieldChange('description', value)
+    updateDraft('description', value)
   }
   function handleLocationNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     setLocationName(e.target.value)
     onFieldChange('locationName', e.target.value)
+    updateDraft('locationName', e.target.value)
   }
   function handleLocationAddressChange(e: React.ChangeEvent<HTMLInputElement>) {
     setLocationAddress(e.target.value)
     onFieldChange('locationAddress', e.target.value)
+    updateDraft('locationAddress', e.target.value)
   }
   function handleDateChange(v: string) {
     onFieldChange('date', v)
+    updateDraft('date', v)
   }
   function handleStartTimeChange(v: string) {
     setStartTime(v)
     onFieldChange('startTime', v)
+    updateDraft('startTime', v)
   }
   function handleEndTimeChange(v: string) {
     onFieldChange('endTime', v)
+    updateDraft('endTime', v)
   }
   function handleAgeRestrictionChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setAgeRestriction(e.target.value as AgeRestriction)
     onFieldChange('ageRestriction', e.target.value)
+    updateDraft('ageRestriction', e.target.value)
   }
   function handleTicketUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
     setTicketUrl(e.target.value)
     onFieldChange('ticketUrl', e.target.value)
+    updateDraft('ticketUrl', e.target.value)
+  }
+  function handleEmojiChange(v: string) {
+    onFieldChange('emoji', v)
+    updateDraft('emoji', v)
+  }
+  function handleVibeTagChange(tag: string, checked: boolean) {
+    setVibeTags((prev) => {
+      const next = new Set(prev)
+      if (checked) next.add(tag)
+      else next.delete(tag)
+      updateDraft('vibeTags', [...next])
+      return next
+    })
+  }
+  function handleDogsWelcomeChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setDogsWelcome(e.target.checked)
+    updateDraft('dogsWelcome', e.target.checked)
+  }
+  function handleRequiresTicketChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setRequiresTicket(e.target.checked)
+    updateDraft('requiresTicket', e.target.checked)
   }
 
   return (
@@ -214,8 +278,9 @@ export function EventForm({ event, action = createEvent }: Props) {
         label="Emoji"
         name="emoji"
         required
-        defaultValue={event?.emoji ?? ''}
+        defaultValue={draft.emoji ?? event?.emoji ?? ''}
         errors={errors.emoji}
+        onChangeAction={handleEmojiChange}
       />
 
       <fieldset>
@@ -233,7 +298,8 @@ export function EventForm({ event, action = createEvent }: Props) {
               label={tag}
               name="vibeTags"
               value={tag}
-              defaultChecked={defaultVibeTags.has(tag)}
+              checked={vibeTags.has(tag)}
+              onChange={(e) => handleVibeTagChange(tag, e.target.checked)}
             />
           ))}
         </div>
@@ -255,7 +321,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         label="Description"
         name="description"
         required
-        defaultValue={event?.description ?? ''}
+        defaultValue={draft.description ?? event?.description ?? ''}
         description="Full details about the event. Supports bold, italic, lists, links, and headings."
         errors={errors.description}
         onChangeAction={handleDescriptionChange}
@@ -266,6 +332,11 @@ export function EventForm({ event, action = createEvent }: Props) {
           label="Location Name"
           name="locationName"
           required
+          autoComplete="off"
+          data-1p-ignore
+          data-bwignore
+          data-lpignore="true"
+          data-form-type="other"
           value={locationName}
           maxLength={200}
           placeholder="e.g. Truckee Regional Park"
@@ -275,6 +346,11 @@ export function EventForm({ event, action = createEvent }: Props) {
         <Input
           label="Address"
           name="locationAddress"
+          autoComplete="off"
+          data-1p-ignore
+          data-bwignore
+          data-lpignore="true"
+          data-form-type="other"
           value={locationAddress}
           maxLength={400}
           placeholder="e.g. 10981 Truckee Way, Truckee, CA"
@@ -288,7 +364,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           label="Date"
           name="date"
           required
-          defaultValue={formatDate(event?.startTime)}
+          defaultValue={draft.date ?? formatDate(event?.startTime)}
           errors={errors.date}
           onChangeAction={handleDateChange}
         />
@@ -296,7 +372,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           label="Start Time"
           name="startTime"
           required
-          defaultValue={formatTime(event?.startTime)}
+          defaultValue={draft.startTime ?? formatTime(event?.startTime)}
           errors={errors.startTime}
           onChange={handleStartTimeChange}
         />
@@ -304,7 +380,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           label="End Time"
           name="endTime"
           clearable
-          defaultValue={formatTime(event?.endTime)}
+          defaultValue={draft.endTime ?? formatTime(event?.endTime)}
           errors={errors.endTime}
           referenceTime={startTime || undefined}
           onChange={handleEndTimeChange}
@@ -334,15 +410,16 @@ export function EventForm({ event, action = createEvent }: Props) {
       <Checkbox
         label="Dogs Welcome"
         name="dogsWelcome"
-        defaultChecked={event?.dogsWelcome}
+        checked={dogsWelcome}
+        onChange={handleDogsWelcomeChange}
         description="Let attendees know if they can bring their furry friends."
       />
 
       <Checkbox
         label="Requires Ticket"
         name="requiresTicket"
-        defaultChecked={event?.requiresTicket}
-        onChange={(e) => setRequiresTicket(e.target.checked)}
+        checked={requiresTicket}
+        onChange={handleRequiresTicketChange}
         description="Check this if attendees need a ticket or RSVP."
       />
 

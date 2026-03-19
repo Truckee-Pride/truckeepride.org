@@ -22,10 +22,13 @@ export function Checkbox({
   const descId = description ? `${inputId}-desc` : undefined
 
   return (
-    <div>
+    <div className="cursor-pointer">
       <label
         htmlFor={inputId}
-        className={`${labelStyles} flex items-center gap-2 leading-none`}
+        className={cn(
+          labelStyles,
+          'cursor-pointer flex items-center gap-2 leading-none',
+        )}
       >
         <input
           type="checkbox"
@@ -34,7 +37,7 @@ export function Checkbox({
           value={value}
           aria-describedby={descId}
           className={cn(
-            'h-4 w-4 rounded border-border accent-brand',
+            'h-4 w-4 cursor-pointer rounded border-border accent-brand',
             className,
           )}
           {...rest}
@@ -42,7 +45,10 @@ export function Checkbox({
         {label}
       </label>
       {description && (
-        <p id={descId} className={`${descriptionStyles} ml-6 mt-0`}>
+        <p
+          id={descId}
+          className={cn(descriptionStyles, 'cursor-pointer ml-6 mt-0')}
+        >
           {description}
         </p>
       )}

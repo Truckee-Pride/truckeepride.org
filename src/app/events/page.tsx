@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, gte, lte, arrayOverlaps } from 'drizzle-orm'
+import type { Metadata } from 'next'
 import { LayoutWidth } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
@@ -11,12 +12,13 @@ import {
   type VibeTag,
   type AgeRestriction,
 } from '@/lib/schemas/events'
+import { PageHeader } from '@/components/PageHeader'
 
 export async function generateMetadata({
   searchParams,
 }: {
   searchParams: Promise<{ time?: string }>
-}) {
+}): Promise<Metadata> {
   const params = await searchParams
   return {
     title: params.time === 'past' ? 'Past Events' : 'Upcoming Events',
@@ -72,12 +74,10 @@ export default async function EventsPage({
 
   return (
     <main className={LayoutWidth.wide}>
-      <div className="mt-8 mb-8 flex items-center justify-between gap-4">
-        <h1 className="m-0">
-          {time === 'past' ? 'Past Events' : 'Upcoming Events'}
-        </h1>
-        <AddEvent />
-      </div>
+      <PageHeader
+        title={time === 'past' ? 'Past Events' : 'Upcoming Events'}
+        accessory={<AddEvent />}
+      />
 
       <div className="mb-6">
         <EventFilters time={time} tags={tagList} age={ageFilter} />
