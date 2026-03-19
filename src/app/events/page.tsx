@@ -21,7 +21,7 @@ export default async function EventsPage() {
 
   return (
     <main className={LayoutWidth.wide}>
-      <div className="mt-8 mb-8 flex items-center justify-between gap-4">
+      <div className="mt-8 mb-8 flex flex-wrap items-baseline justify-between gap-4">
         <h1 className="m-0">Upcoming Events</h1>
         <AddEvent />
       </div>
