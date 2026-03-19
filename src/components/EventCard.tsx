@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Calendar, MapPin } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import type { Event } from '@/db/schema/events'
 
 // Pastel 6-stripe rainbow pride flag colors
@@ -15,18 +16,21 @@ const PRIDE_COLORS = [
 
 function formatCardDate(start: Date, end: Date | null): string {
   const tz = 'America/Los_Angeles'
+  const timeFmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    hour: 'numeric',
+    minute: '2-digit',
+  })
   const date = new Intl.DateTimeFormat('en-US', {
     timeZone: tz,
     weekday: 'short',
     month: 'short',
     day: 'numeric',
   }).format(start)
-  const time = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(start)
-  return `${date} · ${time}`
+  const startTime = timeFmt.format(start)
+  if (!end) return `${date} · ${startTime}`
+  const endTime = timeFmt.format(end)
+  return `${date} · ${startTime} – ${endTime}`
 }
 
 type Props = {
@@ -34,15 +38,17 @@ type Props = {
   colorIndex: number
 }
 
+const cardClasses = cn(
+  'flex h-[15rem] overflow-hidden rounded-xl border-2 bg-background',
+  'transition-all duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-lg',
+)
+
 export function EventCard({ event, colorIndex }: Props) {
   const borderColor = PRIDE_COLORS[colorIndex % PRIDE_COLORS.length]
 
   return (
     <Link href={`/events/${event.slug}`} className="group block no-underline">
-      <div
-        className="flex h-[15rem] overflow-hidden rounded-xl border border-border border-l-[5px] bg-background transition-all duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-lg"
-        style={{ borderLeftColor: borderColor }}
-      >
+      <div className={cardClasses} style={{ borderColor: borderColor }}>
         {/* Text */}
         <div className="flex flex-1 flex-col justify-start gap-1.5 px-4 pt-8 pb-[1.875rem]">
           {event.emoji && (
