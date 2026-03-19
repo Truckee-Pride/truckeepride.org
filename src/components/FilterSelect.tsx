@@ -189,7 +189,7 @@ export function FilterSelect({
           id={listboxId}
           role="listbox"
           aria-label={label}
-          aria-multiselectable={multiple || undefined}
+          aria-multiselectable={multiple ?? undefined}
           className={dropdownStyles}
         >
           {allOptions.map((opt, i) => {
@@ -210,7 +210,7 @@ export function FilterSelect({
                 onMouseEnter={() => setActiveIndex(i)}
                 onMouseDown={handleOptionMouseDown}
                 className={cn(
-                  'flex min-h-[2.75rem] cursor-pointer items-center gap-2 rounded-lg px-3 text-sm',
+                  'flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm',
                   isActive && 'bg-surface',
                   isSelected && 'font-semibold text-brand',
                 )}
