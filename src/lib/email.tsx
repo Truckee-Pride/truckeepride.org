@@ -1,11 +1,29 @@
 import { render } from '@react-email/components'
 import { Resend } from 'resend'
+import type { CreateEmailOptions } from 'resend'
 import { EventApprovedEmail } from '@/emails/event-approved'
 import { EventRejectedEmail } from '@/emails/event-rejected'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const EMAIL_FROM = process.env.EMAIL_FROM ?? 'onboarding@resend.dev'
+export const EMAIL_FROM = process.env.EMAIL_FROM ?? 'onboarding@resend.dev'
+
+/**
+ * Send an email via Resend. Non-critical emails (default) log errors and
+ * continue silently. Critical emails (e.g. magic link) re-throw so the
+ * caller can surface the failure.
+ */
+export async function sendEmail({
+  critical = false,
+  ...params
+}: { critical?: boolean } & CreateEmailOptions) {
+  try {
+    await resend.emails.send(params)
+  } catch (err) {
+    console.error('Email send failed:', err)
+    if (critical) throw err
+  }
+}
 
 export async function sendEventApprovedEmail({
   to,
@@ -18,7 +36,7 @@ export async function sendEventApprovedEmail({
   eventTitle: string
   eventUrl: string
 }) {
-  await resend.emails.send({
+  await sendEmail({
     from: EMAIL_FROM,
     to,
     subject: `Your event "${eventTitle}" has been approved`,
@@ -45,7 +63,7 @@ export async function sendEventRejectedEmail({
   editUrl: string
   rejectionReason: string
 }) {
-  await resend.emails.send({
+  await sendEmail({
     from: EMAIL_FROM,
     to,
     subject: `Your event "${eventTitle}" needs some changes`,
