@@ -23,3 +23,9 @@ All mutations to events (create, update, status change, delete) must write an au
 ```
 
 Simple action log — no field-level diffs. Use Drizzle Studio to investigate details if needed.
+
+## Multi-Branch Migrations
+
+Generating migrations on separate branches causes timestamp conflicts in `drizzle/meta/_journal.json`. When branches merge, a migration with a lower index can have a newer timestamp than a higher-indexed one. Drizzle uses timestamps to decide what's pending and will silently skip out-of-order migrations.
+
+**After rebasing or merging branches that touch migrations, run `/rebase` to fix timestamps.**

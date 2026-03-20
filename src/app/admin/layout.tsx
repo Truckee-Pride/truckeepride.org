@@ -19,5 +19,5 @@ export default async function AdminLayout({
     )
   }
 
-  return <main className={LayoutWidth.admin}>{children}</main>
+  return children
 }

@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
 import { requireUser } from '@/lib/auth-stub'
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/lib/upload'
@@ -27,6 +28,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(jsonResponse)
   } catch (error) {
+    // Re-throw redirect errors so Next.js handles auth redirects properly
+    if (isRedirectError(error)) throw error
+
     return NextResponse.json(
       { error: (error as Error).message },
       { status: 400 },
