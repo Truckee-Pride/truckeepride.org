@@ -15,6 +15,7 @@ import { isBlobUrl } from '@/lib/upload'
 import { pacificToDate } from '@/lib/timezone'
 import { checkPendingEventLimit } from '@/lib/rate-limit'
 import { checkIpRateLimit, checkEmailRateLimit } from '@/lib/ip-rate-limit'
+import { checkEmailDomain } from '@/lib/email-validation'
 import { getGravatarUrl } from '@/lib/gravatar'
 
 // ── Create Event ──────────────────────────────────────────────────────
@@ -282,6 +283,14 @@ export async function sendSignInLink(
     return {
       success: false,
       fieldErrors: { email: ['Enter a valid email address'] },
+    }
+  }
+
+  const domainError = checkEmailDomain(email)
+  if (domainError) {
+    return {
+      success: false,
+      fieldErrors: { email: [domainError] },
     }
   }
 

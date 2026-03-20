@@ -10,7 +10,6 @@
 
 - [ ] **MVP.5.1** User banning: `bannedAt` column on users, admin "Ban Submitter" button in approval queue, bulk-reject pending events on ban
 - [ ] **MVP.5.2** Cloudflare Turnstile (free CAPTCHA) on event submission forms
-- [ ] **MVP.5.3** Disposable email domain blocking in Auth.js signIn callback
 
 ---
 

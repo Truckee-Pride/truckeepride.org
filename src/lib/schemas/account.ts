@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { checkEmailDomain } from '@/lib/email-validation'
 
 const phoneSchema = z
   .string()
@@ -28,7 +29,13 @@ export const accountFieldsSchema = z.object({
     .min(1, 'Email is required')
     .email('Enter a valid email address')
     .max(254, 'Email is too long')
-    .transform((val) => val.toLowerCase().trim()),
+    .transform((val) => val.toLowerCase().trim())
+    .superRefine((email, ctx) => {
+      const error = checkEmailDomain(email)
+      if (error) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: error })
+      }
+    }),
   phone: phoneSchema,
 })
 
