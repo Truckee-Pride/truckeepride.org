@@ -60,6 +60,22 @@ export async function toggleSponsor(id: number, enabled: boolean) {
   return { success: true }
 }
 
+export async function updateSponsorName(id: number, name: string) {
+  const user = await requireUser()
+  if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
+
+  const trimmedName = name.trim()
+  if (!trimmedName) {
+    return { success: false, error: 'Sponsor name is required' }
+  }
+
+  await db.update(sponsors).set({ name: trimmedName }).where(eq(sponsors.id, id))
+
+  revalidatePath('/admin/sponsors')
+  revalidatePath('/')
+  return { success: true }
+}
+
 export async function uploadSponsorImage(formData: FormData) {
   const user = await requireUser()
   if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }

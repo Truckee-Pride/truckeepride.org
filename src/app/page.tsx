@@ -8,8 +8,7 @@ import { EventCard } from '@/components/EventCard'
 import { Button } from '@/components/Button'
 import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 
-const sponsorsGridClasses =
-  'grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
+const sponsorsGridClasses = 'grid grid-cols-2 gap-8 sm:grid-cols-3'
 
 export default async function Home() {
   const [upcomingEvents, sponsorsList] = await Promise.all([
@@ -111,13 +110,15 @@ export default async function Home() {
                 key={sponsor.id}
                 className="flex items-center justify-center py-2"
               >
-                <Image
-                  src={sponsor.imageUrl}
-                  alt={sponsor.name}
-                  width={120}
-                  height={120}
-                  className="h-auto w-full max-w-[120px]"
-                />
+                <div className="relative aspect-square w-full max-w-[136px] max-h-[136px]">
+                  <Image
+                    src={sponsor.imageUrl}
+                    alt={sponsor.name}
+                    fill
+                    sizes="(min-width: 640px) 136px, 50vw"
+                    className="object-contain"
+                  />
+                </div>
               </div>
             ))}
           </div>

@@ -7,6 +7,8 @@ export const textButtonStyles = cva(
       intent: {
         primary: 'text-brand hover:text-brand',
         danger: 'text-red-600 hover:text-red-700',
+        defaultText: 'foreground hover:foreground',
+        mutedText: 'text-muted hover:text-muted',
       },
     },
     defaultVariants: {
