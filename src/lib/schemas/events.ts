@@ -7,6 +7,7 @@ export const VIBE_TAGS = [
   'Family Focused',
   'Smarty Pants',
   "Let's Dance",
+  'Wellness',
 ] as const
 export type VibeTag = (typeof VIBE_TAGS)[number]
 
