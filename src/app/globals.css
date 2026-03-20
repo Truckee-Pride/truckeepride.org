@@ -40,10 +40,9 @@
   --link: var(--blue-600);
   --link-hover: var(--blue-700);
 
-  /* Hover effect (matches Tailwind's shadow-xl + -translate-y-1 in button-styles.ts) */
-  --shadow-hover:
-    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --hover-lift: -0.25rem;
+  /* Button shadow */
+  --cyan-400: #22d3ee;
+  --brand-shadow: var(--cyan-400);
 
   /* Feedback */
   --red-700: #b91c1c;
@@ -86,6 +85,7 @@
   --color-warning: var(--warning);
   --color-warning-bg: var(--warning-bg);
   --color-warning-border: var(--warning-border);
+  --color-brand-shadow: var(--brand-shadow);
 }
 
 @layer base {
