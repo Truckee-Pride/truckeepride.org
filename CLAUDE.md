@@ -46,7 +46,7 @@ Use `"latest"` for frequently-updated packages (Drizzle), caret ranges (`"^15"`)
 
 - **Server Components are the default.** Only add `"use client"` when you actually need browser APIs, event handlers, or React state. Never use `useEffect` + `useState` to fetch data — use Server Components instead.
 - **Server Actions** for all form mutations — no separate API routes for UI-driven data mutations. Every Server Action file must start with `"use server"`.
-- **Read `.claude/forms.md` before building or modifying any form.** React 19 has form reset behavior that silently clears user input if inputs aren't wired correctly. The forms guide covers the required patterns.
+- **The `forms` skill auto-loads when working on forms.** React 19 has form reset behavior that silently clears user input if inputs aren't wired correctly. The forms skill covers the required patterns.
 - **Never use `onSubmit` to intercept a form that calls a server action.** Intercepting with `e.preventDefault()` and then re-triggering submission (via `requestSubmit()` or calling the action directly) breaks Next.js's redirect handling or causes first-click bugs. Instead, wrap the server action in a client function passed to `useActionState` — do validation, image uploads, etc. inside the wrapper, then call the real action at the end. This keeps everything in one action flow so `redirect()` and `isPending` work correctly. See `EventForm.tsx` for the pattern.
 - **Function props on `'use client'` components must end in `Action`** (e.g. `onEmailSentAction`). Next.js requires this for any function prop that may be passed from a Server Component — TypeScript error ts(71007) will fire otherwise.
 - **Route handlers** (`route.ts`) only for external integrations (webhooks, RSS, etc.).
@@ -106,11 +106,44 @@ app/
 - Write JSDoc only for non-obvious function contracts. If a comment explains _what_ the code does (not _why_), refactor instead.
 - **Named event handlers.** Always use `handleX` functions instead of inline arrow functions for event handlers (e.g. `onClick={handleSave}` not `onClick={() => { ... }}`). This keeps JSX readable and makes handlers easy to find.
 
+### TypeScript
+
+- Enable `strict: true` in `tsconfig.json`. Never disable it.
+- Prefer `type` over `interface` for consistency.
+- **Never use `any`.** Use `unknown` and narrow it, or define a proper type.
+- Infer types from Zod schemas and Drizzle table definitions rather than duplicating them manually:
+  ```ts
+  type Event = typeof events.$inferSelect
+  type NewEvent = typeof events.$inferInsert
+  ```
+- Export types from the place they're defined, not from a central `types.ts` barrel file.
+
+### Accessibility
+
+- Target WCAG 2.1 AA standards.
+- All images need meaningful `alt` text.
+- Interactive elements must be keyboard-navigable.
+- Use semantic HTML (`<nav>`, `<main>`, `<article>`, `<button>`, not divs for everything).
+- Color contrast must meet WCAG AA minimum (4.5:1 for text).
+
+### Performance
+
+- Images: use `next/image` everywhere. Never use `<img>`.
+- Fonts: system sans-serif for now. Brand fonts loaded via `next/font` in the design system phase.
+- Only memoize (`useMemo`/`useCallback`) when you've measured a real performance problem.
+- Prefer static generation (`generateStaticParams`) for event detail pages; revalidate on publish/update.
+
+### Testing
+
+- Unit tests: Vitest for Zod schemas and pure utility functions.
+- Integration tests: Server Actions against a test DB.
+- E2E: Playwright for the critical path (submit event → admin approves → event appears publicly).
+
 ---
 
 ## Tailwind CSS Rules
 
-Full conventions in `.claude/tailwind.md`. The most critical rules:
+Full conventions in the `tailwind` skill (auto-loaded for styling tasks). The most critical rules:
 
 - **Use `cn()` for all className composition.** Never use template literals or string concatenation: `cn(LayoutWidth.prose, 'py-12')` not `` `${LayoutWidth.prose} py-12` ``.
 - **Extract long classNames to named consts.** When a className exceeds ~3 utilities, extract to a descriptively-named `const` above the component return.
@@ -156,7 +189,7 @@ import {
 
 ## Component Library
 
-**Never write a bare `<form>`, `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog in `.claude/components.md`. If no existing component fits, ask before creating a new one.
+**Never write a bare `<form>`, `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog (full list in the `components` skill, auto-loaded for UI work). If no existing component fits, ask before creating a new one.
 **For every page, you should probably include a PageHeader rather than a bare <h1>**
 
 Quick reference:
@@ -202,19 +235,3 @@ pnpm update                  # Update all deps
 - **Magic link auth only** — no passwords, no OAuth (for now).
 - The site should be **fast on mobile** — many attendees will be on phones at outdoor events.
 
----
-
-## Reference Docs
-
-Detailed conventions live in `.claude/`. Read the relevant file when working in that area:
-
-| Topic                                                 | File                       |
-| ----------------------------------------------------- | -------------------------- |
-| TypeScript                                            | `.claude/typescript.md`    |
-| Data layer (Drizzle, Neon, migrations, audit logging) | `.claude/data-layer.md`    |
-| Forms & Zod validation                                | `.claude/forms.md`         |
-| Tailwind / styling                                    | `.claude/tailwind.md`      |
-| Component patterns                                    | `.claude/components.md`    |
-| Performance                                           | `.claude/performance.md`   |
-| Testing                                               | `.claude/testing.md`       |
-| Accessibility                                         | `.claude/accessibility.md` |

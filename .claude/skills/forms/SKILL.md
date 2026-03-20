@@ -1,3 +1,9 @@
+---
+name: forms
+description: Form submission patterns for Next.js 15 with React 19. Covers useActionState with Server Actions, the critical React 19 form reset problem (why controlled inputs are required instead of defaultValue), hidden input patterns, and Zod validation. Loaded when building or modifying forms, form components, or Server Actions that handle form data.
+user-invocable: false
+---
+
 # Forms & Validation
 
 ## Form submission pattern

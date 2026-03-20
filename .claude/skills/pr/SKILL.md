@@ -1,3 +1,9 @@
+---
+name: pr
+description: Creates a pull request for the current branch with structured What/Why/Verification body. Use when the user asks to open, create, or submit a PR.
+disable-model-invocation: true
+---
+
 Open a pull request for the current branch.
 
 ## Steps

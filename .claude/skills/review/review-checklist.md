@@ -98,7 +98,7 @@ add one to `globals.css` under `@theme` and use the new token name.
 Look for: Ternary expressions inside className choosing between style sets,
 e.g., `className={cn(intent === 'primary' ? 'bg-pink' : 'bg-red')}`
 Fix: Convert to `cva()` from `class-variance-authority` with a `variants` object.
-See `.claude/tailwind.md` for the full pattern.
+See the `tailwind` skill for the full pattern.
 
 ### T6 — Group responsive/state variants
 

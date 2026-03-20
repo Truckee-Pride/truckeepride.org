@@ -1,3 +1,9 @@
+---
+name: review
+description: Reviews current code changes against all project guidelines (design system components, Tailwind, Next.js, TypeScript, accessibility, forms, performance, code smells) and fixes violations. Use when the user asks to review, check, or audit their changes.
+disable-model-invocation: true
+---
+
 Review the current code changes against every project guideline and fix all violations.
 
 ## Steps
@@ -10,7 +16,7 @@ If there is no diff output, also try `git diff --cached` and `git diff` separate
 
 ### 2. Read the checklist
 
-Read `.claude/review-checklist.md`. This contains every rule to check, with detection patterns and fix instructions.
+Read [review-checklist.md](review-checklist.md). This contains every rule to check, with detection patterns and fix instructions.
 
 ### 3. Read each changed file in full
 
