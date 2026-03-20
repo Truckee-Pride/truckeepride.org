@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useRef, useCallback, useState } from 'react'
+import { useActionState, useRef, useCallback, useState, useEffect } from 'react'
 import {
   ImageUpload,
   type ImageUploadHandle,
@@ -52,6 +52,12 @@ export function AddSponsorForm() {
   )
 
   const isWorking = isPending || isUploading
+
+  useEffect(() => {
+    if (state.success) {
+      imageUploadRef.current?.clear()
+    }
+  }, [state])
 
   return (
     <Form action={formAction} className="space-y-4">

@@ -19,6 +19,7 @@ import {
 export type ImageUploadHandle = {
   needsUpload: boolean
   upload: () => Promise<string | null>
+  clear: () => void
 }
 
 type Props = {
@@ -137,6 +138,12 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
 
     useImperativeHandle(ref, () => ({
       needsUpload: fileState != null && !blobUrl,
+      clear: () => {
+        setFileState(null)
+        setBlobUrl(null)
+        setShowExisting(false)
+        setError(null)
+      },
       upload: async () => {
         // Nothing selected — use existing or empty
         if (!fileState) return showExisting && existingUrl ? existingUrl : null
