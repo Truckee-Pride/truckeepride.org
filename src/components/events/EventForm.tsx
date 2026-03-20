@@ -15,6 +15,7 @@ import type { Event } from '@/db/schema/events'
 import { createEvent } from '@/app/events/new/actions'
 import { Input } from '@/components/forms/Input'
 import { UrlInput } from '@/components/forms/UrlInput'
+import { AddressAutocomplete } from '@/components/forms/AddressAutocomplete'
 import { DateInput } from '@/components/forms/DateInput'
 import { MarkdownEditor } from '@/components/forms/MarkdownEditor'
 import { Select } from '@/components/forms/Select'
@@ -70,6 +71,7 @@ type EventDraft = {
   emoji: string
   locationName: string
   locationAddress: string
+  googleMapsUrl: string
   date: string
   startTime: string
   endTime: string
@@ -101,6 +103,9 @@ export function EventForm({ event, action = createEvent }: Props) {
   )
   const [locationAddress, setLocationAddress] = useState(
     draft.locationAddress ?? event?.locationAddress ?? '',
+  )
+  const [googleMapsUrl, setGoogleMapsUrl] = useState(
+    draft.googleMapsUrl ?? event?.googleMapsUrl ?? '',
   )
   const [date, setDate] = useState(draft.date ?? formatDate(event?.startTime))
   const [startTime, setStartTime] = useState(
@@ -136,6 +141,8 @@ export function EventForm({ event, action = createEvent }: Props) {
         locationName: formData.get('locationName') as string,
         locationAddress:
           (formData.get('locationAddress') as string) || undefined,
+        googleMapsUrl:
+          (formData.get('googleMapsUrl') as string) || undefined,
         date: formData.get('date') as string,
         startTime: formData.get('startTime') as string,
         endTime: (formData.get('endTime') as string) || undefined,
@@ -209,10 +216,21 @@ export function EventForm({ event, action = createEvent }: Props) {
     onFieldChange('locationName', e.target.value)
     updateDraft('locationName', e.target.value)
   }
-  function handleLocationAddressChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setLocationAddress(e.target.value)
-    onFieldChange('locationAddress', e.target.value)
-    updateDraft('locationAddress', e.target.value)
+  function handleLocationAddressChange(value: string) {
+    setLocationAddress(value)
+    onFieldChange('locationAddress', value)
+    updateDraft('locationAddress', value)
+  }
+  function handleGoogleMapsUrlChange(url: string) {
+    setGoogleMapsUrl(url)
+    updateDraft('googleMapsUrl', url)
+  }
+  function handlePlaceSelected(placeName: string) {
+    if (!locationName) {
+      setLocationName(placeName)
+      onFieldChange('locationName', placeName)
+      updateDraft('locationName', placeName)
+    }
   }
   function handleDateChange(v: string) {
     setDate(v)
@@ -345,19 +363,17 @@ export function EventForm({ event, action = createEvent }: Props) {
           errors={errors.locationName}
           onChange={handleLocationNameChange}
         />
-        <Input
+        <AddressAutocomplete
           label="Address"
           name="locationAddress"
-          autoComplete="off"
-          data-1p-ignore
-          data-bwignore
-          data-lpignore="true"
-          data-form-type="other"
           value={locationAddress}
+          defaultGoogleMapsUrl={googleMapsUrl}
           maxLength={400}
           placeholder="e.g. 10981 Truckee Way, Truckee, CA"
           errors={errors.locationAddress}
-          onChange={handleLocationAddressChange}
+          onChangeAction={handleLocationAddressChange}
+          onGoogleMapsUrlChangeAction={handleGoogleMapsUrlChange}
+          onPlaceSelectedAction={handlePlaceSelected}
         />
       </div>
 

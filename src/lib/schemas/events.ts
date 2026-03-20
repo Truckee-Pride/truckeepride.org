@@ -55,6 +55,7 @@ export const createEventBaseSchema = z.object({
     ),
   locationName: z.string().min(1, 'Location name is required').max(200),
   locationAddress: z.string().max(400).optional(),
+  googleMapsUrl: z.string().url().optional().or(z.literal('')),
   date: z.string().min(1, 'Date is required'),
   startTime: z.string().min(1, 'Start time is required'),
   endTime: z.string().optional(),

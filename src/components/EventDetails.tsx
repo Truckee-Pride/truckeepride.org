@@ -6,6 +6,7 @@ import {
   Beer,
   Calendar,
   Dog,
+  ExternalLink,
   IdCard,
   MapPin,
   ShieldUser,
@@ -83,6 +84,20 @@ export function EventDetails({ event, headingLevel = 'h2' }: Props) {
             {event.locationName}
             {event.locationAddress && (
               <span className="text-muted"> · {event.locationAddress}</span>
+            )}
+            {event.googleMapsUrl && (
+              <>
+                {' '}
+                <a
+                  href={event.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-brand hover:underline"
+                >
+                  Map
+                  <ExternalLink size={12} />
+                </a>
+              </>
             )}
           </div>
         </li>
