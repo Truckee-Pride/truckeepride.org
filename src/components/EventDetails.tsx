@@ -52,9 +52,15 @@ type Props = {
   event: Event
   /** HTML heading level for the event title. Defaults to 'h2'. */
   headingLevel?: 'h1' | 'h2'
+  /** A component to display on the right side of the title. */
+  accessory?: React.ReactNode
 }
 
-export function EventDetails({ event, headingLevel = 'h2' }: Props) {
+export function EventDetails({
+  event,
+  headingLevel = 'h2',
+  accessory,
+}: Props) {
   const AgeIcon = AGE_ICONS[event.ageRestriction]
   const Heading = headingLevel
 
@@ -65,7 +71,14 @@ export function EventDetails({ event, headingLevel = 'h2' }: Props) {
         {event.emoji && (
           <div className="text-5xl leading-none mb-2">{event.emoji}</div>
         )}
-        <Heading className="mt-0 mb-0">{event.title}</Heading>
+        {accessory ? (
+          <div className="flex flex-wrap gap-1 items-center justify-between">
+            <Heading className="mt-0 mb-0">{event.title}</Heading>
+            <div className="mt-2">{accessory}</div>
+          </div>
+        ) : (
+          <Heading className="mt-0 mb-0">{event.title}</Heading>
+        )}
         {event.shortDescription && (
           <p className="text-muted mt-1 mb-0">{event.shortDescription}</p>
         )}

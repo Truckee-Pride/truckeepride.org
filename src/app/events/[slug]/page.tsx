@@ -113,7 +113,20 @@ export default async function EventPage({
         </Notice>
       )}
 
-      <EventPreview event={event} />
+      <EventPreview
+        event={event}
+        accessory={
+          canEdit ? (
+            <Button
+              intent="secondary"
+              icon="square-pen"
+              href={`/events/${event.slug}/edit`}
+            >
+              Edit
+            </Button>
+          ) : undefined
+        }
+      />
 
       {/* Action buttons */}
       {!cancelled && (
@@ -130,15 +143,6 @@ export default async function EventPage({
             {event.ticketUrl && (
               <Button icon="ticket" href={event.ticketUrl}>
                 Get Tickets
-              </Button>
-            )}
-            {canEdit && (
-              <Button
-                intent="secondary"
-                icon="edit-2"
-                href={`/events/${event.slug}/edit`}
-              >
-                Edit Event
               </Button>
             )}
           </div>

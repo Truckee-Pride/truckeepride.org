@@ -461,7 +461,7 @@ export function EventForm({ event, action = createEvent }: Props) {
               ? 'Submitting...'
               : event
                 ? 'Save Changes'
-                : 'Preview & Submit'}
+                : 'Submit'}
         </Button>
       </div>
     </Form>
