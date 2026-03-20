@@ -1,7 +1,7 @@
 'use server'
 
 import { del, put } from '@vercel/blob'
-import { eq } from 'drizzle-orm'
+import { and, eq, ne, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
@@ -15,8 +15,21 @@ export async function addSponsor(formData: FormData) {
   const imageUrl = formData.get('imageUrl')?.toString().trim() ?? ''
   const name = formData.get('name')?.toString().trim() ?? ''
 
-  if (!imageUrl) return { success: false, error: 'Image is required' }
-  if (!name) return { success: false, error: 'Sponsor name is required' }
+  if (!imageUrl)
+    return { success: false, fieldErrors: { image: ['Image is required'] } }
+  if (!name)
+    return { success: false, fieldErrors: { name: ['Sponsor name is required'] } }
+
+  const existing = await db
+    .select({ id: sponsors.id })
+    .from(sponsors)
+    .where(sql`lower(trim(${sponsors.name})) = lower(trim(${name}))`)
+    .limit(1)
+  if (existing.length > 0)
+    return {
+      success: false,
+      fieldErrors: { name: ['A sponsor with that name already exists'] },
+    }
 
   await db.insert(sponsors).values({ imageUrl, name, sortOrder: 0 })
 
@@ -68,6 +81,19 @@ export async function updateSponsorName(id: number, name: string) {
   if (!trimmedName) {
     return { success: false, error: 'Sponsor name is required' }
   }
+
+  const existing = await db
+    .select({ id: sponsors.id })
+    .from(sponsors)
+    .where(
+      and(
+        sql`lower(trim(${sponsors.name})) = lower(trim(${trimmedName}))`,
+        ne(sponsors.id, id),
+      ),
+    )
+    .limit(1)
+  if (existing.length > 0)
+    return { success: false, error: 'A sponsor with that name already exists' }
 
   await db.update(sponsors).set({ name: trimmedName }).where(eq(sponsors.id, id))
 

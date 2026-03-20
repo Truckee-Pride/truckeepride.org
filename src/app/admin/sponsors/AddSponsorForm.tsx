@@ -6,36 +6,44 @@ import {
   type ImageUploadHandle,
 } from '@/components/forms/ImageUpload'
 import { Input } from '@/components/forms/Input'
-import { FormError } from '@/components/forms/FormError'
 import { Button } from '@/components/Button'
 import { Form } from '@/components/forms/Form'
 import { addSponsor } from './actions'
 
-type ActionState = { success: boolean; error?: string }
+type ActionState = {
+  success: boolean
+  fieldErrors?: { image?: string[]; name?: string[] }
+}
 
 const initialState: ActionState = { success: false }
 
 export function AddSponsorForm() {
   const imageUploadRef = useRef<ImageUploadHandle>(null)
   const [isUploading, setIsUploading] = useState(false)
-  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [name, setName] = useState('')
 
-  // Wrap the server action to handle client-side image upload first
   const wrappedAction = useCallback(
-    async (_prev: ActionState, formData: FormData) => {
-      setUploadError(null)
+    async (_prev: ActionState, formData: FormData): Promise<ActionState> => {
+      const nameValue = formData.get('name')?.toString().trim() ?? ''
+      const imageValue = formData.get('imageUrl')?.toString().trim() ?? ''
+      if (!nameValue || !imageValue) {
+        return {
+          success: false,
+          fieldErrors: {
+            ...(!imageValue && { image: ['Image is required'] }),
+            ...(!nameValue && { name: ['Sponsor name is required'] }),
+          },
+        }
+      }
 
       if (imageUploadRef.current?.needsUpload) {
         setIsUploading(true)
         try {
           const url = await imageUploadRef.current.upload()
-          if (url) {
-            formData.set('imageUrl', url)
-          }
+          if (url) formData.set('imageUrl', url)
         } catch (err) {
           const message = err instanceof Error ? err.message : 'Upload failed'
-          setUploadError(message)
-          return { success: false, error: message }
+          return { success: false, fieldErrors: { image: [message] } }
         } finally {
           setIsUploading(false)
         }
@@ -56,6 +64,7 @@ export function AddSponsorForm() {
   useEffect(() => {
     if (state.success) {
       imageUploadRef.current?.clear()
+      setName('')
     }
   }, [state])
 
@@ -65,15 +74,17 @@ export function AddSponsorForm() {
         ref={imageUploadRef}
         name="imageUrl"
         label="Sponsor logo"
-        errors={uploadError ? [uploadError] : undefined}
+        errors={state.fieldErrors?.image}
       />
       <Input
         label="Sponsor name"
         name="name"
         placeholder="e.g. Truckee Cultural District"
         required
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        errors={state.fieldErrors?.name}
       />
-      <FormError message={state.error} />
       <Button type="submit" disabled={isWorking}>
         {isWorking ? 'Adding…' : 'Add Sponsor'}
       </Button>
