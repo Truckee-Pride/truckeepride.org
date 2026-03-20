@@ -1,4 +1,3 @@
-import { LayoutWidth } from '@/lib/constants'
 import { AdminEventsNav } from './AdminEventsNav'
 
 export default function AdminEventsLayout({
@@ -7,11 +6,11 @@ export default function AdminEventsLayout({
   children: React.ReactNode
 }) {
   return (
-    <main className={LayoutWidth.admin}>
-      <div className="mt-8 mb-6">
+    <>
+      <div className="mt-2 mb-6">
         <AdminEventsNav />
       </div>
       {children}
-    </main>
+    </>
   )
 }
