@@ -1,3 +1,9 @@
+---
+name: data-layer
+description: Drizzle ORM and Neon PostgreSQL conventions. Covers schema organization in src/db/schema/, migration workflow (drizzle-kit generate/migrate), transaction usage for multi-step mutations, revalidation after mutations, and audit logging for event mutations. Loaded when working on database queries, schema changes, Server Actions with mutations, or migrations.
+user-invocable: false
+---
+
 # Data Layer (Drizzle + Neon)
 
 - Schema lives in `src/db/schema/`. One file per domain (e.g., `events.ts`, `users.ts`, `audit.ts`).

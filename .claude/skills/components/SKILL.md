@@ -1,3 +1,9 @@
+---
+name: components
+description: UI component catalog for the Truckee Pride design system. Lists all available components (Button, TextButton, TextLink, Notice, ToggleGroup, FilterSelect, PageHeader, Form) and form field components (Input, Textarea, Select, Checkbox, DateInput, TimeCombobox, EmojiPicker, FormField, FormError) with usage and props. Loaded when building or modifying UI, pages, or forms.
+user-invocable: false
+---
+
 # Component Guidelines
 
 - One component per file. Filename = component name (PascalCase).

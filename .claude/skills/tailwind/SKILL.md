@@ -1,3 +1,9 @@
+---
+name: tailwind
+description: Tailwind CSS v4 conventions for this project including CSS-first config, cn() usage, className extraction, cva for variants, design tokens, responsive grouping, and class ordering. Loaded when working on styling, classNames, or UI components.
+user-invocable: false
+---
+
 # Tailwind Conventions
 
 ## Tailwind v4 Specifics
