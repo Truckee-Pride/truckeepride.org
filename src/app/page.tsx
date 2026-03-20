@@ -4,7 +4,7 @@ import { and, asc, eq, gte } from 'drizzle-orm'
 import { LayoutWidth } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
-import { EventCard } from '@/components/EventCard'
+import { EventList } from '@/components/EventList'
 import { Button } from '@/components/Button'
 import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 
@@ -151,10 +151,8 @@ export default async function Home() {
         {upcomingEvents.length === 0 ? (
           <p className="text-muted">No upcoming events — check back soon!</p>
         ) : (
-          <div className="mt-8 flex flex-col gap-3">
-            {upcomingEvents.map((event, i) => (
-              <EventCard key={event.id} event={event} colorIndex={i} />
-            ))}
+          <div className="mt-8">
+            <EventList events={upcomingEvents} />
           </div>
         )}
         <div className="mt-8">

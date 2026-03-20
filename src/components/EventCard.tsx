@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Calendar, MapPin } from 'lucide-react'
+import { Clock, MapPin } from 'lucide-react'
 import type { Event } from '@/db/schema/events'
 
 // Pastel 6-stripe rainbow pride flag colors
@@ -13,20 +13,12 @@ const PRIDE_COLORS = [
   '#c4b5fd', // violet
 ]
 
-function formatCardDate(start: Date): string {
-  const tz = 'America/Los_Angeles'
-  const date = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  }).format(start)
-  const time = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
+function formatCardTime(start: Date): string {
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
     hour: 'numeric',
     minute: '2-digit',
   }).format(start)
-  return `${date} · ${time}`
 }
 
 type Props = {
@@ -52,8 +44,8 @@ export function EventCard({ event, colorIndex }: Props) {
             {event.title}
           </h3>
           <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
-            <Calendar size={13} className="shrink-0" />
-            {formatCardDate(event.startTime)}
+            <Clock size={13} className="shrink-0" />
+            {formatCardTime(event.startTime)}
           </p>
           <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
             <MapPin size={13} className="shrink-0" />

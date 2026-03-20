@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { LayoutWidth } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
-import { EventCard } from '@/components/EventCard'
+import { EventList } from '@/components/EventList'
 import { AddEvent } from '@/components/AddEvent'
 import { EventFilters } from './EventFilters'
 import {
@@ -104,11 +104,7 @@ export default async function EventsPage({
           )}
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          {filteredEvents.map((event, i) => (
-            <EventCard key={event.id} event={event} colorIndex={i} />
-          ))}
-        </div>
+        <EventList events={filteredEvents} />
       )}
     </main>
   )
