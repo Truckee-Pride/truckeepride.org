@@ -72,6 +72,16 @@ Segmented control for mutually exclusive options. Uses `role="radiogroup"` with 
 />
 ```
 
+### ToggleChip (`src/components/ToggleChip.tsx`)
+
+Boolean toggle chip for filter UIs. Renders as a `<button>` with `role="switch"` and `aria-checked`. Active state uses `bg-brand text-inverse`.
+
+```tsx
+<ToggleChip label="Dogs Welcome" pressed={dogs} onChangeAction={handleDogsChange}>
+  🐕
+</ToggleChip>
+```
+
 ### FilterSelect (`src/components/FilterSelect.tsx`)
 
 Dropdown select for filter UIs. Supports single-select and multi-select via `multiple` prop. Uses `role="combobox"` + `role="listbox"` with full keyboard navigation (arrow keys, Home/End, Escape).
