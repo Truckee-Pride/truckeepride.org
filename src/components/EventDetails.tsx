@@ -13,6 +13,7 @@ import {
   Ticket,
 } from 'lucide-react'
 import type { Event } from '@/db/schema/events'
+import { TextLink } from '@/components/TextLink'
 
 function formatDateRange(start: Date, end: Date | null) {
   const tz = 'America/Los_Angeles'
@@ -88,15 +89,15 @@ export function EventDetails({ event, headingLevel = 'h2' }: Props) {
             {event.googleMapsUrl && (
               <>
                 {' '}
-                <a
+                <TextLink
                   href={event.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-brand hover:underline"
+                  className="inline-flex items-center gap-1"
                 >
                   Map
                   <ExternalLink size={12} />
-                </a>
+                </TextLink>
               </>
             )}
           </div>

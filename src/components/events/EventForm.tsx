@@ -141,8 +141,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         locationName: formData.get('locationName') as string,
         locationAddress:
           (formData.get('locationAddress') as string) || undefined,
-        googleMapsUrl:
-          (formData.get('googleMapsUrl') as string) || undefined,
+        googleMapsUrl: (formData.get('googleMapsUrl') as string) || undefined,
         date: formData.get('date') as string,
         startTime: formData.get('startTime') as string,
         endTime: (formData.get('endTime') as string) || undefined,

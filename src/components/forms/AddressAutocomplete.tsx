@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
 import {
@@ -19,10 +19,7 @@ const dropdownStyles = cn(
   'overflow-hidden rounded-md border border-border bg-background shadow-lg',
 )
 
-const optionStyles = cn(
-  'cursor-pointer px-3 py-2 text-sm',
-  'hover:bg-muted/50',
-)
+const optionStyles = cn('cursor-pointer px-3 py-2 text-sm', 'hover:bg-muted/50')
 
 const optionActiveStyles = 'bg-muted/50'
 
@@ -55,9 +52,7 @@ export function AddressAutocomplete({
 }: Props) {
   const { input, setInput, predictions, isLoading, error } =
     usePlacesAutocomplete()
-  const [googleMapsUrl, setGoogleMapsUrl] = useState(
-    defaultGoogleMapsUrl ?? '',
-  )
+  const [googleMapsUrl, setGoogleMapsUrl] = useState(defaultGoogleMapsUrl ?? '')
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -105,38 +100,31 @@ export function AddressAutocomplete({
     }
   }
 
-  const handleSelect = useCallback(
-    (prediction: PlacePrediction) => {
-      const address = prediction.description
-      setInput(address)
-      onChangeAction?.(address)
+  function handleSelect(prediction: PlacePrediction) {
+    const address = prediction.description
+    setInput(address)
+    onChangeAction?.(address)
 
-      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}&query_place_id=${prediction.placeId}`
-      setGoogleMapsUrl(url)
-      onGoogleMapsUrlChangeAction?.(url)
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}&query_place_id=${prediction.placeId}`
+    setGoogleMapsUrl(url)
+    onGoogleMapsUrlChangeAction?.(url)
 
-      if (prediction.mainText) {
-        onPlaceSelectedAction?.(prediction.mainText)
-      }
+    if (prediction.mainText) {
+      onPlaceSelectedAction?.(prediction.mainText)
+    }
 
-      setIsOpen(false)
-    },
-    [onChangeAction, onGoogleMapsUrlChangeAction, onPlaceSelectedAction], // eslint-disable-line react-hooks/exhaustive-deps
-  )
+    setIsOpen(false)
+  }
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (!isOpen || predictions.length === 0) return
 
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setActiveIndex((prev) =>
-        prev < predictions.length - 1 ? prev + 1 : 0,
-      )
+      setActiveIndex((prev) => (prev < predictions.length - 1 ? prev + 1 : 0))
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      setActiveIndex((prev) =>
-        prev > 0 ? prev - 1 : predictions.length - 1,
-      )
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : predictions.length - 1))
     } else if (e.key === 'Enter' && activeIndex >= 0) {
       e.preventDefault()
       handleSelect(predictions[activeIndex])
