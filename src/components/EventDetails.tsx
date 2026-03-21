@@ -50,13 +50,27 @@ const AGE_ICONS: Record<string, typeof Baby> = {
 
 type Props = {
   event: Event
+  /** HTML heading level for the event title. Defaults to 'h2'. */
+  headingLevel?: 'h1' | 'h2'
 }
 
-export function EventDetails({ event }: Props) {
+export function EventDetails({ event, headingLevel = 'h2' }: Props) {
   const AgeIcon = AGE_ICONS[event.ageRestriction]
+  const Heading = headingLevel
 
   return (
     <>
+      {/* Title block */}
+      <header>
+        {event.emoji && (
+          <div className="text-5xl leading-none mb-2">{event.emoji}</div>
+        )}
+        <Heading className="mt-0 mb-0">{event.title}</Heading>
+        {event.shortDescription && (
+          <p className="text-muted mt-1 mb-0">{event.shortDescription}</p>
+        )}
+      </header>
+
       {/* Info block */}
       <ul className="list-none p-0 m-0 space-y-1 text-base mt-6">
         <li className="flex items-center gap-2">

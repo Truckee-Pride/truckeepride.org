@@ -52,7 +52,7 @@ export async function approveEvent(id: string) {
     eventUrl: `${BASE_URL}/events/${event.slug}`,
   })
 
-  revalidatePath('/admin/events', 'layout')
+  revalidatePath('/', 'layout')
   return { success: true }
 }
 
@@ -87,7 +87,7 @@ export async function rejectEvent(id: string, reason: string) {
     rejectionReason: trimmed,
   })
 
-  revalidatePath('/admin/events', 'layout')
+  revalidatePath('/', 'layout')
   return { success: true }
 }
 
@@ -109,7 +109,7 @@ export async function banUser(userId: string) {
     })
   })
 
-  revalidatePath('/admin/events', 'layout')
+  revalidatePath('/', 'layout')
   return { success: true }
 }
 
@@ -127,6 +127,6 @@ export async function deleteEvent(id: string) {
     })
   })
 
-  revalidatePath('/admin/events', 'layout')
+  revalidatePath('/', 'layout')
   return { success: true }
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { MoveUp, MoveDown } from 'lucide-react'
@@ -11,7 +10,7 @@ import { DeleteEventButton } from './DeleteEventButton'
 import { ApproveEventButton } from './ApproveEventButton'
 import { EditEventButton } from './EditEventButton'
 import { RejectEventButton } from './RejectEventButton'
-import { EventLightbox } from './EventLightbox'
+import { EventPreviewModal } from './EventPreviewModal'
 import { cn } from '@/lib/utils'
 import type { Event } from '@/db/schema/events'
 import type { User } from '@/db/schema/users'
@@ -202,11 +201,9 @@ export function AdminEventsTable({
         </table>
       </div>
 
-      {selectedEvent &&
-        createPortal(
-          <EventLightbox event={selectedEvent} onCloseAction={handleClose} />,
-          document.body,
-        )}
+      {selectedEvent && (
+        <EventPreviewModal event={selectedEvent} onCloseAction={handleClose} />
+      )}
     </>
   )
 }
