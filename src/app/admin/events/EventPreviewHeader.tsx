@@ -21,9 +21,6 @@ export function EventPreviewHeader({
     event.ticketUrl ?? /\[.+?\]\([a-z]+:/.test(event.description ?? '')
   return (
     <>
-      <h2 className="m-0">
-        <span className="capitalize">{event.status}</span> Event
-      </h2>
       <section>
         <div>
           {owner.firstName} {owner.lastName}

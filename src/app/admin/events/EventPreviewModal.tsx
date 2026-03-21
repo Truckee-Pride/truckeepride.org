@@ -18,7 +18,7 @@ export function EventPreviewModal({ event, onCloseAction }: Props) {
 
   return (
     <Modal
-      title={event.title}
+      title={`${event.status.charAt(0).toUpperCase()}${event.status.slice(1)} Event`}
       open={true}
       onOpenChangeAction={handleOpenChange}
       header={<EventPreviewHeader event={event} owner={event.owner} />}

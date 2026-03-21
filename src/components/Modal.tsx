@@ -18,11 +18,18 @@ const panelStyles = cn(
   'rounded-xl bg-background',
 )
 
-const headerStyles = cn(
-  'flex shrink-0 items-start gap-3',
+const titleRowStyles = cn(
+  'flex shrink-0 items-center gap-3',
   'rounded-t-xl bg-surface',
   sectionPadding,
-  'py-4',
+  'pt-4',
+  'pb-0',
+)
+
+const headerStyles = cn(
+  'shrink-0 bg-surface',
+  sectionPadding,
+  'pb-4',
 )
 
 const closeButtonStyles = cn(
@@ -43,10 +50,10 @@ const scrollAreaStyles = cn(
 )
 
 type Props = {
-  /** Accessible title announced to screen readers. */
+  /** Visible title shown in the top row alongside the close button. */
   title: string
-  /** Content rendered in the gray header area, beside the close button. */
-  header: React.ReactNode
+  /** Content rendered in the header area below the title row. */
+  header?: React.ReactNode
   /** Scrollable body content. */
   children: React.ReactNode
   open: boolean
@@ -63,15 +70,15 @@ export function Modal({
   return (
     <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className={panelStyles} showCloseButton={false}>
-        <DialogTitle className="sr-only">{title}</DialogTitle>
-
-        <div className={headerStyles}>
-          <div className="flex-1 min-w-0">{header}</div>
+        <div className={titleRowStyles}>
+          <DialogTitle className="flex-1 min-w-0 m-0">{title}</DialogTitle>
           <DialogClose className={closeButtonStyles}>
             <X size={20} />
             <span className="sr-only">Close</span>
           </DialogClose>
         </div>
+
+        {header && <div className={headerStyles}>{header}</div>}
 
         <div className={scrollAreaStyles}>{children}</div>
       </DialogContent>
