@@ -152,7 +152,7 @@ export default async function Home() {
           <p className="text-muted">No upcoming events — check back soon!</p>
         ) : (
           <div className="mt-8">
-            <EventList events={upcomingEvents} />
+            <EventList events={upcomingEvents} maxEvents={5} />
           </div>
         )}
         <div className="mt-8">

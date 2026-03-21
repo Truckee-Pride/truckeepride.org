@@ -1,4 +1,5 @@
 import { TextLink } from '@/components/TextLink'
+import { numericDate } from '@/lib/dateTimeFormatters'
 import { DeleteEventButton } from './DeleteEventButton'
 import { ApproveEventButton } from './ApproveEventButton'
 import { RejectEventButton } from './RejectEventButton'
@@ -86,11 +87,7 @@ export function AdminEventsTable({
               )}
               {showDate && (
                 <td className={tdMutedStyles}>
-                  {event.startTime.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
+                  {numericDate(event.startTime)}
                 </td>
               )}
               {showLocation && (
@@ -100,11 +97,7 @@ export function AdminEventsTable({
               )}
               {showSubmitted && (
                 <td className={tdMutedStyles}>
-                  {event.createdAt.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
+                  {numericDate(event.createdAt)}
                 </td>
               )}
               <td className={actionCellStyles}>

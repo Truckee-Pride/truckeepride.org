@@ -5,14 +5,7 @@ import { Calendar } from 'lucide-react'
 import { DayPicker } from 'react-day-picker'
 import { cn } from '@/lib/utils'
 import { FormField } from './FormField'
-
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  })
-}
+import { shortDate } from '@/lib/dateTimeFormatters'
 
 function parseDefaultValue(value: string | undefined): Date | undefined {
   if (!value) return undefined
@@ -151,7 +144,7 @@ export function DateInput({
               className={cn(dateButtonStyles, fieldHasError && 'border-error')}
             >
               <span className={selectedDate ? 'text-foreground' : 'text-muted'}>
-                {selectedDate ? formatDate(selectedDate) : PLACEHOLDER}
+                {selectedDate ? shortDate(selectedDate) : PLACEHOLDER}
               </span>
               <Calendar aria-hidden className="ml-auto size-4 text-subtle" />
             </button>

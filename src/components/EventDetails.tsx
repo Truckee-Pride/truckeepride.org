@@ -12,32 +12,13 @@ import {
   Ticket,
 } from 'lucide-react'
 import type { Event } from '@/db/schema/events'
+import { fullDateWithYear, time } from '@/lib/dateTimeFormatters'
 
 function formatDateRange(start: Date, end: Date | null) {
-  const tz = 'America/Los_Angeles'
-  const dateStr = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(start)
-
-  const startTime = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(start)
-
+  const dateStr = fullDateWithYear(start)
+  const startTime = time(start)
   if (!end) return `${dateStr} · ${startTime}`
-
-  const endTime = new Intl.DateTimeFormat('en-US', {
-    timeZone: tz,
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(end)
-
-  return `${dateStr} · ${startTime} – ${endTime}`
+  return `${dateStr} · ${startTime} – ${time(end)}`
 }
 
 const AGE_ICONS: Record<string, typeof Baby> = {

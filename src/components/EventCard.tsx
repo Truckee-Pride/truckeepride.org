@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Clock, MapPin } from 'lucide-react'
+import { Calendar, MapPin } from 'lucide-react'
 import type { Event } from '@/db/schema/events'
+import { shortDate, time } from '@/lib/dateTimeFormatters'
 
 // Pastel 6-stripe rainbow pride flag colors
 const PRIDE_COLORS = [
@@ -12,14 +13,6 @@ const PRIDE_COLORS = [
   '#93c5fd', // blue
   '#c4b5fd', // violet
 ]
-
-function formatCardTime(start: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Los_Angeles',
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(start)
-}
 
 type Props = {
   event: Event
@@ -44,8 +37,8 @@ export function EventCard({ event, colorIndex }: Props) {
             {event.title}
           </h3>
           <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
-            <Clock size={13} className="shrink-0" />
-            {formatCardTime(event.startTime)}
+            <Calendar size={13} className="shrink-0" />
+            {shortDate(event.startTime)} · {time(event.startTime)}
           </p>
           <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
             <MapPin size={13} className="shrink-0" />

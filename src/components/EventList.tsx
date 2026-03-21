@@ -1,37 +1,18 @@
 import type { Event } from '@/db/schema/events'
+import { fullDate, dateKey } from '@/lib/dateTimeFormatters'
 import { EventCard } from './EventCard'
-
-const TZ = 'America/Los_Angeles'
-
-function formatDateHeading(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: TZ,
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  }).format(date)
-}
-
-function getDateKey(date: Date): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: TZ,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(date)
-}
 
 function groupEventsByDate(eventList: Event[]) {
   const groups: { key: string; heading: string; events: Event[] }[] = []
   let currentKey = ''
 
   for (const event of eventList) {
-    const key = getDateKey(event.startTime)
+    const key = dateKey(event.startTime)
     if (key !== currentKey) {
       currentKey = key
       groups.push({
         key,
-        heading: formatDateHeading(event.startTime),
+        heading: fullDate(event.startTime),
         events: [],
       })
     }
@@ -43,10 +24,12 @@ function groupEventsByDate(eventList: Event[]) {
 
 type Props = {
   events: Event[]
+  maxEvents?: number
 }
 
-export function EventList({ events }: Props) {
-  const groups = groupEventsByDate(events)
+export function EventList({ events, maxEvents }: Props) {
+  const limited = maxEvents ? events.slice(0, maxEvents) : events
+  const groups = groupEventsByDate(limited)
 
   return (
     <div className="flex flex-col gap-6">
