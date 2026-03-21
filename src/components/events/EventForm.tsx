@@ -15,7 +15,10 @@ import type { Event } from '@/db/schema/events'
 import { createEvent } from '@/app/events/new/actions'
 import { Input } from '@/components/forms/Input'
 import { UrlInput } from '@/components/forms/UrlInput'
-import { AddressAutocomplete } from '@/components/forms/AddressAutocomplete'
+import {
+  GoogleMapsAutocomplete,
+  type PlaceSelection,
+} from '@/components/forms/GoogleMapsAutocomplete'
 import { DateInput } from '@/components/forms/DateInput'
 import { MarkdownEditor } from '@/components/forms/MarkdownEditor'
 import { Select } from '@/components/forms/Select'
@@ -210,26 +213,45 @@ export function EventForm({ event, action = createEvent }: Props) {
     onFieldChange('description', value)
     updateDraft('description', value)
   }
-  function handleLocationNameChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setLocationName(e.target.value)
-    onFieldChange('locationName', e.target.value)
-    updateDraft('locationName', e.target.value)
+  function handleLocationNameChange(value: string) {
+    setLocationName(value)
+    onFieldChange('locationName', value)
+    updateDraft('locationName', value)
+    // Clear stale geo data when user types manually
+    if (googleMapsUrl) {
+      setGoogleMapsUrl('')
+      updateDraft('googleMapsUrl', '')
+    }
+  }
+  function handleLocationNameSelect(selection: PlaceSelection) {
+    setLocationName(selection.placeName)
+    onFieldChange('locationName', selection.placeName)
+    updateDraft('locationName', selection.placeName)
+    setLocationAddress(selection.address)
+    onFieldChange('locationAddress', selection.address)
+    updateDraft('locationAddress', selection.address)
+    setGoogleMapsUrl(selection.googleMapsUrl)
+    updateDraft('googleMapsUrl', selection.googleMapsUrl)
   }
   function handleLocationAddressChange(value: string) {
     setLocationAddress(value)
     onFieldChange('locationAddress', value)
     updateDraft('locationAddress', value)
-  }
-  function handleGoogleMapsUrlChange(url: string) {
-    setGoogleMapsUrl(url)
-    updateDraft('googleMapsUrl', url)
-  }
-  function handlePlaceSelected(placeName: string) {
-    if (!locationName) {
-      setLocationName(placeName)
-      onFieldChange('locationName', placeName)
-      updateDraft('locationName', placeName)
+    // Clear stale geo data when user types manually
+    if (googleMapsUrl) {
+      setGoogleMapsUrl('')
+      updateDraft('googleMapsUrl', '')
     }
+  }
+  function handleLocationAddressSelect(selection: PlaceSelection) {
+    setLocationAddress(selection.address)
+    onFieldChange('locationAddress', selection.address)
+    updateDraft('locationAddress', selection.address)
+    setLocationName(selection.placeName)
+    onFieldChange('locationName', selection.placeName)
+    updateDraft('locationName', selection.placeName)
+    setGoogleMapsUrl(selection.googleMapsUrl)
+    updateDraft('googleMapsUrl', selection.googleMapsUrl)
   }
   function handleDateChange(v: string) {
     setDate(v)
@@ -347,34 +369,31 @@ export function EventForm({ event, action = createEvent }: Props) {
       />
 
       <div className="grid items-start gap-6 xs:grid-cols-2">
-        <Input
+        <GoogleMapsAutocomplete
           label="Location Name"
           name="locationName"
+          types="establishment"
           required
-          autoComplete="off"
-          data-1p-ignore
-          data-bwignore
-          data-lpignore="true"
-          data-form-type="other"
           value={locationName}
           maxLength={200}
           placeholder="e.g. Truckee Regional Park"
           errors={errors.locationName}
-          onChange={handleLocationNameChange}
+          onChangeAction={handleLocationNameChange}
+          onPlaceSelectAction={handleLocationNameSelect}
         />
-        <AddressAutocomplete
+        <GoogleMapsAutocomplete
           label="Address"
           name="locationAddress"
+          types="address"
           value={locationAddress}
-          defaultGoogleMapsUrl={googleMapsUrl}
           maxLength={400}
           placeholder="e.g. 10981 Truckee Way, Truckee, CA"
           errors={errors.locationAddress}
           onChangeAction={handleLocationAddressChange}
-          onGoogleMapsUrlChangeAction={handleGoogleMapsUrlChange}
-          onPlaceSelectedAction={handlePlaceSelected}
+          onPlaceSelectAction={handleLocationAddressSelect}
         />
       </div>
+      <input type="hidden" name="googleMapsUrl" value={googleMapsUrl} />
 
       <div className="grid items-start gap-6 xs:grid-cols-3">
         <DateInput

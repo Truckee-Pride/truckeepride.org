@@ -57,7 +57,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Input too long' }, { status: 400 })
   }
 
-  // 4. Forward to Google Places API (New)
+  // 4. Determine place types to search
+  const typesParam = req.nextUrl.searchParams.get('types')
+  const includedPrimaryTypes =
+    typesParam === 'establishment'
+      ? ['establishment']
+      : typesParam === 'address'
+        ? ['address']
+        : ['address', 'establishment']
+
+  // 5. Forward to Google Places API (New)
   const apiKey = process.env.GOOGLE_PLACES_API_KEY
   if (!apiKey) {
     console.error('GOOGLE_PLACES_API_KEY is not set')
@@ -81,7 +90,7 @@ export async function GET(req: NextRequest) {
               radius: 80000,
             },
           },
-          includedPrimaryTypes: ['address', 'establishment'],
+          includedPrimaryTypes,
         }),
       },
     )

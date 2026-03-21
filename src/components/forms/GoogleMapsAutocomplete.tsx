@@ -23,36 +23,41 @@ const optionStyles = cn('cursor-pointer px-3 py-2 text-sm', 'hover:bg-muted/50')
 
 const optionActiveStyles = 'bg-muted/50'
 
+export type PlaceSelection = {
+  placeName: string
+  address: string
+  googleMapsUrl: string
+}
+
 type Props = {
   label: string
   name: string
+  types?: 'address' | 'establishment'
   errors?: string[]
   description?: string
   value?: string
-  defaultGoogleMapsUrl?: string
   maxLength?: number
   placeholder?: string
+  required?: boolean
   onChangeAction?: (value: string) => void
-  onPlaceSelectedAction?: (placeName: string) => void
-  onGoogleMapsUrlChangeAction?: (url: string) => void
+  onPlaceSelectAction?: (selection: PlaceSelection) => void
 }
 
-export function AddressAutocomplete({
+export function GoogleMapsAutocomplete({
   label,
   name,
+  types,
   errors,
   description,
   value: controlledValue,
-  defaultGoogleMapsUrl,
   maxLength,
   placeholder,
+  required,
   onChangeAction,
-  onPlaceSelectedAction,
-  onGoogleMapsUrlChangeAction,
+  onPlaceSelectAction,
 }: Props) {
   const { input, setInput, predictions, isLoading, error } =
-    usePlacesAutocomplete()
-  const [googleMapsUrl, setGoogleMapsUrl] = useState(defaultGoogleMapsUrl ?? '')
+    usePlacesAutocomplete(types)
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -93,26 +98,14 @@ export function AddressAutocomplete({
     const val = e.target.value
     setInput(val)
     onChangeAction?.(val)
-    // Clear stale geo data when user types manually
-    if (googleMapsUrl) {
-      setGoogleMapsUrl('')
-      onGoogleMapsUrlChangeAction?.('')
-    }
   }
 
   function handleSelect(prediction: PlacePrediction) {
-    const address = prediction.description
-    setInput(address)
-    onChangeAction?.(address)
+    const address = prediction.secondaryText || prediction.description
+    const placeName = prediction.mainText || ''
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(prediction.description)}&query_place_id=${prediction.placeId}`
 
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}&query_place_id=${prediction.placeId}`
-    setGoogleMapsUrl(url)
-    onGoogleMapsUrlChangeAction?.(url)
-
-    if (prediction.mainText) {
-      onPlaceSelectedAction?.(prediction.mainText)
-    }
-
+    onPlaceSelectAction?.({ placeName, address, googleMapsUrl })
     setIsOpen(false)
   }
 
@@ -147,6 +140,7 @@ export function AddressAutocomplete({
       name={name}
       description={description}
       errors={errors}
+      required={required}
     >
       {({ inputId, hasError, describedBy }) => (
         <div ref={wrapperRef} className="relative">
@@ -174,7 +168,6 @@ export function AddressAutocomplete({
             placeholder={placeholder}
             className={cn(inputBase, hasError && 'border-error')}
           />
-          <input type="hidden" name="googleMapsUrl" value={googleMapsUrl} />
 
           {isOpen && predictions.length > 0 && (
             <ul

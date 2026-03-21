@@ -7,7 +7,9 @@ export type PlacePrediction = {
   secondaryText: string
 }
 
-export function usePlacesAutocomplete() {
+type PlaceTypes = 'address' | 'establishment'
+
+export function usePlacesAutocomplete(types?: PlaceTypes) {
   const [input, setInput] = useState('')
   const [predictions, setPredictions] = useState<PlacePrediction[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -32,7 +34,7 @@ export function usePlacesAutocomplete() {
 
       try {
         const res = await fetch(
-          `/api/places/autocomplete?input=${encodeURIComponent(input.trim())}`,
+          `/api/places/autocomplete?input=${encodeURIComponent(input.trim())}${types ? `&types=${types}` : ''}`,
           { signal: abortRef.current.signal },
         )
 
@@ -63,7 +65,7 @@ export function usePlacesAutocomplete() {
       if (debounceRef.current) clearTimeout(debounceRef.current)
       if (abortRef.current) abortRef.current.abort()
     }
-  }, [input])
+  }, [input, types])
 
   function clear() {
     setPredictions([])

@@ -111,7 +111,7 @@ Before writing a bare `<input>`, `<textarea>`, `<select>`, or `<input type="chec
 | `DateInput`    | `<input type="date">`     | MM/DD/YYYY typed segments + react-day-picker calendar dropdown; stores `YYYY-MM-DD` |
 | `TimeCombobox` | custom time `<input>`     | Keyboard-navigable segments + dropdown; stores 24h `HH:MM`                          |
 | `EmojiPicker`  | —                         | Button + dropdown picker; returns emoji string                                      |
-| `AddressAutocomplete` | `<input>` with Places | Google Places Autocomplete; stores googleMapsUrl in hidden input                    |
+| `GoogleMapsAutocomplete` | `<input>` with Places | Google Places Autocomplete; `types` prop selects `'address'` or `'establishment'`; calls `onPlaceSelectAction` with `{ placeName, address, googleMapsUrl }` |
 | `FormError`    | inline error div          | Form-level (non-field) error; returns null if no message                            |
 | `FormField`    | —                         | Core wrapper for custom fields; render-prop pattern                                 |
 
