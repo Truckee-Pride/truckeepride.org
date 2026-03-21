@@ -7,7 +7,7 @@ export async function logAction(
   action: string,
   userId: string,
   targetType: string,
-  targetId: string
+  targetId: string,
 ) {
   await db.insert(auditLog).values({ action, userId, targetType, targetId })
 }
