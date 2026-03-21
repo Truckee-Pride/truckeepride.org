@@ -6,7 +6,10 @@ import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
 import { auditLog, users } from '@/db/schema'
 
-export { banUser } from '../events/actions'
+export async function banUser(userId: string) {
+  const { banUser: ban } = await import('../events/actions')
+  return ban(userId)
+}
 
 export async function unbanUser(id: string) {
   const admin = await requireUser()

@@ -97,7 +97,6 @@ export function DateInput({
 
   const hiddenValue = toHiddenValue(selectedDate)
 
-
   function handleDaySelect(selected: Date | undefined) {
     if (!selected) return
     if (!controlled) setInternalDate(selected)

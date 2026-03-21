@@ -77,7 +77,11 @@ Segmented control for mutually exclusive options. Uses `role="radiogroup"` with 
 Boolean toggle chip for filter UIs. Renders as a `<button>` with `role="switch"` and `aria-checked`. Active state uses `bg-brand text-inverse`.
 
 ```tsx
-<ToggleChip label="Dogs Welcome" pressed={dogs} onChangeAction={handleDogsChange}>
+<ToggleChip
+  label="Dogs Welcome"
+  pressed={dogs}
+  onChangeAction={handleDogsChange}
+>
   🐕
 </ToggleChip>
 ```

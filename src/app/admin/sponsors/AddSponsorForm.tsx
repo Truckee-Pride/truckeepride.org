@@ -28,7 +28,8 @@ export function AddSponsorForm() {
     async (_prev: ActionState, formData: FormData): Promise<ActionState> => {
       const nameValue = formData.get('name')?.toString().trim() ?? ''
       const imageValue = formData.get('imageUrl')?.toString().trim() ?? ''
-      const hasImage = imageValue !== '' || imageUploadRef.current?.needsUpload === true
+      const hasImage =
+        imageValue !== '' || imageUploadRef.current?.needsUpload === true
       if (!nameValue || !hasImage) {
         return {
           success: false,

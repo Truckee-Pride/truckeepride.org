@@ -1,5 +1,9 @@
 import { z } from 'zod'
-import { SAFE_LINK_PROTOCOLS, HTTPS_PROTOCOL, HAS_DOMAIN } from '@/lib/constants'
+import {
+  SAFE_LINK_PROTOCOLS,
+  HTTPS_PROTOCOL,
+  HAS_DOMAIN,
+} from '@/lib/constants'
 
 export const VIBE_TAGS = [
   'Sporty',
@@ -28,7 +32,8 @@ export const createEventBaseSchema = z.object({
     .max(5000, 'Description is too long')
     .transform((val) =>
       val.replace(/\[(.+?)\]\(([^)]+)\)/g, (match, text, url) => {
-        if (url.startsWith('http://')) return `[${text}](${url.replace('http://', 'https://')})`
+        if (url.startsWith('http://'))
+          return `[${text}](${url.replace('http://', 'https://')})`
         if (!SAFE_LINK_PROTOCOLS.test(url)) return `[${text}](https://${url})`
         return match
       }),
