@@ -23,7 +23,7 @@ export function TextButton({
       ref={ref}
       className={cn(
         textButtonStyles({ intent }),
-        disabled && 'opacity-50 cursor-default hover:no-underline',
+        disabled && 'cursor-default opacity-50 hover:no-underline',
         className,
       )}
       disabled={disabled}

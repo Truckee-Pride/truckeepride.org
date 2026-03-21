@@ -286,13 +286,13 @@ export function EventForm({ event, action = createEvent }: Props) {
       />
 
       <fieldset>
-        <legend className="text-base font-semibold text-foreground">
+        <legend className="text-foreground text-base font-semibold">
           Vibe Tags
-          <span className="ml-1.5 text-base font-normal text-muted">
+          <span className="text-muted ml-1.5 text-base font-normal">
             (optional)
           </span>
         </legend>
-        <p className="mt-1 text-sm text-muted">Pick any that fit your event.</p>
+        <p className="text-muted mt-1 text-sm">Pick any that fit your event.</p>
         <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
           {VIBE_TAGS.map((tag) => (
             <Checkbox
@@ -329,7 +329,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         onChangeAction={handleDescriptionChange}
       />
 
-      <div className="grid items-start gap-6 xs:grid-cols-2">
+      <div className="xs:grid-cols-2 grid items-start gap-6">
         <Input
           label="Location Name"
           name="locationName"
@@ -361,7 +361,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         />
       </div>
 
-      <div className="grid items-start gap-6 xs:grid-cols-3">
+      <div className="xs:grid-cols-3 grid items-start gap-6">
         <DateInput
           label="Date"
           name="date"

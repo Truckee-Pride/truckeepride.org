@@ -181,7 +181,7 @@ export function EditableText({
           placeholder={placeholder}
           disabled={isPending}
         />
-        {error && <p className="text-sm mt-0 text-error">{error}</p>}
+        {error && <p className="text-error mt-0 text-sm">{error}</p>}
       </div>
     )
   }
@@ -197,9 +197,9 @@ export function EditableText({
       >
         <span
           className={cn(
-            'min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left',
+            'min-w-0 flex-1 overflow-hidden text-left text-ellipsis whitespace-nowrap',
             textClassName,
-            !value && emptyStateText && 'italic text-muted',
+            !value && emptyStateText && 'text-muted italic',
           )}
         >
           {value || emptyStateText}

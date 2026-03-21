@@ -110,7 +110,7 @@ export default async function EventsPage({
           </p>
           {!hasFilters && time === 'upcoming' && (
             <>
-              <p className="mt-2 text-muted">
+              <p className="text-muted mt-2">
                 Have an event to share with the community?
               </p>
               <div className="mt-4 flex justify-center">

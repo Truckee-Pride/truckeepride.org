@@ -206,7 +206,7 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
                 <img
                   src={existingUrl}
                   alt="Current flyer"
-                  className="h-32 w-32 rounded-md border border-border object-cover"
+                  className="border-border h-32 w-32 rounded-md border object-cover"
                 />
                 <div className="flex gap-2 pt-1">
                   <TextButton
@@ -238,17 +238,17 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
                 <img
                   src={fileState.previewUrl}
                   alt="Preview"
-                  className="h-32 w-32 rounded-md border border-border object-cover"
+                  className="border-border h-32 w-32 rounded-md border object-cover"
                 />
                 <div className="space-y-1 pt-1">
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-foreground text-sm font-medium">
                     {fileState.file.name}
                   </p>
-                  <p className="text-sm text-muted">
+                  <p className="text-muted text-sm">
                     {formatFileSize(fileState.file.size)}
                   </p>
                   {fileState.dimensionWarning && (
-                    <p className="text-sm text-warning">
+                    <p className="text-warning text-sm">
                       {fileState.dimensionWarning}
                     </p>
                   )}
@@ -267,10 +267,10 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
             {/* Upload progress bar */}
             {uploading && (
               <div className="space-y-2">
-                <p className="text-sm text-muted">Uploading...</p>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-border">
+                <p className="text-muted text-sm">Uploading...</p>
+                <div className="bg-border h-2 w-full overflow-hidden rounded-full">
                   <div
-                    className="h-full rounded-full bg-brand transition-all duration-200"
+                    className="bg-brand h-full rounded-full transition-all duration-200"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -300,10 +300,10 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
                       : 'border-border hover:border-brand/50'
                 }`}
               >
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-foreground text-sm font-medium">
                   Drag and drop an image, or click to browse
                 </p>
-                <p className="mt-1 text-sm text-muted">
+                <p className="text-muted mt-1 text-sm">
                   JPEG, PNG, WebP, or GIF up to {formatFileSize(MAX_FILE_SIZE)}
                 </p>
               </div>

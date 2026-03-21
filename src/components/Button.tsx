@@ -36,7 +36,7 @@ export function Button({
 
   const content = (
     <div className="flex items-start gap-2">
-      {Icon && <Icon className="inline-block shrink-0 mt-1" size={20} />}
+      {Icon && <Icon className="mt-1 inline-block shrink-0" size={20} />}
       {children}
     </div>
   )

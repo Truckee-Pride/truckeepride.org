@@ -145,7 +145,7 @@ export function AccountForm({ redirectTo }: Props) {
         <p className="text-muted">
           <small>Didn&apos;t get it? Check your spam folder, or resend.</small>
         </p>
-        <div className="flex gap-3 flex-wrap items-start">
+        <div className="flex flex-wrap items-start gap-3">
           <Form action={resendAction} className="mt-0">
             <input type="hidden" name="email" value={sentEmail} />
             <input type="hidden" name="redirectTo" value={redirectTo} />
@@ -207,7 +207,7 @@ export function AccountForm({ redirectTo }: Props) {
         <input type="hidden" name="gravatarUrl" value={gravatarUrl ?? ''} />
         <FormError message={createState.error} />
 
-        <div className="grid gap-4 grid-cols-2">
+        <div className="grid grid-cols-2 gap-4">
           <Input
             label="First Name"
             name="firstName"

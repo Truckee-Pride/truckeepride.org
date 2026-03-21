@@ -118,7 +118,7 @@ export default async function EventPage({
       {/* Action buttons */}
       {!cancelled && (
         <section className="mt-10">
-          <div className="flex flex-wrap gap-3 mt-6">
+          <div className="mt-6 flex flex-wrap gap-3">
             <AddToCalendarButton
               title={event.title}
               startTime={event.startTime}

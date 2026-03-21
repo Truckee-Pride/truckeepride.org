@@ -2,6 +2,7 @@
 name: review
 description: Reviews current code changes against all project guidelines (design system components, Tailwind, Next.js, TypeScript, accessibility, forms, performance, code smells) and fixes violations. Use when the user asks to review, check, or audit their changes.
 disable-model-invocation: true
+context: fork
 ---
 
 Review the current code changes against every project guideline and fix all violations.
@@ -97,3 +98,21 @@ After everything is clean, output a summary:
 ```
 
 If nothing was found at all, say: "No violations found. Linters pass. Changes look good."
+
+### Pre-report gate
+
+Before writing the summary, confirm you checked ALL of these categories:
+
+- [ ] Design system components (C1–C5)
+- [ ] Tailwind (T1–T7)
+- [ ] Next.js (N1–N6)
+- [ ] TypeScript (TS1)
+- [ ] Code style (S1–S2)
+- [ ] Auth & security (A1–A6)
+- [ ] Data layer (D1–D4)
+- [ ] Accessibility (A11Y1–A11Y3)
+- [ ] Forms (F1–F4)
+- [ ] Performance (P1)
+- [ ] Code smells (E1–E5)
+
+If you skipped any category, go back and check it now.

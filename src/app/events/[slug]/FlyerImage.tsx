@@ -19,7 +19,7 @@ export function FlyerImage({ src, alt }: { src: string; alt: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="block max-w-sm max-[384px]:-mx-4 cursor-zoom-in"
+        className="block max-w-sm cursor-zoom-in max-[384px]:-mx-4"
         aria-label="View full flyer"
       >
         <Image
@@ -42,7 +42,7 @@ export function FlyerImage({ src, alt }: { src: string; alt: string }) {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="max-w-2xl w-full"
+            className="w-full max-w-2xl"
           >
             <Image
               src={src}

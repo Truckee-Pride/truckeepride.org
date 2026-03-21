@@ -53,7 +53,7 @@ export function StatusFilter() {
     <div ref={ref} className="relative inline-block">
       <button
         onClick={handleToggle}
-        className={`inline-flex items-center gap-1 font-medium cursor-pointer no-underline hover:underline ${current ? 'text-brand' : 'text-foreground'}`}
+        className={`inline-flex cursor-pointer items-center gap-1 font-medium no-underline hover:underline ${current ? 'text-brand' : 'text-foreground'}`}
       >
         {current ? `Status: ${activeLabel}` : 'Status'}
         <span className="text-xs">
@@ -65,12 +65,12 @@ export function StatusFilter() {
         </span>
       </button>
       {open && (
-        <div className="absolute z-10 mt-1 left-0 rounded-lg border border-border bg-background shadow-lg py-1 min-w-[140px]">
+        <div className="border-border bg-background absolute left-0 z-10 mt-1 min-w-[140px] rounded-lg border py-1 shadow-lg">
           {STATUSES.map((s) => (
             <button
               key={s.value}
               onClick={() => handleSelect(s.value)}
-              className={`block w-full text-left px-3 py-1.5 text-sm cursor-pointer hover:bg-surface ${s.value === current ? 'font-semibold text-brand' : 'text-foreground'}`}
+              className={`hover:bg-surface block w-full cursor-pointer px-3 py-1.5 text-left text-sm ${s.value === current ? 'text-brand font-semibold' : 'text-foreground'}`}
             >
               {s.label}
             </button>

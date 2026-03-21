@@ -32,7 +32,7 @@ export function AddEvent() {
   return (
     <Link
       href="/events/new"
-      className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-inverse no-underline transition-colors hover:bg-brand-hover"
+      className="bg-brand text-inverse hover:bg-brand-hover inline-flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold no-underline transition-colors"
     >
       <CalendarPlus size={16} />
       Submit an Event
@@ -160,7 +160,7 @@ import { AddEvent } from '@/components/AddEvent'
 // Empty branch:
 ;<div className="py-8 text-center">
   <p className="text-muted">No upcoming events right now — check back soon!</p>
-  <p className="mt-2 text-muted">Have an event to share with the community?</p>
+  <p className="text-muted mt-2">Have an event to share with the community?</p>
   <div className="mt-4 flex justify-center">
     <AddEvent />
   </div>

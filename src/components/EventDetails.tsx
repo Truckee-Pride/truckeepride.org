@@ -63,7 +63,7 @@ export function EventDetails({ event, headingLevel = 'h2' }: Props) {
       {/* Title block */}
       <header>
         {event.emoji && (
-          <div className="text-5xl leading-none mb-2">{event.emoji}</div>
+          <div className="mb-2 text-5xl leading-none">{event.emoji}</div>
         )}
         <Heading className="mt-0 mb-0">{event.title}</Heading>
         {event.shortDescription && (
@@ -72,13 +72,13 @@ export function EventDetails({ event, headingLevel = 'h2' }: Props) {
       </header>
 
       {/* Info block */}
-      <ul className="list-none p-0 m-0 space-y-1 text-base mt-6">
+      <ul className="m-0 mt-6 list-none space-y-1 p-0 text-base">
         <li className="flex items-center gap-2">
           <Calendar size={16} className="shrink-0" />
           {formatDateRange(event.startTime, event.endTime ?? null)}
         </li>
         <li className="flex items-start gap-2">
-          <MapPin size={16} className="shrink-0 mt-[7px]" />
+          <MapPin size={16} className="mt-[7px] shrink-0" />
           <div>
             {event.locationName}
             {event.locationAddress && (

@@ -77,7 +77,7 @@ export function SignInForm({
         <p className="text-muted">
           <small>Didn&apos;t get it? Check your spam folder, or resend.</small>
         </p>
-        <div className="flex gap-3 flex-wrap items-start">
+        <div className="flex flex-wrap items-start gap-3">
           <Form action={resendAction} className="mt-0">
             <input type="hidden" name="email" value={sentEmail} />
             <input type="hidden" name="redirectTo" value={redirectTo} />
@@ -90,7 +90,7 @@ export function SignInForm({
             </Button>
           </Form>
         </div>
-        <p className="text-sm text-muted">
+        <p className="text-muted text-sm">
           Wrong email?{' '}
           <TextButton type="button" onClick={handleTryAgain}>
             Try again

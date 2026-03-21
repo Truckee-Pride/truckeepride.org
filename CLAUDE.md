@@ -112,11 +112,7 @@ app/
 - Enable `strict: true` in `tsconfig.json`. Never disable it.
 - Prefer `type` over `interface` for consistency.
 - **Never use `any`.** Use `unknown` and narrow it, or define a proper type.
-- Infer types from Zod schemas and Drizzle table definitions rather than duplicating them manually:
-  ```ts
-  type Event = typeof events.$inferSelect
-  type NewEvent = typeof events.$inferInsert
-  ```
+- Infer types from Zod schemas and Drizzle tables (`$inferSelect`, `z.infer`) — see the `data-layer` skill.
 - Export types from the place they're defined, not from a central `types.ts` barrel file.
 
 ### Accessibility
@@ -164,90 +160,27 @@ This generates a file in `src/components/ui/`. Config lives in `components.json`
 
 ## Tailwind CSS Rules
 
-Full conventions in the `tailwind` skill (auto-loaded for styling tasks). The most critical rules:
-
-- **Use `cn()` for all className composition.** Never use template literals or string concatenation: `cn(LayoutWidth.prose, 'py-12')` not `` `${LayoutWidth.prose} py-12` ``.
-- **Extract long classNames to named consts.** When a className exceeds ~3 utilities, extract to a descriptively-named `const` above the component return.
-- **Don't fight the design system with typography utilities.** `globals.css` sets font sizes, weights, and spacing for `h1`–`h4`, `p`, `ul`, `ol`, and `li`. Don't add `text-3xl`, `font-bold`, `mb-2`, etc. to these elements — let globals handle it. Only add utilities for **semantic color** (`text-subtle`, `text-muted`) or **context-specific layout** that the element genuinely needs.
-- **Use design tokens, not raw colors.** Prefer `bg-warning-bg`, `text-error`, `bg-brand` over `bg-yellow-50`, `text-red-700`, `bg-pink-500`. Add new tokens to `globals.css` if a color is used more than once.
-- **Never use `!important`** (or Tailwind's `!` prefix). Fix the cascade layer instead.
-
----
-
-## Admin Table Styles
-
-All admin data tables must use the shared style constants from `src/app/admin/table-styles.ts`. Never write inline table classNames in admin pages — import the named consts instead.
-
-```tsx
-import {
-  tableWrapperStyles,
-  headerRowStyles,
-  bodyRowStyles,
-  thStyles,
-  tdStyles,
-  tdMutedStyles,
-  actionCellStyles,
-} from '../table-styles'
-
-// Use like:
-;<div className={tableWrapperStyles}>
-  <table className="w-full text-sm">
-    <thead>
-      <tr className={headerRowStyles}>
-        <th className={thStyles}>...</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr className={bodyRowStyles}>
-        <td className={tdStyles}>...</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-```
+See the `tailwind` skill (auto-loaded for styling tasks) for full conventions. Key rule: use `cn()` for all className composition, design tokens instead of raw colors, and never use `!important`.
 
 ---
 
 ## Component Library
 
-**Never write a bare `<form>`, `<button>`, `<a>`, `<input>`, `<textarea>`, `<select>`, or `<input type="checkbox">`.** Always use a component from the catalog (full list in the `components` skill, auto-loaded for UI work). If no existing component fits, ask before creating a new one.
-**For every page, you should probably include a PageHeader rather than a bare <h1>**
+**Never write bare HTML form elements or buttons.** Always use components from the `components` skill catalog (auto-loaded for UI work). Use `PageHeader` instead of bare `<h1>` at the top of pages. If no existing component fits, ask before creating a new one.
 
-Quick reference:
-
-- Page Header -> `PageHeader` (`src/components/PageHeader.md`)
-- Form wrapper → `Form` (`src/components/forms/Form.tsx`)
-- Filled action button or link → `Button` (`src/components/Button.tsx`)
-- Inline text button → `TextButton` (`src/components/TextButton.tsx`)
-- Inline text link → `TextLink` (`src/components/TextLink.tsx`)
-- Inline notice/callout box → `Notice` (`src/components/Notice.tsx`) — variants: `warning` (default, yellow), `danger` (red)
-- Form fields (`input`, `textarea`, `select`, `checkbox`) → matching component from `src/components/forms/`
+Admin tables must use shared style constants from `src/app/admin/table-styles.ts` — see the `review` checklist rule T7.
 
 ---
 
 ## Common Commands
 
-```bash
-# Development
-pnpm dev                     # Start dev server
+Standard commands (`pnpm dev`, `pnpm lint`, `pnpm typecheck`, `pnpm build`) work as expected. These non-obvious commands require the dotenv wrapper:
 
-# Database
+```bash
 pnpm exec dotenv -e .env.local -- npx drizzle-kit generate     # Generate migration from schema changes
 pnpm exec dotenv -e .env.local -- npx drizzle-kit migrate      # Apply migrations
 pnpm exec dotenv -e .env.local -- npx drizzle-kit studio       # Visual DB browser (localhost:4983)
-
-# Checks
-pnpm lint
-pnpm typecheck
-pnpm build
-
-# Scripts (require .env.local)
-npx dotenv -e .env.local -- tsx src/scripts/<script>.ts
-
-# Package management
-pnpm add <pkg>               # Add dependency
-pnpm add -D <pkg>            # Add dev dependency
-pnpm update                  # Update all deps
+npx dotenv -e .env.local -- tsx src/scripts/<script>.ts         # Run scripts
 ```
 
 ---

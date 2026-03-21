@@ -131,7 +131,7 @@ export function AdminEventsTable({
                   />
                 </th>
               )}
-              <th className={cn(thStyles, 'text-right text-muted')}>Actions</th>
+              <th className={cn(thStyles, 'text-muted text-right')}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -229,16 +229,16 @@ function SortLink({
     <Link
       href={`/admin/events?${params.toString()}`}
       className={cn(
-        'no-underline inline-flex items-center gap-1 font-medium cursor-pointer hover:underline text-foreground',
+        'text-foreground inline-flex cursor-pointer items-center gap-1 font-medium no-underline hover:underline',
       )}
     >
       {label}
       {isActive && (
         <span className="text-xs">
           {dir === 'asc' ? (
-            <MoveUp aria-hidden className="size-4 text-subtle" />
+            <MoveUp aria-hidden className="text-subtle size-4" />
           ) : (
-            <MoveDown aria-hidden className="size-4 text-subtle" />
+            <MoveDown aria-hidden className="text-subtle size-4" />
           )}
         </span>
       )}

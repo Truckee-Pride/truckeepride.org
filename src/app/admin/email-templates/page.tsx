@@ -55,7 +55,7 @@ function EmailPreview({ title, html }: { title: string; html: string }) {
       <iframe
         srcDoc={html}
         title={title}
-        className="w-full rounded-lg border border-border"
+        className="border-border w-full rounded-lg border"
         style={{ height: '480px' }}
       />
     </section>

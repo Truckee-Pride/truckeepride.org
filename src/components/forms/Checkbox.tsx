@@ -27,7 +27,7 @@ export function Checkbox({
         htmlFor={inputId}
         className={cn(
           labelStyles,
-          'cursor-pointer flex items-center gap-2 leading-none',
+          'flex cursor-pointer items-center gap-2 leading-none',
         )}
       >
         <input
@@ -37,7 +37,7 @@ export function Checkbox({
           value={value}
           aria-describedby={descId}
           className={cn(
-            'h-4 w-4 cursor-pointer rounded border-border accent-brand',
+            'border-border accent-brand h-4 w-4 cursor-pointer rounded',
             className,
           )}
           {...rest}
@@ -47,7 +47,7 @@ export function Checkbox({
       {description && (
         <p
           id={descId}
-          className={cn(descriptionStyles, 'cursor-pointer ml-6 mt-0')}
+          className={cn(descriptionStyles, 'mt-0 ml-6 cursor-pointer')}
         >
           {description}
         </p>
