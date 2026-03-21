@@ -1,6 +1,7 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { signIn } from '@/lib/auth'
@@ -151,6 +152,7 @@ export async function submitEventForReview(
     targetId: eventId,
   })
 
+  revalidatePath('/', 'layout')
   return { success: true }
 }
 

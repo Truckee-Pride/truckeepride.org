@@ -1,6 +1,7 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
@@ -124,5 +125,6 @@ export async function updateEvent(
     targetId: eventId,
   })
 
+  revalidatePath('/', 'layout')
   redirect(`/events/${updated.slug}`)
 }

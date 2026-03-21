@@ -5,6 +5,7 @@ import { RejectEventButton } from './RejectEventButton'
 import { cn } from '@/lib/utils'
 import { EditEventButton } from './EditEventButton'
 import { formatPhoneNumber } from '@/lib/models/user'
+import { Notice } from '@/components/Notice'
 
 const actionsRowStyles = cn('flex shrink-0 flex-wrap gap-x-4 gap-y-2')
 
@@ -16,6 +17,8 @@ export function EventPreviewHeader({
   owner: User
 }) {
   const pending = event.status === 'pending'
+  const hasExternalLinks =
+    event.ticketUrl ?? /\[.+?\]\([a-z]+:/.test(event.description ?? '')
   return (
     <>
       <h2 className="m-0">
@@ -28,7 +31,14 @@ export function EventPreviewHeader({
         <div>{owner.email}</div>
         <div>{formatPhoneNumber(owner)}</div>
       </section>
-
+      {pending && hasExternalLinks && (
+        <Notice intent="warning">
+          <strong>
+            Before approving, verify any links in the description and ticket URL
+            lead to legitimate, safe sites.
+          </strong>
+        </Notice>
+      )}
       <section className={actionsRowStyles}>
         <EditEventButton slug={event.slug} />
         {pending && (
