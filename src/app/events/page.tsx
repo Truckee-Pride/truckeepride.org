@@ -28,7 +28,7 @@ export async function generateMetadata({
 export default async function EventsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ time?: string; tags?: string; age?: string }>
+  searchParams: Promise<{ time?: string; tags?: string; age?: string; dogs?: string }>
 }) {
   const params = await searchParams
 
@@ -48,6 +48,8 @@ export default async function EventsPage({
     ? (params.age as AgeRestriction)
     : null
 
+  const dogsFilter = params.dogs === 'yes'
+
   // Build query conditions
   const conditions = [eq(events.status, 'approved')]
 
@@ -65,12 +67,16 @@ export default async function EventsPage({
     conditions.push(arrayOverlaps(events.vibeTags, tagList))
   }
 
+  if (dogsFilter) {
+    conditions.push(eq(events.dogsWelcome, true))
+  }
+
   const filteredEvents = await db.query.events.findMany({
     where: and(...conditions),
     orderBy: time === 'past' ? desc(events.startTime) : asc(events.startTime),
   })
 
-  const hasFilters = tagList.length > 0 || ageFilter != null
+  const hasFilters = tagList.length > 0 || ageFilter != null || dogsFilter
 
   return (
     <main className={LayoutWidth.wide}>
@@ -80,7 +86,7 @@ export default async function EventsPage({
       />
 
       <div className="mb-6">
-        <EventFilters time={time} tags={tagList} age={ageFilter} />
+        <EventFilters time={time} tags={tagList} age={ageFilter} dogs={dogsFilter} />
       </div>
 
       {filteredEvents.length === 0 ? (

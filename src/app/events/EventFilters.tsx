@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ToggleGroup } from '@/components/ToggleGroup'
 import { FilterSelect } from '@/components/FilterSelect'
+import { ToggleChip } from '@/components/ToggleChip'
 import { VIBE_TAGS, AGE_RESTRICTION_OPTIONS } from '@/lib/schemas/events'
 
 const tagOptions = VIBE_TAGS.map((tag) => ({ value: tag, label: tag }))
@@ -15,9 +16,10 @@ type Props = {
   time: 'upcoming' | 'past'
   tags: string[]
   age: string | null
+  dogs: boolean
 }
 
-export function EventFilters({ time, tags, age }: Props) {
+export function EventFilters({ time, tags, age, dogs }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -48,6 +50,10 @@ export function EventFilters({ time, tags, age }: Props) {
     pushParams({ age: v || null })
   }
 
+  function handleDogsChange(pressed: boolean) {
+    pushParams({ dogs: pressed ? 'yes' : null })
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-3">
       <ToggleGroup
@@ -72,6 +78,13 @@ export function EventFilters({ time, tags, age }: Props) {
         value={age ?? ''}
         onChangeAction={handleAgeChange}
       />
+      <ToggleChip
+        label="Dogs Welcome"
+        pressed={dogs}
+        onChangeAction={handleDogsChange}
+      >
+        🐶
+      </ToggleChip>
     </div>
   )
 }
