@@ -23,6 +23,9 @@ export const SAFE_LINK_PROTOCOLS = /^(https:\/\/|mailto:|tel:)/
 /** Ticket URLs must use HTTPS. */
 export const HTTPS_PROTOCOL = /^https:\/\//
 
+/** Matches a real domain: letters, dot, letters (e.g. example.com). */
+export const HAS_DOMAIN = /[a-z]{2,}\.[a-z]{2,}/i
+
 /** HTML elements the markdown editor can produce — used to restrict rendering. */
 export const MARKDOWN_ALLOWED_ELEMENTS = [
   'p',

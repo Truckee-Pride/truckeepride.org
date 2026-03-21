@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { SAFE_LINK_PROTOCOLS, HTTPS_PROTOCOL } from '@/lib/constants'
+import { SAFE_LINK_PROTOCOLS, HTTPS_PROTOCOL, HAS_DOMAIN } from '@/lib/constants'
 
 export const VIBE_TAGS = [
   'Sporty',
@@ -38,6 +38,14 @@ export const createEventBaseSchema = z.object({
           SAFE_LINK_PROTOCOLS.test(url),
         ),
       'Links must use https://, mailto:, or tel:',
+    )
+    .refine(
+      (val) =>
+        [...val.matchAll(/\[.+?\]\(([^)]+)\)/g)].every(([, url]) => {
+          if (/^(mailto:|tel:)/.test(url)) return true
+          return HAS_DOMAIN.test(url)
+        }),
+      'Links must contain a valid domain (e.g. example.com)',
     ),
   locationName: z.string().min(1, 'Location name is required').max(200),
   locationAddress: z.string().max(400).optional(),
@@ -57,6 +65,10 @@ export const createEventBaseSchema = z.object({
     .refine(
       (val) => !val || HTTPS_PROTOCOL.test(val),
       'Ticket URL must use https://',
+    )
+    .refine(
+      (val) => !val || HAS_DOMAIN.test(val),
+      'Must be a valid domain (e.g. eventbrite.com)',
     )
     .optional()
     .or(z.literal('')),
