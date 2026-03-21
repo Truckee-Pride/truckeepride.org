@@ -1,29 +1,21 @@
 'use client'
 
-import * as Dialog from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+} from '@/components/ui/dialog'
+import { X } from 'lucide-react'
 
 /** Shared horizontal padding for header and body — keeps content aligned. */
 const sectionPadding = 'px-5'
 
-const overlayStyles = cn(
-  'fixed inset-0 z-50',
-  'bg-black/60',
-  'data-[state=open]:animate-in data-[state=open]:fade-in-0',
-  'data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
-)
-
-const contentStyles = cn(
-  'fixed inset-0 z-50',
-  'flex items-center justify-center p-4',
-)
-
 const panelStyles = cn(
-  'relative w-full max-w-2xl',
-  'max-h-[calc(100dvh-2rem)]',
-  'flex flex-col',
-  'rounded-xl bg-background shadow-xl',
+  'max-w-2xl max-h-[calc(100dvh-2rem)]',
+  'flex flex-col gap-0 p-0',
+  'rounded-xl bg-background',
 )
 
 const headerStyles = cn(
@@ -34,8 +26,8 @@ const headerStyles = cn(
 )
 
 const closeButtonStyles = cn(
-  'ml-auto shrink-0',
-  'p-1 rounded-md',
+  'static ml-auto shrink-0',
+  'p-1 rounded-md opacity-100',
   'text-muted cursor-pointer',
   'hover:text-foreground hover:bg-background',
 )
@@ -51,7 +43,7 @@ const scrollAreaStyles = cn(
 )
 
 type Props = {
-  /** Accessible title announced to screen readers (also used as aria-label). */
+  /** Accessible title announced to screen readers. */
   title: string
   /** Content rendered in the gray header area, beside the close button. */
   header: React.ReactNode
@@ -69,24 +61,20 @@ export function Modal({
   onOpenChangeAction,
 }: Props) {
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChangeAction}>
-      <Dialog.Portal>
-        <Dialog.Overlay className={overlayStyles} />
-        <div className={contentStyles}>
-          <Dialog.Content className={panelStyles} aria-label={title}>
-            <Dialog.Title className="sr-only">{title}</Dialog.Title>
+    <Dialog open={open} onOpenChange={onOpenChangeAction}>
+      <DialogContent className={panelStyles} showCloseButton={false}>
+        <DialogTitle className="sr-only">{title}</DialogTitle>
 
-            <div className={headerStyles}>
-              <div className="flex-1 min-w-0">{header}</div>
-              <Dialog.Close className={closeButtonStyles} aria-label="Close">
-                <X size={20} />
-              </Dialog.Close>
-            </div>
-
-            <div className={scrollAreaStyles}>{children}</div>
-          </Dialog.Content>
+        <div className={headerStyles}>
+          <div className="flex-1 min-w-0">{header}</div>
+          <DialogClose className={closeButtonStyles}>
+            <X size={20} />
+            <span className="sr-only">Close</span>
+          </DialogClose>
         </div>
-      </Dialog.Portal>
-    </Dialog.Root>
+
+        <div className={scrollAreaStyles}>{children}</div>
+      </DialogContent>
+    </Dialog>
   )
 }
