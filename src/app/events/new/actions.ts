@@ -15,6 +15,9 @@ import { pacificToDate } from '@/lib/timezone'
 import { checkPendingEventLimit } from '@/lib/rate-limit'
 import { checkIpRateLimit, checkEmailRateLimit } from '@/lib/ip-rate-limit'
 import { getGravatarUrl } from '@/lib/gravatar'
+import { sendEventSubmittedNotification } from '@/lib/email'
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://truckeepride.org'
 
 // ── Create Event ──────────────────────────────────────────────────────
 
@@ -150,6 +153,25 @@ export async function submitEventForReview(
     targetType: 'event',
     targetId: eventId,
   })
+
+  // Notify admins about the new submission
+  const owner = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+  })
+
+  if (owner) {
+    const reviewUrl = `${BASE_URL}/admin/events/pending`
+    sendEventSubmittedNotification({
+      event,
+      submitterName: [owner.firstName, owner.lastName]
+        .filter(Boolean)
+        .join(' ') || null,
+      submitterEmail: owner.email,
+      reviewUrl,
+    }).catch((err) => {
+      console.error('Failed to send event submitted notification:', err)
+    })
+  }
 
   return { success: true }
 }

@@ -2,6 +2,8 @@ import { render } from '@react-email/components'
 import { Resend } from 'resend'
 import { EventApprovedEmail } from '@/emails/event-approved'
 import { EventRejectedEmail } from '@/emails/event-rejected'
+import { EventSubmittedEmail } from '@/emails/event-submitted'
+import type { Event } from '@/db/schema/events'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -58,4 +60,41 @@ export async function sendEventRejectedEmail({
       />,
     ),
   })
+}
+
+const ADMIN_NOTIFICATION_EMAILS = [
+  'sam.grossberg@gmail.com',
+  'david@truckeepride.org',
+]
+
+export async function sendEventSubmittedNotification({
+  event,
+  submitterName,
+  submitterEmail,
+  reviewUrl,
+}: {
+  event: Event
+  submitterName: string | null
+  submitterEmail: string
+  reviewUrl: string
+}) {
+  const html = await render(
+    <EventSubmittedEmail
+      event={event}
+      submitterName={submitterName}
+      submitterEmail={submitterEmail}
+      reviewUrl={reviewUrl}
+    />,
+  )
+
+  await Promise.all(
+    ADMIN_NOTIFICATION_EMAILS.map((to) =>
+      resend.emails.send({
+        from: EMAIL_FROM,
+        to,
+        subject: `New event submitted: ${event.emoji} ${event.title}`,
+        html,
+      }),
+    ),
+  )
 }
