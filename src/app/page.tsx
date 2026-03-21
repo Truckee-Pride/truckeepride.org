@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { and, asc, eq, gte } from 'drizzle-orm'
 import { LayoutWidth } from '@/lib/constants'
@@ -6,6 +5,7 @@ import { db } from '@/lib/db'
 import { events, sponsors } from '@/db/schema'
 import { EventCard } from '@/components/EventCard'
 import { Button } from '@/components/Button'
+import { SponsorLogo } from '@/components/SponsorLogo'
 import { DONATE_BUTTON_TEXT } from '@/lib/constants'
 
 const sponsorsGridClasses = 'grid grid-cols-2 gap-8 sm:grid-cols-3'
@@ -105,37 +105,18 @@ export default async function Home() {
             supporting us:
           </p>
           <div className={sponsorsGridClasses}>
-            {sponsorsList.map((sponsor) => {
-              const logoContent = (
-                <div className="relative aspect-square w-full max-w-[136px] max-h-[136px]">
-                  <Image
-                    src={sponsor.imageUrl}
-                    alt={sponsor.name}
-                    fill
-                    sizes="(min-width: 640px) 136px, 50vw"
-                    className="object-contain"
-                  />
-                </div>
-              )
-              return (
-                <div
-                  key={sponsor.id}
-                  className="flex items-center justify-center py-2"
-                >
-                  {sponsor.externalUrl ? (
-                    <a
-                      href={sponsor.externalUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {logoContent}
-                    </a>
-                  ) : (
-                    logoContent
-                  )}
-                </div>
-              )
-            })}
+            {sponsorsList.map((sponsor) => (
+              <div
+                key={sponsor.id}
+                className="flex items-center justify-center py-2"
+              >
+                <SponsorLogo
+                  name={sponsor.name}
+                  imageUrl={sponsor.imageUrl}
+                  externalUrl={sponsor.externalUrl}
+                />
+              </div>
+            ))}
           </div>
         </section>
       )}
