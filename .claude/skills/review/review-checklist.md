@@ -224,7 +224,7 @@ Fix: Remove it entirely and use React's built-in escaping. If raw HTML is
 truly required (e.g., rendering Markdown output), sanitize with DOMPurify
 before passing to `dangerouslySetInnerHTML`.
 
-### A4 — No secrets in NEXT_PUBLIC_ env vars
+### A4 — No secrets in NEXT*PUBLIC* env vars
 
 Look for: `NEXT_PUBLIC_` env vars containing API keys, database URLs,
 or auth secrets — either in `.env*` files or `process.env.NEXT_PUBLIC_*`

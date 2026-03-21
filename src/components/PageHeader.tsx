@@ -22,7 +22,7 @@ const titleRowStyles = 'flex flex-wrap gap-1 items-center justify-between'
 export function PageHeader({ title, subtitle, emoji, accessory }: Props) {
   return (
     <header>
-      {emoji && <div className="text-5xl leading-none mb-2">{emoji}</div>}
+      {emoji && <div className="mb-2 text-5xl leading-none">{emoji}</div>}
       <div className={titleRowStyles}>
         <h1 className="mt-0 mb-0">{title}</h1>
         {accessory && <div className="mt-2">{accessory}</div>}

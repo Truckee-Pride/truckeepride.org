@@ -28,7 +28,7 @@ export default async function SignInPage({
       <SignInForm
         redirectTo={callbackUrl ?? '/'}
         autoFocus
-        className="space-y-4 max-w-sm"
+        className="max-w-sm space-y-4"
       />
     </main>
   )

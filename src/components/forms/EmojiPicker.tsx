@@ -62,9 +62,9 @@ export function EmojiPicker({
               <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="flex h-10 w-10 items-center justify-center rounded-md border border-border bg-background text-xl transition-colors hover:bg-surface hover:cursor-pointer"
+                className="border-border bg-background hover:bg-surface flex h-10 w-10 items-center justify-center rounded-md border text-xl transition-colors hover:cursor-pointer"
               >
-                {emoji || <SmilePlus className="h-5 w-5 text-muted" />}
+                {emoji || <SmilePlus className="text-muted h-5 w-5" />}
               </button>
             </div>
           </>

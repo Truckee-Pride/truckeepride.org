@@ -102,6 +102,7 @@ If nothing was found at all, say: "No violations found. Linters pass. Changes lo
 ### Pre-report gate
 
 Before writing the summary, confirm you checked ALL of these categories:
+
 - [ ] Design system components (C1–C5)
 - [ ] Tailwind (T1–T7)
 - [ ] Next.js (N1–N6)

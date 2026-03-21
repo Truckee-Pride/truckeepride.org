@@ -54,19 +54,19 @@ export function EventCard({ event, colorIndex }: Props) {
           {event.emoji && (
             <div className="text-2xl leading-none">{event.emoji}</div>
           )}
-          <h3 className="m-0 text-xl md:text-3xl font-bold leading-snug text-foreground group-hover:underline decoration-1 underline-offset-2">
+          <h3 className="text-foreground m-0 text-xl leading-snug font-bold decoration-1 underline-offset-2 group-hover:underline md:text-3xl">
             {event.title}
           </h3>
-          <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
+          <p className="text-muted m-0 flex items-center gap-1.5 text-sm">
             <Calendar size={13} className="shrink-0" />
             {formatCardDate(event.startTime, event.endTime ?? null)}
           </p>
-          <p className="m-0 flex items-center gap-1.5 text-sm text-muted">
+          <p className="text-muted m-0 flex items-center gap-1.5 text-sm">
             <MapPin size={13} className="shrink-0" />
             {event.locationName}
           </p>
           {event.shortDescription && (
-            <p className="m-0 mt-1 text-base text-foreground line-clamp-1">
+            <p className="text-foreground m-0 mt-1 line-clamp-1 text-base">
               {event.shortDescription}
             </p>
           )}
@@ -74,7 +74,7 @@ export function EventCard({ event, colorIndex }: Props) {
 
         {/* Flyer — natural width from aspect ratio, capped at square */}
         {event.flyerUrl && (
-          <div className="shrink-0 self-stretch flex items-center pt-2 pb-2 pr-2">
+          <div className="flex shrink-0 items-center self-stretch pt-2 pr-2 pb-2">
             <Image
               src={event.flyerUrl}
               alt={`${event.title} flyer`}

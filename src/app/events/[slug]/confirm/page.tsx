@@ -37,18 +37,18 @@ export default async function ConfirmEventPage({
 
   return (
     <main className={LayoutWidth.prose}>
-      <div className="bg-green-50 border border-green-400 text-green-800 rounded-lg px-4 py-3 mb-6">
+      <div className="mb-6 rounded-lg border border-green-400 bg-green-50 px-4 py-3 text-green-800">
         <strong>Your event was saved!</strong> Review it below, then submit for
         approval.
       </div>
 
       <EventPreview event={event} />
 
-      <div className="flex flex-wrap gap-3 mt-8">
+      <div className="mt-8 flex flex-wrap gap-3">
         <ConfirmSubmitButton eventId={event.id} />
         <Link
           href={`/events/${event.slug}/edit`}
-          className="inline-block px-6 py-3 rounded-lg font-semibold text-xl border border-border text-foreground no-underline hover:bg-gray-50 transition-colors"
+          className="border-border text-foreground inline-block rounded-lg border px-6 py-3 text-xl font-semibold no-underline transition-colors hover:bg-gray-50"
         >
           Edit Event
         </Link>

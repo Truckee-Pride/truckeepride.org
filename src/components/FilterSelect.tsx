@@ -171,10 +171,10 @@ export function FilterSelect({
         onClick={() => setOpen((o) => !o)}
         onKeyDown={open ? handleListKeyDown : handleTriggerKeyDown}
         className={cn(
-          'inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm transition-colors',
-          'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+          'border-border bg-background inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg border px-3 text-sm transition-colors',
+          'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
           'hover:bg-surface',
-          hasSelection ? 'font-semibold text-brand' : 'text-foreground',
+          hasSelection ? 'text-brand font-semibold' : 'text-foreground',
         )}
       >
         {triggerText}
@@ -212,7 +212,7 @@ export function FilterSelect({
                 className={cn(
                   'flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm',
                   isActive && 'bg-surface',
-                  isSelected && 'font-semibold text-brand',
+                  isSelected && 'text-brand font-semibold',
                 )}
               >
                 {multiple && (
@@ -235,7 +235,7 @@ export function FilterSelect({
           {multiple && hasSelection && (
             <li
               role="presentation"
-              className="border-t border-border px-3 pt-1.5 pb-1"
+              className="border-border border-t px-3 pt-1.5 pb-1"
             >
               <TextButton type="button" intent="danger" onClick={handleClear}>
                 Clear all

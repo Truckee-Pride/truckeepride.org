@@ -126,12 +126,16 @@ export function MarkdownEditor({
           aria-invalid={hasError || undefined}
           aria-describedby={describedBy}
           className={cn(
-            'mdxeditor-form-field rounded-md border border-border',
-            'focus-within:border-brand focus-within:ring-1 focus-within:ring-brand',
+            'mdxeditor-form-field border-border rounded-md border',
+            'focus-within:border-brand focus-within:ring-brand focus-within:ring-1',
             hasError && 'border-error',
           )}
         >
-          <Editor ref={editorRef} markdown={defaultValue} onChange={handleChange} />
+          <Editor
+            ref={editorRef}
+            markdown={defaultValue}
+            onChange={handleChange}
+          />
           <input type="hidden" name={name} value={markdown} />
         </div>
       )}

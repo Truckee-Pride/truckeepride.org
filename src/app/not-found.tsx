@@ -11,7 +11,7 @@ export default function NotFound() {
     <main className={LayoutWidth.wide}>
       <div className="py-16 text-center">
         <h1 className="mb-4">Page not found</h1>
-        <p className="mb-8 text-muted">
+        <p className="text-muted mb-8">
           The page you&apos;re looking for doesn&apos;t exist or may have moved.
         </p>
         <Button href="/">Back to home</Button>

@@ -52,7 +52,7 @@ export default async function AdminSponsorsPage() {
                     textClassName="m-0 font-medium"
                     suffix={
                       !sponsor.enabled ? (
-                        <span className="ml-2 text-sm text-muted">
+                        <span className="text-muted ml-2 text-sm">
                           (disabled)
                         </span>
                       ) : undefined

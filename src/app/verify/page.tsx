@@ -64,7 +64,7 @@ export default async function VerifyPage({
 
       {email && (
         <>
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex flex-wrap gap-3">
             <Form action={handleResend}>
               <input type="hidden" name="email" value={email} />
               <input type="hidden" name="redirectTo" value={redirectTo} />
@@ -74,7 +74,7 @@ export default async function VerifyPage({
               Create Account
             </Button>
           </div>
-          <p className="text-sm text-muted">
+          <p className="text-muted text-sm">
             Wrong email? <TextLink href={backUrl}>Try again</TextLink>
           </p>
         </>

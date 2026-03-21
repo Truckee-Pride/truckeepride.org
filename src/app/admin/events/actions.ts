@@ -94,7 +94,8 @@ export async function rejectEvent(id: string, reason: string) {
 export async function banUser(userId: string) {
   const user = await requireUser()
   if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
-  if (userId === user.id) return { success: false, error: 'Cannot ban yourself' }
+  if (userId === user.id)
+    return { success: false, error: 'Cannot ban yourself' }
 
   await db.transaction(async (tx) => {
     await tx

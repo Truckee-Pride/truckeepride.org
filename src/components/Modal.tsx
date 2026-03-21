@@ -26,11 +26,7 @@ const titleRowStyles = cn(
   'pb-0',
 )
 
-const headerStyles = cn(
-  'shrink-0 bg-surface',
-  sectionPadding,
-  'pb-4',
-)
+const headerStyles = cn('shrink-0 bg-surface', sectionPadding, 'pb-4')
 
 const closeButtonStyles = cn(
   'static ml-auto shrink-0',
@@ -71,7 +67,7 @@ export function Modal({
     <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className={panelStyles} showCloseButton={false}>
         <div className={titleRowStyles}>
-          <DialogTitle className="flex-1 min-w-0 m-0">{title}</DialogTitle>
+          <DialogTitle className="m-0 min-w-0 flex-1">{title}</DialogTitle>
           <DialogClose className={closeButtonStyles}>
             <X size={20} />
             <span className="sr-only">Close</span>

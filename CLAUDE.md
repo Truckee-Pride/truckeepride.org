@@ -191,4 +191,3 @@ npx dotenv -e .env.local -- tsx src/scripts/<script>.ts         # Run scripts
 - **Events** are the core feature. When in doubt, optimize for that workflow first.
 - **Magic link auth only** — no passwords, no OAuth (for now).
 - The site should be **fast on mobile** — many attendees will be on phones at outdoor events.
-

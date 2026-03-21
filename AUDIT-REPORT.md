@@ -8,12 +8,15 @@
 ## 1. Structure & Scope
 
 ### CLAUDE.md Length
+
 **240 lines — 3x over the ~80 line target.** This is the single biggest structural issue. Much of what's in CLAUDE.md is duplicated in skills or is generic knowledge Claude already has.
 
 ### Skills Directory Structure
+
 Skills are correctly placed in `.claude/skills/<name>/SKILL.md`. All 7 skills have valid YAML frontmatter with `name` and `description`. The `review` skill includes a supplementary `review-checklist.md` — good pattern.
 
 ### Missing Configuration
+
 **No `.claude/settings.json` exists.** This means zero hooks are configured — no auto-formatting, no branch protection, no automation.
 
 ---
@@ -42,7 +45,7 @@ Server secrets exposed via `NEXT_PUBLIC_` prefix are shipped to the browser. Nei
 **Fix:** Add to `review-checklist.md` after A3:
 
 ```markdown
-### A4 — No secrets in NEXT_PUBLIC_ env vars
+### A4 — No secrets in NEXT*PUBLIC* env vars
 
 Look for: `NEXT_PUBLIC_` env vars containing API keys, database URLs,
 or auth secrets — either in `.env*` files or `process.env.NEXT_PUBLIC_*`
@@ -89,13 +92,13 @@ Large sections duplicate what skills already cover.
 
 **Fix:** Remove/shrink these sections from CLAUDE.md:
 
-| Section to remove/shrink | Already covered by |
-|---|---|
-| "Tailwind CSS Rules" (~20 lines) | `tailwind` skill |
-| "Admin Table Styles" (full code example) | `review` checklist rule T7 |
-| "Component Library" (full catalog) | `components` skill |
+| Section to remove/shrink                 | Already covered by                        |
+| ---------------------------------------- | ----------------------------------------- |
+| "Tailwind CSS Rules" (~20 lines)         | `tailwind` skill                          |
+| "Admin Table Styles" (full code example) | `review` checklist rule T7                |
+| "Component Library" (full catalog)       | `components` skill                        |
 | "Code Style > TypeScript" type inference | `data-layer` skill + review checklist TS2 |
-| "Common Commands" (standard ones) | `package.json` scripts |
+| "Common Commands" (standard ones)        | `package.json` scripts                    |
 
 Replace each with a one-line pointer to the relevant skill.
 
@@ -137,6 +140,7 @@ No final gate to confirm all categories were checked.
 ### I5. `review` checklist missing stack-specific footguns
 
 Missing rules:
+
 - **D4** — Drizzle N+1 queries (db calls inside loops)
 - **A6** — Auth check uses client-supplied userId instead of `auth()`
 - **N6** — Hydration mismatch sources (`Date.now()`, `Math.random()`, `window.*` in Server Components)
@@ -185,13 +189,14 @@ Shrink to only non-obvious commands (Drizzle with dotenv).
 
 ## Summary
 
-| Priority | Count | Key themes |
-|---|---|---|
-| 🔴 Critical | 4 | Missing security rules (XSS, env secrets, SQL injection, env non-null assertion) |
-| 🟡 Important | 7 | CLAUDE.md bloat, no hooks, review skill gaps, skill trigger descriptions |
-| 🟢 Quick Wins | 6 | `context: fork`, description wording, dedup with ESLint |
+| Priority      | Count | Key themes                                                                       |
+| ------------- | ----- | -------------------------------------------------------------------------------- |
+| 🔴 Critical   | 4     | Missing security rules (XSS, env secrets, SQL injection, env non-null assertion) |
+| 🟡 Important  | 7     | CLAUDE.md bloat, no hooks, review skill gaps, skill trigger descriptions         |
+| 🟢 Quick Wins | 6     | `context: fork`, description wording, dedup with ESLint                          |
 
 **Top 3 actions by impact:**
+
 1. Add the 4 missing security rules to the review checklist
 2. Create `.claude/settings.json` with auto-format and main-branch-protection hooks
 3. Trim CLAUDE.md by ~50% by pointing to skills instead of duplicating them

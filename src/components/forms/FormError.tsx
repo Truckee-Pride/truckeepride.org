@@ -7,7 +7,7 @@ export function FormError({ message }: Props) {
   return (
     <div
       role="alert"
-      className="rounded-md border border-error-border bg-error-bg px-4 py-3 text-sm text-error"
+      className="border-error-border bg-error-bg text-error rounded-md border px-4 py-3 text-sm"
     >
       {message}
     </div>

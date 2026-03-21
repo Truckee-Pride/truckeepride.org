@@ -400,14 +400,14 @@ export function TimeCombobox({
                 hourRef.current?.focus()
               }}
               className={cn(
-                'flex h-10 w-full cursor-pointer items-center rounded-md border border-border bg-background px-3',
-                'text-base text-foreground',
-                'has-focus:border-brand has-focus:ring-1 has-focus:ring-brand',
+                'border-border bg-background flex h-10 w-full cursor-pointer items-center rounded-md border px-3',
+                'text-foreground text-base',
+                'has-focus:border-brand has-focus:ring-brand has-focus:ring-1',
                 hasError && 'border-error',
               )}
             >
               {isEmpty ? (
-                <span className="text-base text-subtle select-none">
+                <span className="text-subtle text-base select-none">
                   hh:mm PM
                 </span>
               ) : (
@@ -428,7 +428,7 @@ export function TimeCombobox({
                     className={cn(segment, 'w-[2ch] text-right')}
                   />
                   <span
-                    className="select-none text-base text-foreground"
+                    className="text-foreground text-base select-none"
                     aria-hidden
                   >
                     :
@@ -461,7 +461,7 @@ export function TimeCombobox({
                 </div>
               )}
 
-              <ChevronDown aria-hidden className="ml-auto size-4 text-subtle" />
+              <ChevronDown aria-hidden className="text-subtle ml-auto size-4" />
             </div>
 
             {open && (
@@ -469,7 +469,7 @@ export function TimeCombobox({
                 id={`${inputId}-listbox`}
                 role="listbox"
                 aria-label={label}
-                className="absolute top-full z-10 mt-1 max-h-60 w-full list-none overflow-y-auto rounded-xl border border-border bg-background p-1 shadow-lg"
+                className="border-border bg-background absolute top-full z-10 mt-1 max-h-60 w-full list-none overflow-y-auto rounded-xl border p-1 shadow-lg"
               >
                 {TIME_OPTIONS.map((opt, index) => {
                   const isSelected = opt.value === value24
@@ -494,7 +494,7 @@ export function TimeCombobox({
                         className={cn(
                           'flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 text-left text-base',
                           isSelected
-                            ? 'bg-brand font-medium text-inverse'
+                            ? 'bg-brand text-inverse font-medium'
                             : isHighlighted
                               ? 'bg-brand/20'
                               : 'hover:bg-surface',

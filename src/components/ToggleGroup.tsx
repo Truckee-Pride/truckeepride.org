@@ -54,7 +54,7 @@ export function ToggleGroup({ label, options, value, onChange }: Props) {
       ref={groupRef}
       role="radiogroup"
       aria-label={label}
-      className="inline-flex rounded-lg border border-border bg-surface"
+      className="border-border bg-surface inline-flex rounded-lg border"
     >
       {options.map((opt, i) => {
         const isActive = opt.value === value
@@ -69,7 +69,7 @@ export function ToggleGroup({ label, options, value, onChange }: Props) {
             onKeyDown={(e) => handleKeyDown(e, i)}
             className={cn(
               'min-h-[2.75rem] cursor-pointer px-4 text-sm font-medium transition-colors',
-              'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
+              'focus-visible:outline-brand focus-visible:outline-2 focus-visible:outline-offset-2',
               i === 0 && 'rounded-l-lg',
               i === options.length - 1 && 'rounded-r-lg',
               isActive

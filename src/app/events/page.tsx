@@ -28,7 +28,12 @@ export async function generateMetadata({
 export default async function EventsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ time?: string; tags?: string; age?: string; dogs?: string }>
+  searchParams: Promise<{
+    time?: string
+    tags?: string
+    age?: string
+    dogs?: string
+  }>
 }) {
   const params = await searchParams
 
@@ -86,7 +91,12 @@ export default async function EventsPage({
       />
 
       <div className="mb-6">
-        <EventFilters time={time} tags={tagList} age={ageFilter} dogs={dogsFilter} />
+        <EventFilters
+          time={time}
+          tags={tagList}
+          age={ageFilter}
+          dogs={dogsFilter}
+        />
       </div>
 
       {filteredEvents.length === 0 ? (
@@ -100,7 +110,7 @@ export default async function EventsPage({
           </p>
           {!hasFilters && time === 'upcoming' && (
             <>
-              <p className="mt-2 text-muted">
+              <p className="text-muted mt-2">
                 Have an event to share with the community?
               </p>
               <div className="mt-4 flex justify-center">

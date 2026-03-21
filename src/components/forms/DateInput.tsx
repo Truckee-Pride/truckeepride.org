@@ -97,7 +97,6 @@ export function DateInput({
 
   const hiddenValue = toHiddenValue(selectedDate)
 
-
   function handleDaySelect(selected: Date | undefined) {
     if (!selected) return
     if (!controlled) setInternalDate(selected)
@@ -151,11 +150,11 @@ export function DateInput({
               <span className={selectedDate ? 'text-foreground' : 'text-muted'}>
                 {selectedDate ? formatDate(selectedDate) : PLACEHOLDER}
               </span>
-              <Calendar aria-hidden className="ml-auto size-4 text-subtle" />
+              <Calendar aria-hidden className="text-subtle ml-auto size-4" />
             </button>
 
             {open && (
-              <div className="absolute top-full z-10 mt-1 rounded-xl border border-border bg-background p-2 shadow-lg">
+              <div className="border-border bg-background absolute top-full z-10 mt-1 rounded-xl border p-2 shadow-lg">
                 <DayPicker
                   mode="single"
                   selected={selectedDate}

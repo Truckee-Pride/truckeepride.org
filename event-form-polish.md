@@ -171,7 +171,7 @@ Update the label row to be `flex items-baseline justify-between` when `labelActi
     <label htmlFor={inputId} className={labelStyles}>
       {label}
       {!required && (
-        <span className="ml-1.5 text-base font-normal text-muted">
+        <span className="text-muted ml-1.5 text-base font-normal">
           (optional)
         </span>
       )}

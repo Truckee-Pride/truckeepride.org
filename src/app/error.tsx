@@ -19,7 +19,7 @@ export default function Error({
     <main className={LayoutWidth.wide}>
       <div className="py-16 text-center">
         <h1 className="mb-4">Something went wrong</h1>
-        <p className="mb-8 text-muted">
+        <p className="text-muted mb-8">
           We hit an unexpected snag. Try refreshing, or come back in a moment.
         </p>
         <div className="flex items-center justify-center gap-4">
