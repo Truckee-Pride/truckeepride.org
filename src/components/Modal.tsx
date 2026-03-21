@@ -26,11 +26,7 @@ const titleRowStyles = cn(
   'pb-0',
 )
 
-const headerStyles = cn(
-  'shrink-0 bg-surface',
-  sectionPadding,
-  'pb-4',
-)
+const headerStyles = cn('shrink-0 bg-surface', sectionPadding, 'pb-4')
 
 const closeButtonStyles = cn(
   'static ml-auto shrink-0',

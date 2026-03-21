@@ -12,18 +12,18 @@ Truckee Tahoe Pride Foundation is a 501(c)(3) nonprofit (EIN 994735689) based in
 
 ## Tech Stack
 
-| Layer            | Technology                            | Rationale                                                             |
-| ---------------- | ------------------------------------- | --------------------------------------------------------------------- |
-| **Framework**    | Next.js 15 (App Router, TypeScript)   | SSR for SEO, RSC, Server Actions, streaming.                          |
-| **Hosting**      | Vercel                                | Best Next.js DX, preview deploys, edge caching. Free or Pro ($20/mo). |
-| **Database**     | PostgreSQL on Neon                    | Serverless Postgres, connection pooling for Vercel, free tier.        |
-| **ORM**          | Drizzle ORM                           | SQL-first, tiny bundle, no codegen, TS-native schemas.                |
-| **Auth**         | Auth.js v5 with Resend email provider | Magic link only. Drizzle adapter. Sessions in Postgres.               |
-| **Email**        | Resend + React Email                  | Magic links + transactional notifications. `auth@truckeepride.org`.   |
-| **File Storage** | Vercel Blob                           | Event images. S3-compatible.                                          |
-| **Styling**      | Tailwind CSS v4                       | Utility-first, CSS-first config.                                      |
-| **UI Primitives**| shadcn/ui (Radix + Tailwind)          | Accessible headless components, copied into `src/components/ui/`.     |
-| **Validation**   | Zod                                   | Shared schemas between client and server.                             |
+| Layer             | Technology                            | Rationale                                                             |
+| ----------------- | ------------------------------------- | --------------------------------------------------------------------- |
+| **Framework**     | Next.js 15 (App Router, TypeScript)   | SSR for SEO, RSC, Server Actions, streaming.                          |
+| **Hosting**       | Vercel                                | Best Next.js DX, preview deploys, edge caching. Free or Pro ($20/mo). |
+| **Database**      | PostgreSQL on Neon                    | Serverless Postgres, connection pooling for Vercel, free tier.        |
+| **ORM**           | Drizzle ORM                           | SQL-first, tiny bundle, no codegen, TS-native schemas.                |
+| **Auth**          | Auth.js v5 with Resend email provider | Magic link only. Drizzle adapter. Sessions in Postgres.               |
+| **Email**         | Resend + React Email                  | Magic links + transactional notifications. `auth@truckeepride.org`.   |
+| **File Storage**  | Vercel Blob                           | Event images. S3-compatible.                                          |
+| **Styling**       | Tailwind CSS v4                       | Utility-first, CSS-first config.                                      |
+| **UI Primitives** | shadcn/ui (Radix + Tailwind)          | Accessible headless components, copied into `src/components/ui/`.     |
+| **Validation**    | Zod                                   | Shared schemas between client and server.                             |
 
 **Not using:** Turborepo/monorepo (single app, no need), MDX (too few content pages to justify), separate API routes (no external API consumers yet).
 

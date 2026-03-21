@@ -102,9 +102,7 @@ export function EventForm({ event, action = createEvent }: Props) {
   const [locationAddress, setLocationAddress] = useState(
     draft.locationAddress ?? event?.locationAddress ?? '',
   )
-  const [date, setDate] = useState(
-    draft.date ?? formatDate(event?.startTime),
-  )
+  const [date, setDate] = useState(draft.date ?? formatDate(event?.startTime))
   const [startTime, setStartTime] = useState(
     draft.startTime ?? formatTime(event?.startTime),
   )

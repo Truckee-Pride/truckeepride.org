@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { AdminEventsTable } from './AdminEventsTable'
 import { PageHeader } from '@/components/PageHeader'
+import { AdminEventsNav } from './AdminEventsNav'
 
 const SORT_FIELDS = ['title', 'startTime', 'locationName', 'createdAt'] as const
 type SortField = (typeof SORT_FIELDS)[number]
@@ -52,7 +53,10 @@ export default async function AdminEventsPage({
 
   return (
     <>
-      <PageHeader title={`All Events (${allEvents.length})`} />
+      <PageHeader
+        title={`All Events (${allEvents.length})`}
+        accessory={<AdminEventsNav />}
+      />
       <AdminEventsTable
         events={allEvents}
         columns={['status', 'date', 'location', 'submitted']}

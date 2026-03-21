@@ -4,14 +4,23 @@ import { useState } from 'react'
 import { Input } from './Input'
 import { validateUrl } from '@/lib/url'
 
-type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> & {
+type Props = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'id' | 'type'
+> & {
   label: string
   name: string
   errors?: string[]
   description?: string
 }
 
-export function UrlInput({ value: controlledValue, onChange, onBlur, errors, ...rest }: Props) {
+export function UrlInput({
+  value: controlledValue,
+  onChange,
+  onBlur,
+  errors,
+  ...rest
+}: Props) {
   const [internalValue, setInternalValue] = useState(
     (controlledValue as string) ?? '',
   )
@@ -20,9 +29,7 @@ export function UrlInput({ value: controlledValue, onChange, onBlur, errors, ...
   const isControlled = controlledValue !== undefined
   const displayValue = isControlled ? controlledValue : internalValue
 
-  const allErrors = domainError
-    ? [...(errors ?? []), domainError]
-    : errors
+  const allErrors = domainError ? [...(errors ?? []), domainError] : errors
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (domainError) setDomainError(null)

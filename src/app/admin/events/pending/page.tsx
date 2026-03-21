@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { AdminEventsTable } from '../AdminEventsTable'
 import { PageHeader } from '@/components/PageHeader'
+import { AdminEventsNav } from '../AdminEventsNav'
 
 export default async function PendingEventsPage() {
   const pendingEvents = await db.query.events.findMany({
@@ -13,7 +14,10 @@ export default async function PendingEventsPage() {
 
   return (
     <>
-      <PageHeader title={`Pending Events (${pendingEvents.length})`} />
+      <PageHeader
+        title={`Pending Events (${pendingEvents.length})`}
+        accessory={<AdminEventsNav />}
+      />
       <AdminEventsTable
         events={pendingEvents}
         columns={['date', 'location', 'submitted']}

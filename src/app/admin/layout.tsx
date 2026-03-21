@@ -1,5 +1,6 @@
 import { LayoutWidth } from '@/lib/constants'
 import { requireUser } from '@/lib/auth-stub'
+import { AdminNav } from './AdminNav'
 
 export default async function AdminLayout({
   children,
@@ -19,5 +20,10 @@ export default async function AdminLayout({
     )
   }
 
-  return children
+  return (
+    <main className={LayoutWidth.admin}>
+      <AdminNav />
+      <div className="mt-6">{children}</div>
+    </main>
+  )
 }

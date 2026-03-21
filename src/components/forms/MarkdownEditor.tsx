@@ -131,7 +131,11 @@ export function MarkdownEditor({
             hasError && 'border-error',
           )}
         >
-          <Editor ref={editorRef} markdown={defaultValue} onChange={handleChange} />
+          <Editor
+            ref={editorRef}
+            markdown={defaultValue}
+            onChange={handleChange}
+          />
           <input type="hidden" name={name} value={markdown} />
         </div>
       )}

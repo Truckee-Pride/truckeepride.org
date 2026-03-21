@@ -1,6 +1,6 @@
 {
-  "id": "53f8c985-0cd5-457d-b534-75970255efde",
-  "prevId": "c29cb9f3-15e1-441b-8676-7bfb83f75668",
+  "id": "b7face5b-8e8a-4965-bfa6-60a0d5d2bcd4",
+  "prevId": "d34a7ec7-8a66-4ffe-82d8-0088893107d7",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -64,6 +64,12 @@
           "notNull": true,
           "default": "'user'"
         },
+        "banned_at": {
+          "name": "banned_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -86,7 +92,9 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
@@ -135,8 +143,12 @@
           "name": "event_owners_event_id_events_id_fk",
           "tableFrom": "event_owners",
           "tableTo": "events",
-          "columnsFrom": ["event_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -144,8 +156,12 @@
           "name": "event_owners_user_id_users_id_fk",
           "tableFrom": "event_owners",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -153,8 +169,12 @@
           "name": "event_owners_added_by_users_id_fk",
           "tableFrom": "event_owners",
           "tableTo": "users",
-          "columnsFrom": ["added_by"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "added_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -245,13 +265,13 @@
           "name": "short_description",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "emoji": {
           "name": "emoji",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "requires_ticket": {
           "name": "requires_ticket",
@@ -267,6 +287,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'All ages'"
+        },
+        "vibe_tags": {
+          "name": "vibe_tags",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'"
         },
         "dogs_welcome": {
           "name": "dogs_welcome",
@@ -316,8 +343,12 @@
           "name": "events_owner_id_users_id_fk",
           "tableFrom": "events",
           "tableTo": "users",
-          "columnsFrom": ["owner_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "owner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -327,7 +358,9 @@
         "events_slug_unique": {
           "name": "events_slug_unique",
           "nullsNotDistinct": false,
-          "columns": ["slug"]
+          "columns": [
+            "slug"
+          ]
         }
       },
       "policies": {},
@@ -382,8 +415,12 @@
           "name": "audit_log_user_id_users_id_fk",
           "tableFrom": "audit_log",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -471,8 +508,12 @@
           "name": "accounts_user_id_users_id_fk",
           "tableFrom": "accounts",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -480,7 +521,10 @@
       "compositePrimaryKeys": {
         "accounts_provider_provider_account_id_pk": {
           "name": "accounts_provider_provider_account_id_pk",
-          "columns": ["provider", "provider_account_id"]
+          "columns": [
+            "provider",
+            "provider_account_id"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -517,8 +561,12 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -557,7 +605,10 @@
       "compositePrimaryKeys": {
         "verification_tokens_identifier_token_pk": {
           "name": "verification_tokens_identifier_token_pk",
-          "columns": ["identifier", "token"]
+          "columns": [
+            "identifier",
+            "token"
+          ]
         }
       },
       "uniqueConstraints": {},
@@ -581,11 +632,24 @@
           "primaryKey": false,
           "notNull": true
         },
-        "alt": {
-          "name": "alt",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "external_url": {
+          "name": "external_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enabled": {
+          "name": "enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
         },
         "sort_order": {
           "name": "sort_order",
@@ -602,7 +666,23 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "sponsors_name_unique": {
+          "name": "sponsors_name_unique",
+          "columns": [
+            {
+              "expression": "lower(trim(\"name\"))",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -615,17 +695,32 @@
     "public.user_role": {
       "name": "user_role",
       "schema": "public",
-      "values": ["user", "admin"]
+      "values": [
+        "user",
+        "admin"
+      ]
     },
     "public.age_restriction": {
       "name": "age_restriction",
       "schema": "public",
-      "values": ["All ages", "18+", "21+", "Some parts 21+", "PG-13"]
+      "values": [
+        "All ages",
+        "18+",
+        "21+",
+        "Some parts 21+",
+        "PG-13"
+      ]
     },
     "public.event_status": {
       "name": "event_status",
       "schema": "public",
-      "values": ["draft", "pending_review", "approved", "rejected", "cancelled"]
+      "values": [
+        "draft",
+        "pending",
+        "approved",
+        "rejected",
+        "cancelled"
+      ]
     }
   },
   "schemas": {},

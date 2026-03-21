@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { events } from '@/db/schema'
 import { AdminEventsTable } from '../AdminEventsTable'
 import { PageHeader } from '@/components/PageHeader'
+import { AdminEventsNav } from '../AdminEventsNav'
 
 export default async function PastEventsPage() {
   const pastEvents = await db.query.events.findMany({
@@ -13,7 +14,10 @@ export default async function PastEventsPage() {
 
   return (
     <>
-      <PageHeader title={`Past Events (${pastEvents.length})`} />
+      <PageHeader
+        title={`Past Events (${pastEvents.length})`}
+        accessory={<AdminEventsNav />}
+      />
       <AdminEventsTable
         events={pastEvents}
         columns={['date', 'location']}

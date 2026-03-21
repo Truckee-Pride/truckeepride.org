@@ -15,7 +15,10 @@ export function normalizeUrl(raw: string): string {
 const INVALID_DOMAIN_MESSAGE = 'Must contain a valid domain (e.g. example.com)'
 
 /** Normalize a URL and validate it has a real domain. Returns { url, error }. */
-export function validateUrl(raw: string): { url: string; error: string | null } {
+export function validateUrl(raw: string): {
+  url: string
+  error: string | null
+} {
   const url = normalizeUrl(raw)
   if (!url) return { url, error: null }
   if (!HAS_DOMAIN.test(url)) return { url, error: INVALID_DOMAIN_MESSAGE }

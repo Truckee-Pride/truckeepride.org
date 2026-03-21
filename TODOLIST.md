@@ -8,7 +8,7 @@
 
 **Goal: Protect event submission from spam, bots, and targeted harassment.**
 
-- [ ] **MVP.5.1** User banning: `bannedAt` column on users, admin "Ban Submitter" button in approval queue, bulk-reject pending events on ban
+- [ ] **MVP.5.1** User banning: bulk-reject pending events on ban, admin "Ban Submitter" button in approval queue
 - [ ] **MVP.5.2** Cloudflare Turnstile (free CAPTCHA) on event submission forms
 - [ ] **MVP.5.3** Disposable email domain blocking in Auth.js signIn callback
 
@@ -39,7 +39,7 @@
 - [ ] "My Events" tab/filter on `/events` page: show user's own events with status badges
 - [ ] Audit Log
 - [ ] Admin event owners page (`src/app/admin/events/[id]/owners/page.tsx`) — use Drizzle Studio until then
-- [ ] Admin user management `/admin/users` — use Drizzle Studio until then
+- [ ] Admin user management: role editing, user detail view
 - [ ] Rate limiting on sign-in
 - [ ] Full site nav: Get Involved, About, Donate links, mobile hamburger
 - [ ] About page, Get Involved page
