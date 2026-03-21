@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils'
-import { Avatar } from '@/components/Avatar'
 import { TextLink } from '@/components/TextLink'
 import { BanUserButton } from './BanUserButton'
 import type { User } from '@/db/schema/users'
@@ -12,6 +11,7 @@ import {
   tdMutedStyles,
   actionCellStyles,
 } from '../table-styles'
+import { formatPhoneNumber } from '@/lib/models/user'
 
 type Props = {
   users: User[]
@@ -24,10 +24,6 @@ const bannedBadgeStyles = cn(
   'bg-red-100 px-2 py-0.5',
   'text-xs font-medium text-red-700',
 )
-
-function gravatarUrl(email: string): string {
-  return `https://www.gravatar.com/avatar/${email.trim().toLowerCase()}?d=404&s=64`
-}
 
 function SortHeader({
   label,
@@ -71,7 +67,12 @@ export function AdminUsersTable({
       <table className="w-full text-sm">
         <thead>
           <tr className={headerRowStyles}>
-            <th className={thStyles}>User</th>
+            <SortHeader
+              label="Name"
+              field="name"
+              currentSort={sortField}
+              currentDir={sortDir}
+            />
             <SortHeader
               label="Email"
               field="email"
@@ -95,12 +96,10 @@ export function AdminUsersTable({
         </thead>
         <tbody>
           {userList.map((user) => {
-            const avatarSrc = user.image ?? gravatarUrl(user.email)
             return (
               <tr key={user.id} className={bodyRowStyles}>
                 <td className={cn(tdStyles, 'font-medium')}>
                   <span className="flex items-center gap-2">
-                    <Avatar src={avatarSrc} name={user.name} />
                     <span>
                       {user.name ?? '—'}
                       {user.bannedAt && (
@@ -110,7 +109,7 @@ export function AdminUsersTable({
                   </span>
                 </td>
                 <td className={tdMutedStyles}>{user.email}</td>
-                <td className={tdMutedStyles}>{user.phone ?? '—'}</td>
+                <td className={tdMutedStyles}>{formatPhoneNumber(user)}</td>
                 <td className={tdMutedStyles}>
                   {user.createdAt.toLocaleDateString('en-US', {
                     month: 'short',

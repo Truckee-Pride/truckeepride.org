@@ -8,6 +8,7 @@ import { signIn } from '@/lib/auth'
 import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
 import { events, users, auditLog } from '@/db/schema'
+import { computeName } from '@/lib/models/user'
 import { createEventSchema, type CreateEventInput } from '@/lib/schemas/events'
 import { accountFieldsSchema } from '@/lib/schemas/account'
 import { generateSlug, ensureUniqueSlug } from '@/lib/slug'
@@ -216,9 +217,15 @@ export async function createAccountAndSignIn(
     if (!existingUser.image && gravatarUrl) updates.image = gravatarUrl
 
     if (Object.keys(updates).length > 0) {
+      const effectiveFirst = updates.firstName ?? existingUser.firstName
+      const effectiveLast = updates.lastName ?? existingUser.lastName
       await db
         .update(users)
-        .set({ ...updates, updatedAt: new Date() })
+        .set({
+          ...updates,
+          name: computeName(effectiveFirst, effectiveLast),
+          updatedAt: new Date(),
+        })
         .where(eq(users.id, existingUser.id))
     }
   } else {
@@ -235,6 +242,7 @@ export async function createAccountAndSignIn(
     }
 
     await db.insert(users).values({
+      name: computeName(data.firstName, data.lastName),
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
