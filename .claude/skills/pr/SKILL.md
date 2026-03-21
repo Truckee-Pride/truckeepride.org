@@ -2,6 +2,7 @@
 name: pr
 description: Generates a GitHub PR link with pre-populated title and description for the current branch. Use when the user asks to open, create, or submit a PR.
 disable-model-invocation: true
+context: fork
 ---
 
 Generate a GitHub "compare" link with pre-populated title and body for the current branch.

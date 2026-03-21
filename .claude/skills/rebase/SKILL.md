@@ -1,6 +1,6 @@
 ---
 name: rebase
-description: Rebase the current branch onto main and fix any migration conflicts.
+description: Rebase the current branch onto main, resolve merge conflicts, and fix Drizzle migration timestamp ordering in _journal.json. Use when the user asks to rebase, sync with main, or fix migration conflicts after merging branches.
 disable-model-invocation: true
 ---
 

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "command": "npx prettier --write \"$CLAUDE_FILE_PATH\" 2>/dev/null; true"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -qE 'git (push|commit).*main\\b'; then echo 'BLOCKED: Do not push/commit directly to main.' >&2; exit 1; fi"
+      }
+    ]
+  }
+}

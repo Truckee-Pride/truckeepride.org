@@ -166,6 +166,12 @@ Fix: Add `'use server'` as the first line of the file.
 Look for: `throw new Error(...)` in Server Actions called by forms
 Fix: Return `{ success: false, error: 'message' }` instead.
 
+### N6 — Hydration mismatch sources
+
+Look for: `Date.now()`, `new Date()`, `Math.random()`, or `window.*` used
+directly in Server Component render output
+Fix: Move to a Client Component, or use `Suspense` with a client-only wrapper.
+
 ---
 
 ## TypeScript
@@ -173,6 +179,7 @@ Fix: Return `{ success: false, error: 'message' }` instead.
 ### TS1 — Use of `any`
 
 Look for: `: any`, `as any`, `<any>`
+(ESLint also catches this — only flag if ESLint is suppressed with a disable comment)
 Fix: Replace with `unknown` and add type narrowing, or define a proper type.
 
 ### TS2 — Manual type duplication
@@ -210,6 +217,33 @@ Fix: Add `auth()` call and role/ownership check at the start of the action.
 Look for: API keys, tokens, passwords, connection strings in source code
 Fix: Move to `.env.local` and reference via `process.env.VARIABLE_NAME`.
 
+### A3 — No dangerouslySetInnerHTML without sanitization
+
+Look for: `dangerouslySetInnerHTML` in JSX
+Fix: Remove it entirely and use React's built-in escaping. If raw HTML is
+truly required (e.g., rendering Markdown output), sanitize with DOMPurify
+before passing to `dangerouslySetInnerHTML`.
+
+### A4 — No secrets in NEXT_PUBLIC_ env vars
+
+Look for: `NEXT_PUBLIC_` env vars containing API keys, database URLs,
+or auth secrets — either in `.env*` files or `process.env.NEXT_PUBLIC_*`
+references to values that should be server-only.
+Fix: Remove the `NEXT_PUBLIC_` prefix. Use the variable only in Server
+Components or Server Actions.
+
+### A5 — No force-unwrapped env vars
+
+Look for: `process.env.VARIABLE_NAME!` (non-null assertion on env vars)
+Fix: Add a runtime check or use a validated env schema. Example:
+`const dbUrl = process.env.DATABASE_URL ?? ''` with an early error if empty.
+
+### A6 — Auth check uses client-supplied userId
+
+Look for: Server Actions that read `userId` from `formData` instead of `auth()`
+Fix: Always get the user ID from `const session = await auth()` — never trust
+client-supplied identity.
+
 ---
 
 ## Data Layer
@@ -225,6 +259,18 @@ Fix: Wrap in `db.transaction(async (tx) => { ... })`.
 Look for: Server Actions with `db.insert`/`db.update`/`db.delete`
 but no `revalidatePath()` or `revalidateTag()`
 Fix: Add appropriate `revalidatePath('/events')` or similar after the mutation.
+
+### D3 — No string interpolation in SQL
+
+Look for: Template literals building SQL strings with `${variable}` that
+bypass Drizzle's parameterized query builders.
+Fix: Use Drizzle's query builder API or `sql.placeholder()` for dynamic values.
+
+### D4 — Drizzle N+1 queries
+
+Look for: `db.query.*` or `db.select()` calls inside a `.map()`, `.forEach()`,
+or `for` loop
+Fix: Use a single query with `inArray()` or a relational `with` clause.
 
 ---
 

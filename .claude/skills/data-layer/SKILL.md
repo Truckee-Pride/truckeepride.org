@@ -1,6 +1,6 @@
 ---
 name: data-layer
-description: Drizzle ORM and Neon PostgreSQL conventions. Covers schema organization in src/db/schema/, migration workflow (drizzle-kit generate/migrate), transaction usage for multi-step mutations, revalidation after mutations, and audit logging for event mutations. Loaded when working on database queries, schema changes, Server Actions with mutations, or migrations.
+description: Drizzle ORM and Neon PostgreSQL conventions for schema definitions, database queries, columns, indexes, migrations (drizzle-kit generate/migrate), transactions for multi-step mutations, revalidation after mutations, and audit logging. Loaded when adding columns, writing queries, changing schema, creating migrations, or working on Server Actions with database mutations.
 user-invocable: false
 ---
 
