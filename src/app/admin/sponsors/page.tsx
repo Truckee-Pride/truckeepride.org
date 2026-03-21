@@ -8,7 +8,7 @@ import { ToggleSponsorButton } from './ToggleSponsorButton'
 import { AddSponsorForm } from './AddSponsorForm'
 import { LayoutWidth } from '@/lib/constants'
 import { EditableText } from '@/components/forms/EditableText'
-import { updateSponsorName } from './actions'
+import { updateSponsorName, updateSponsorUrl } from './actions'
 
 const sponsorRowClasses =
   'flex items-center gap-4 rounded-lg border border-border bg-surface p-4'
@@ -47,6 +47,8 @@ export default async function AdminSponsorsPage() {
                     onSaveAction={updateSponsorName.bind(null, sponsor.id)}
                     ariaLabel={`Edit sponsor name for ${sponsor.name}`}
                     emptyErrorMessage="Sponsor name is required"
+                    emptyStateText="Sponsor name"
+                    placeholder="Sponsor name"
                     textClassName="m-0 font-medium"
                     suffix={
                       !sponsor.enabled ? (
@@ -55,6 +57,17 @@ export default async function AdminSponsorsPage() {
                         </span>
                       ) : undefined
                     }
+                  />
+                  <EditableText
+                    value={sponsor.externalUrl ?? ''}
+                    onSaveAction={updateSponsorUrl.bind(null, sponsor.id)}
+                    ariaLabel={`Edit website URL for ${sponsor.name}`}
+                    emptyErrorMessage=""
+                    emptyStateText="Add URL"
+                    placeholder="https://example.com"
+                    textClassName="m-0 text-sm text-muted"
+                    className="mt-0.5"
+                    type="url"
                   />
                 </div>
                 <ToggleSponsorButton

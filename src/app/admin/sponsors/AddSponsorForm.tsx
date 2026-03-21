@@ -6,6 +6,7 @@ import {
   type ImageUploadHandle,
 } from '@/components/forms/ImageUpload'
 import { Input } from '@/components/forms/Input'
+import { UrlInput } from '@/components/forms/UrlInput'
 import { Button } from '@/components/Button'
 import { Form } from '@/components/forms/Form'
 import { addSponsor } from './actions'
@@ -21,16 +22,18 @@ export function AddSponsorForm() {
   const imageUploadRef = useRef<ImageUploadHandle>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [name, setName] = useState('')
+  const [externalUrl, setExternalUrl] = useState('')
 
   const wrappedAction = useCallback(
     async (_prev: ActionState, formData: FormData): Promise<ActionState> => {
       const nameValue = formData.get('name')?.toString().trim() ?? ''
       const imageValue = formData.get('imageUrl')?.toString().trim() ?? ''
-      if (!nameValue || !imageValue) {
+      const hasImage = imageValue !== '' || imageUploadRef.current?.needsUpload === true
+      if (!nameValue || !hasImage) {
         return {
           success: false,
           fieldErrors: {
-            ...(!imageValue && { image: ['Image is required'] }),
+            ...(!hasImage && { image: ['Image is required'] }),
             ...(!nameValue && { name: ['Sponsor name is required'] }),
           },
         }
@@ -65,6 +68,7 @@ export function AddSponsorForm() {
     if (state.success) {
       imageUploadRef.current?.clear()
       setName('')
+      setExternalUrl('')
     }
   }, [state])
 
@@ -84,6 +88,12 @@ export function AddSponsorForm() {
         value={name}
         onChange={(e) => setName(e.target.value)}
         errors={state.fieldErrors?.name}
+      />
+      <UrlInput
+        label="Website URL (optional)"
+        name="externalUrl"
+        value={externalUrl}
+        onChange={(e) => setExternalUrl(e.target.value)}
       />
       <Button type="submit" disabled={isWorking}>
         {isWorking ? 'Adding…' : 'Add Sponsor'}

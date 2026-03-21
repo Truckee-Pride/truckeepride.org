@@ -11,6 +11,8 @@ import {
 } from 'react'
 import { Pencil } from 'lucide-react'
 import { TextButton } from '@/components/TextButton'
+import { inputBase } from '@/components/forms/Input'
+import { validateUrl } from '@/lib/url'
 import { cn } from '@/lib/utils'
 
 type SaveResult = { success: boolean; error?: string }
@@ -20,22 +22,32 @@ type EditableTextProps = {
   onSaveAction: (nextValue: string) => Promise<SaveResult>
   ariaLabel: string
   emptyErrorMessage?: string
+  emptyStateText?: string
+  placeholder?: string
   className?: string
   textClassName?: string
   suffix?: ReactNode
+  /** Input type — when 'url', automatically normalizes (prepends https://) before save. */
+  type?: 'text' | 'url' | 'email' | 'tel'
 }
 
 const pencilIconStyles =
   'size-4 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100'
+
+/** Module-level lock: when an EditableText has a validation error, block other instances from opening. */
+let activeErrorInstance: (() => void) | null = null
 
 export function EditableText({
   value,
   onSaveAction,
   ariaLabel,
   emptyErrorMessage = 'Value is required',
+  emptyStateText,
+  placeholder,
   className,
   textClassName,
   suffix,
+  type = 'text',
 }: EditableTextProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [draftValue, setDraftValue] = useState(value)
@@ -48,6 +60,10 @@ export function EditableText({
   }, [value, isEditing])
 
   function handleEditName() {
+    if (activeErrorInstance) {
+      activeErrorInstance()
+      return
+    }
     setDraftValue(value)
     setError(null)
     setIsEditing(true)
@@ -64,28 +80,50 @@ export function EditableText({
   function handleCancelEdit() {
     setDraftValue(value)
     setError(null)
+    activeErrorInstance = null
     setIsEditing(false)
   }
 
-  function handleSave() {
-    const trimmedValue = draftValue.trim()
+  function refocusInput() {
+    requestAnimationFrame(() => inputRef.current?.focus())
+  }
 
-    if (!trimmedValue) {
-      setError(emptyErrorMessage)
+  function setErrorAndLock(message: string) {
+    setError(message)
+    activeErrorInstance = refocusInput
+    refocusInput()
+  }
+
+  function handleSave() {
+    let trimmedValue = draftValue.trim()
+    if (trimmedValue && type === 'url') {
+      const { url, error: urlError } = validateUrl(trimmedValue)
+      trimmedValue = url
+      setDraftValue(trimmedValue)
+      if (urlError) {
+        setErrorAndLock(urlError)
+        return
+      }
+    }
+
+    if (!trimmedValue && emptyErrorMessage) {
+      setErrorAndLock(emptyErrorMessage)
       return
     }
 
     if (trimmedValue === value) {
       setError(null)
+      activeErrorInstance = null
       setIsEditing(false)
       return
     }
 
     setError(null)
+    activeErrorInstance = null
     startTransition(async () => {
       const result = await onSaveAction(trimmedValue)
       if (!result.success) {
-        setError(result.error ?? 'Could not save value')
+        setErrorAndLock(result.error ?? 'Could not save value')
         return
       }
 
@@ -97,17 +135,22 @@ export function EditableText({
     if (isPending) return
 
     const trimmedValue = draftValue.trim()
-    if (!trimmedValue || trimmedValue === value) {
-      if (trimmedValue === value) setIsEditing(false)
+
+    // No changes — just close
+    if (trimmedValue === value || (!trimmedValue && !emptyErrorMessage)) {
+      setError(null)
+      activeErrorInstance = null
+      setIsEditing(false)
       return
     }
 
-    const shouldSave = window.confirm(`Save updated value: "${trimmedValue}"?`)
-    if (!shouldSave) {
-      handleCancelEdit()
+    // Empty with required — show error and stay
+    if (!trimmedValue && emptyErrorMessage) {
+      setErrorAndLock(emptyErrorMessage)
       return
     }
 
+    // Auto-save on blur (handleSave will lock on server error)
     handleSave()
   }
 
@@ -128,15 +171,17 @@ export function EditableText({
       <div className="space-y-1">
         <input
           ref={inputRef}
+          type={type}
           value={draftValue}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
-          className="h-9 w-full rounded-md border border-border bg-background px-3 py-2 text-base text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+          className={inputBase}
           aria-label={ariaLabel}
+          placeholder={placeholder}
           disabled={isPending}
         />
-        {error && <p className="text-sm text-error">{error}</p>}
+        {error && <p className="text-sm mt-0 text-error">{error}</p>}
       </div>
     )
   }
@@ -154,9 +199,10 @@ export function EditableText({
           className={cn(
             'min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left',
             textClassName,
+            !value && emptyStateText && 'italic text-muted',
           )}
         >
-          {value}
+          {value || emptyStateText}
         </span>
         {suffix ? (
           <span className="min-w-0 shrink overflow-hidden text-ellipsis whitespace-nowrap">
