@@ -19,7 +19,7 @@ export const bodyRowStyles = cn(
 )
 
 /** Standard header cell */
-export const thStyles = 'px-4 py-3 font-medium'
+export const thStyles = 'px-4 py-3 font-medium text-lg'
 
 /** Standard body cell */
 export const tdStyles = 'px-4 py-3'

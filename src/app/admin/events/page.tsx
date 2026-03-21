@@ -1,16 +1,20 @@
-import { asc, desc } from 'drizzle-orm'
+import { asc, desc, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { events } from '@/db/schema'
-import { EventsTableBody } from './EventsTableBody'
-import {
-  tableWrapperStyles,
-  headerRowStyles,
-  thStyles,
-} from '../table-styles'
-import { cn } from '@/lib/utils'
+import { AdminEventsTable } from './AdminEventsTable'
+import { PageHeader } from '@/components/PageHeader'
 
 const SORT_FIELDS = ['title', 'startTime', 'locationName', 'createdAt'] as const
 type SortField = (typeof SORT_FIELDS)[number]
+
+const VALID_STATUSES = [
+  'draft',
+  'pending',
+  'approved',
+  'rejected',
+  'cancelled',
+] as const
+type EventStatus = (typeof VALID_STATUSES)[number]
 
 function getOrderBy(sort: SortField, dir: 'asc' | 'desc') {
   const fn = dir === 'asc' ? asc : desc
@@ -29,37 +33,32 @@ function getOrderBy(sort: SortField, dir: 'asc' | 'desc') {
 export default async function AdminEventsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sort?: string; dir?: string }>
+  searchParams: Promise<{ sort?: string; dir?: string; status?: string }>
 }) {
   const params = await searchParams
   const sort = (
     SORT_FIELDS.includes(params.sort as SortField) ? params.sort : 'startTime'
   ) as SortField
   const dir = params.dir === 'asc' ? 'asc' : ('desc' as const)
+  const statusFilter = VALID_STATUSES.includes(params.status as EventStatus)
+    ? (params.status as EventStatus)
+    : null
 
   const allEvents = await db.query.events.findMany({
     orderBy: getOrderBy(sort, dir),
+    with: { owner: true },
+    ...(statusFilter ? { where: eq(events.status, statusFilter) } : {}),
   })
 
   return (
     <>
-      <h1 className="mb-6">All Events ({allEvents.length})</h1>
-
-      <div className={tableWrapperStyles}>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className={headerRowStyles}>
-              <th className={thStyles}>Title</th>
-              <th className={thStyles}>Status</th>
-              <th className={thStyles}>Date</th>
-              <th className={thStyles}>Location</th>
-              <th className={thStyles}>Submitted</th>
-              <th className={cn(thStyles, 'text-right text-muted')}>Actions</th>
-            </tr>
-          </thead>
-          <EventsTableBody events={allEvents} />
-        </table>
-      </div>
+      <PageHeader title={`All Events (${allEvents.length})`} />
+      <AdminEventsTable
+        events={allEvents}
+        columns={['status', 'date', 'location', 'submitted']}
+        sort={sort}
+        dir={dir}
+      />
     </>
   )
 }

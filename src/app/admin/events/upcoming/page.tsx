@@ -11,6 +11,7 @@ export default async function UpcomingEventsPage() {
       gte(events.startTime, new Date()),
     ),
     orderBy: asc(events.startTime),
+    with: { owner: true },
   })
 
   return (

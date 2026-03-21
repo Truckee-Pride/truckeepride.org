@@ -17,7 +17,7 @@ export async function checkPendingEventLimit(userId: string): Promise<{
       .where(
         and(
           eq(events.ownerId, userId),
-          inArray(events.status, ['draft', 'pending_review']),
+          inArray(events.status, ['draft', 'pending']),
         ),
       ),
     db

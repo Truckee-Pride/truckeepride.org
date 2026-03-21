@@ -6,8 +6,9 @@ import { PageHeader } from '@/components/PageHeader'
 
 export default async function PendingEventsPage() {
   const pendingEvents = await db.query.events.findMany({
-    where: eq(events.status, 'pending_review'),
+    where: eq(events.status, 'pending'),
     orderBy: asc(events.createdAt),
+    with: { owner: true },
   })
 
   return (

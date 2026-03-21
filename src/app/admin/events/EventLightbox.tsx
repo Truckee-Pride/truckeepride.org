@@ -5,11 +5,13 @@ import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { EventDetails } from '@/components/EventDetails'
 import { Notice } from '@/components/Notice'
+import { EventPreviewHeader } from './EventPreviewHeader'
 import type { Event } from '@/db/schema/events'
+import type { User } from '@/db/schema/users'
 import { LayoutWidth } from '@/lib/constants'
 
 type Props = {
-  event: Event
+  event: Event & { owner: User }
   onCloseAction: () => void
 }
 
@@ -37,16 +39,16 @@ export function EventLightbox({ event, onCloseAction }: Props) {
     LayoutWidth.wide,
     'max-h-[calc(100dvh-2rem)]',
     'flex flex-col',
-    'rounded-xl bg-background shadow-xl',
+    'rounded-xl bg-surface shadow-xl',
   )
 
   const panelInnerStyles = cn('flex flex-col flex-1 min-h-0')
 
-  const closeButtonRowStyles = cn('flex shrink-0 justify-end p-3')
+  const headerRowStyles = cn('flex shrink-0 w-full items-start py-4')
 
   const scrollAreaStyles = cn(
     'overflow-y-auto flex-1 min-h-0',
-    'p-6 sm:p-8',
+    'p-4',
     '[&::-webkit-scrollbar]:w-1.5',
     '[&::-webkit-scrollbar-track]:bg-transparent',
     '[&::-webkit-scrollbar-thumb]:rounded-full',
@@ -54,6 +56,7 @@ export function EventLightbox({ event, onCloseAction }: Props) {
   )
 
   const closeButtonStyles = cn(
+    'flex-shrink',
     'p-1 rounded-md',
     'text-muted cursor-pointer',
     'hover:text-foreground hover:bg-surface',
@@ -69,7 +72,10 @@ export function EventLightbox({ event, onCloseAction }: Props) {
     >
       <div className={panelStyles}>
         <div className={panelInnerStyles}>
-          <div className={closeButtonRowStyles}>
+          <div className={headerRowStyles}>
+            <div className="flex-1 min-w-0">
+              <EventPreviewHeader event={event} owner={event.owner} />
+            </div>
             <button
               onClick={onCloseAction}
               className={closeButtonStyles}
@@ -78,6 +84,7 @@ export function EventLightbox({ event, onCloseAction }: Props) {
               <X size={20} />
             </button>
           </div>
+
           <div className={scrollAreaStyles}>
             <header>
               {event.emoji && (
@@ -89,7 +96,7 @@ export function EventLightbox({ event, onCloseAction }: Props) {
               )}
             </header>
 
-            {event.status === 'pending_review' &&
+            {event.status === 'pending' &&
               (event.ticketUrl ??
                 /\[.+?\]\([a-z]+:/.test(event.description ?? '')) && (
                 <Notice intent="warning">

@@ -1,3 +1,9 @@
+---
+name: rebase
+description: Rebase the current branch onto main and fix any migration conflicts.
+disable-model-invocation: true
+---
+
 Rebase the current branch onto main and fix any migration conflicts.
 
 ## Steps

@@ -68,7 +68,7 @@ export default async function EventPage({
   const canEdit = user ? await canEditEvent(user, event) : false
 
   const cancelled = event.status === 'cancelled'
-  const pendingReview = event.status === 'pending_review'
+  const pendingReview = event.status === 'pending'
 
   const jsonLd = {
     '@context': 'https://schema.org',

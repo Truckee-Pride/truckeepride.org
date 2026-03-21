@@ -10,7 +10,7 @@ import { users } from './users'
 
 export const eventStatusEnum = pgEnum('event_status', [
   'draft',
-  'pending_review',
+  'pending',
   'approved',
   'rejected',
   'cancelled',

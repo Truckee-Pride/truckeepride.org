@@ -14,6 +14,7 @@ export const users = pgTable('users', {
   image: text('image'),
   phone: text('phone'),
   role: userRoleEnum('role').default('user').notNull(),
+  bannedAt: timestamp('banned_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })

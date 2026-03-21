@@ -63,14 +63,14 @@ export function EventFilters({ time, tags, age }: Props) {
         label="Vibes"
         options={tagOptions}
         value={tags}
-        onChange={handleTagsChange}
+        onChangeAction={handleTagsChange}
         multiple
       />
       <FilterSelect
         label="Age"
         options={ageOptions}
         value={age ?? ''}
-        onChange={handleAgeChange}
+        onChangeAction={handleAgeChange}
       />
     </div>
   )

@@ -27,6 +27,7 @@ import {
 } from '@/components/forms/ImageUpload'
 import { Button } from '@/components/Button'
 import { Form } from '@/components/forms/Form'
+import { formatPacificDate, formatPacificTime } from '@/lib/timezone'
 
 type ActionState = {
   success: boolean
@@ -53,14 +54,12 @@ type Props = {
 
 function formatDate(date: Date | null | undefined): string {
   if (!date) return ''
-  return date.toISOString().slice(0, 10)
+  return formatPacificDate(date)
 }
 
 function formatTime(date: Date | null | undefined): string {
   if (!date) return ''
-  const offset = date.getTimezoneOffset()
-  const local = new Date(date.getTime() - offset * 60000)
-  return local.toISOString().slice(11, 16)
+  return formatPacificTime(date)
 }
 
 type EventDraft = {

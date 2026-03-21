@@ -11,6 +11,7 @@ import { createEventSchema, type CreateEventInput } from '@/lib/schemas/events'
 import { accountFieldsSchema } from '@/lib/schemas/account'
 import { generateSlug, ensureUniqueSlug } from '@/lib/slug'
 import { isBlobUrl } from '@/lib/upload'
+import { pacificToDate } from '@/lib/timezone'
 import { checkPendingEventLimit } from '@/lib/rate-limit'
 import { checkIpRateLimit, checkEmailRateLimit } from '@/lib/ip-rate-limit'
 import { getGravatarUrl } from '@/lib/gravatar'
@@ -81,9 +82,9 @@ export async function createEvent(
   const baseSlug = generateSlug(data.title)
   const slug = await ensureUniqueSlug(baseSlug)
 
-  const startTime = new Date(`${data.date}T${data.startTime}`)
+  const startTime = pacificToDate(data.date, data.startTime)
   const endTime = data.endTime
-    ? new Date(`${data.date}T${data.endTime}`)
+    ? pacificToDate(data.date, data.endTime)
     : undefined
 
   const [event] = await db
@@ -135,7 +136,7 @@ export async function submitEventForReview(
 
   const [updated] = await db
     .update(events)
-    .set({ status: 'pending_review', updatedAt: new Date() })
+    .set({ status: 'pending', updatedAt: new Date() })
     .where(eq(events.id, eventId))
     .returning({ id: events.id })
 

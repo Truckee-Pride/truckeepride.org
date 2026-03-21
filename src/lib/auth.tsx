@@ -17,7 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }),
-  session: { strategy: 'database' },
+  session: { strategy: 'database', maxAge: 90 * 24 * 60 * 60 },
   providers: [
     ResendProvider({
       from: EMAIL_FROM,

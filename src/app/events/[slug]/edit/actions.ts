@@ -9,6 +9,7 @@ import { updateEventSchema, type UpdateEventInput } from '@/lib/schemas/events'
 import { del } from '@vercel/blob'
 import { canEditEvent } from '@/lib/permissions'
 import { isBlobUrl } from '@/lib/upload'
+import { pacificToDate } from '@/lib/timezone'
 
 export type UpdateEventState = {
   success: boolean
@@ -91,8 +92,8 @@ export async function updateEvent(
     }
   }
 
-  const startTime = new Date(`${data.date}T${data.startTime}`)
-  const endTime = data.endTime ? new Date(`${data.date}T${data.endTime}`) : null
+  const startTime = pacificToDate(data.date, data.startTime)
+  const endTime = data.endTime ? pacificToDate(data.date, data.endTime) : null
 
   const [updated] = await db
     .update(events)

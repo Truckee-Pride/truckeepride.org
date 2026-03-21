@@ -17,6 +17,7 @@ export async function getCurrentUser(): Promise<User | null> {
     phone: null,
     role:
       (session.user as unknown as { role: 'user' | 'admin' }).role ?? 'user',
+    bannedAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   }

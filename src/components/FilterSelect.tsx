@@ -17,7 +17,7 @@ type Props = {
   label: string
   options: Option[]
   value: string | string[]
-  onChange: (value: string | string[]) => void
+  onChangeAction: (value: string | string[]) => void
   multiple?: boolean
 }
 
@@ -25,7 +25,7 @@ export function FilterSelect({
   label,
   options,
   value,
-  onChange,
+  onChangeAction,
   multiple,
 }: Props) {
   const [open, setOpen] = useState(false)
@@ -134,15 +134,15 @@ export function FilterSelect({
       } else {
         next.add(optValue)
       }
-      onChange(Array.from(next))
+      onChangeAction(Array.from(next))
     } else {
-      onChange(optValue)
+      onChangeAction(optValue)
       setOpen(false)
     }
   }
 
   function handleClear() {
-    onChange(multiple ? [] : '')
+    onChangeAction(multiple ? [] : '')
     setOpen(false)
   }
 
@@ -171,7 +171,7 @@ export function FilterSelect({
         onClick={() => setOpen((o) => !o)}
         onKeyDown={open ? handleListKeyDown : handleTriggerKeyDown}
         className={cn(
-          'inline-flex min-h-[2.75rem] cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm transition-colors',
+          'inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm transition-colors',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
           'hover:bg-surface',
           hasSelection ? 'font-semibold text-brand' : 'text-foreground',
