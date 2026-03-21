@@ -37,6 +37,7 @@ Use `"latest"` for frequently-updated packages (Drizzle), caret ranges (`"^15"`)
 | Auth            | Auth.js v5 (magic link / email) |
 | Email           | Resend + React Email            |
 | File storage    | Vercel Blob                     |
+| UI primitives   | shadcn/ui (Radix + Tailwind)    |
 | Validation      | Zod                             |
 | Package manager | pnpm                            |
 
@@ -138,6 +139,26 @@ app/
 - Unit tests: Vitest for Zod schemas and pure utility functions.
 - Integration tests: Server Actions against a test DB.
 - E2E: Playwright for the critical path (submit event → admin approves → event appears publicly).
+
+---
+
+## shadcn/ui
+
+We use [shadcn/ui](https://ui.shadcn.com) for unstyled, accessible UI primitives (built on Radix). Components are **copied into the repo** at `src/components/ui/` — they're ours to customize.
+
+**Adding a new primitive:**
+
+```bash
+npx shadcn@latest add <component>   # e.g. npx shadcn@latest add dropdown-menu
+```
+
+This generates a file in `src/components/ui/`. Config lives in `components.json` (new-york style, Lucide icons).
+
+**Rules:**
+
+- **Don't use `src/components/ui/` components directly in pages or features.** Wrap them in a project-level component in `src/components/` (e.g., `Modal.tsx` wraps `dialog.tsx`). This keeps the shadcn/ui files easy to regenerate and update.
+- **Add a comment at the top of each `ui/` file** noting it came from shadcn/ui and any customizations made.
+- **Keep customizations minimal.** Prefer overriding via className props from the wrapper rather than editing the `ui/` file.
 
 ---
 

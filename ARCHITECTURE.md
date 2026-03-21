@@ -22,6 +22,7 @@ Truckee Tahoe Pride Foundation is a 501(c)(3) nonprofit (EIN 994735689) based in
 | **Email**        | Resend + React Email                  | Magic links + transactional notifications. `auth@truckeepride.org`.   |
 | **File Storage** | Vercel Blob                           | Event images. S3-compatible.                                          |
 | **Styling**      | Tailwind CSS v4                       | Utility-first, CSS-first config.                                      |
+| **UI Primitives**| shadcn/ui (Radix + Tailwind)          | Accessible headless components, copied into `src/components/ui/`.     |
 | **Validation**   | Zod                                   | Shared schemas between client and server.                             |
 
 **Not using:** Turborepo/monorepo (single app, no need), MDX (too few content pages to justify), separate API routes (no external API consumers yet).
@@ -60,6 +61,7 @@ truckeepride/
 │   │   ├── layout.tsx             # Root layout
 │   │   └── globals.css
 │   ├── components/                # React components
+│   │   ├── ui/                   # shadcn/ui primitives (Radix wrappers)
 │   │   ├── events/
 │   │   ├── layout/
 │   │   └── admin/

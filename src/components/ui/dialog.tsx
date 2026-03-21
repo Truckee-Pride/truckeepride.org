@@ -1,3 +1,6 @@
+// shadcn/ui Dialog — imported via `npx shadcn@latest add dialog`
+// Docs: https://ui.shadcn.com/docs/components/dialog
+// Customized: added `showCloseButton` prop to DialogContent.
 'use client'
 
 import * as React from 'react'
