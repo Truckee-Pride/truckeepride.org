@@ -106,7 +106,7 @@ Before writing the summary, confirm you checked ALL of these categories:
 - [ ] Design system components (C1–C5)
 - [ ] Tailwind (T1–T7)
 - [ ] Next.js (N1–N6)
-- [ ] TypeScript (TS1–TS2)
+- [ ] TypeScript (TS1)
 - [ ] Code style (S1–S2)
 - [ ] Auth & security (A1–A6)
 - [ ] Data layer (D1–D4)

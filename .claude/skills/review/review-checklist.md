@@ -176,13 +176,7 @@ Fix: Move to a Client Component, or use `Suspense` with a client-only wrapper.
 
 ## TypeScript
 
-### TS1 — Use of `any`
-
-Look for: `: any`, `as any`, `<any>`
-(ESLint also catches this — only flag if ESLint is suppressed with a disable comment)
-Fix: Replace with `unknown` and add type narrowing, or define a proper type.
-
-### TS2 — Manual type duplication
+### TS1 — Manual type duplication
 
 Look for: Type definitions that duplicate Drizzle table columns or Zod schema shape
 Fix: Use `typeof table.$inferSelect` for Drizzle, `z.infer<typeof schema>` for Zod.
