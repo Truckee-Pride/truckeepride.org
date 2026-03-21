@@ -105,11 +105,8 @@ export default async function Home() {
             supporting us:
           </p>
           <div className={sponsorsGridClasses}>
-            {sponsorsList.map((sponsor) => (
-              <div
-                key={sponsor.id}
-                className="flex items-center justify-center py-2"
-              >
+            {sponsorsList.map((sponsor) => {
+              const logoContent = (
                 <div className="relative aspect-square w-full max-w-[136px] max-h-[136px]">
                   <Image
                     src={sponsor.imageUrl}
@@ -119,8 +116,26 @@ export default async function Home() {
                     className="object-contain"
                   />
                 </div>
-              </div>
-            ))}
+              )
+              return (
+                <div
+                  key={sponsor.id}
+                  className="flex items-center justify-center py-2"
+                >
+                  {sponsor.externalUrl ? (
+                    <a
+                      href={sponsor.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {logoContent}
+                    </a>
+                  ) : (
+                    logoContent
+                  )}
+                </div>
+              )
+            })}
           </div>
         </section>
       )}

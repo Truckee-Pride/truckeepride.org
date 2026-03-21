@@ -14,6 +14,8 @@ export async function addSponsor(formData: FormData) {
 
   const imageUrl = formData.get('imageUrl')?.toString().trim() ?? ''
   const name = formData.get('name')?.toString().trim() ?? ''
+  const externalUrlRaw = formData.get('externalUrl')?.toString().trim()
+  const externalUrl = externalUrlRaw ?? null
 
   if (!imageUrl)
     return { success: false, fieldErrors: { image: ['Image is required'] } }
@@ -31,7 +33,7 @@ export async function addSponsor(formData: FormData) {
       fieldErrors: { name: ['A sponsor with that name already exists'] },
     }
 
-  await db.insert(sponsors).values({ imageUrl, name, sortOrder: 0 })
+  await db.insert(sponsors).values({ imageUrl, name, externalUrl, sortOrder: 0 })
 
   revalidatePath('/admin/sponsors')
   revalidatePath('/')
@@ -96,6 +98,22 @@ export async function updateSponsorName(id: number, name: string) {
     return { success: false, error: 'A sponsor with that name already exists' }
 
   await db.update(sponsors).set({ name: trimmedName }).where(eq(sponsors.id, id))
+
+  revalidatePath('/admin/sponsors')
+  revalidatePath('/')
+  return { success: true }
+}
+
+export async function updateSponsorUrl(id: number, url: string) {
+  const user = await requireUser()
+  if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
+
+  const externalUrl = url.trim() || null
+
+  await db
+    .update(sponsors)
+    .set({ externalUrl })
+    .where(eq(sponsors.id, id))
 
   revalidatePath('/admin/sponsors')
   revalidatePath('/')

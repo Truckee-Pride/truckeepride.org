@@ -21,6 +21,7 @@ export function AddSponsorForm() {
   const imageUploadRef = useRef<ImageUploadHandle>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [name, setName] = useState('')
+  const [externalUrl, setExternalUrl] = useState('')
 
   const wrappedAction = useCallback(
     async (_prev: ActionState, formData: FormData): Promise<ActionState> => {
@@ -65,6 +66,7 @@ export function AddSponsorForm() {
     if (state.success) {
       imageUploadRef.current?.clear()
       setName('')
+      setExternalUrl('')
     }
   }, [state])
 
@@ -84,6 +86,14 @@ export function AddSponsorForm() {
         value={name}
         onChange={(e) => setName(e.target.value)}
         errors={state.fieldErrors?.name}
+      />
+      <Input
+        label="Website URL (optional)"
+        name="externalUrl"
+        type="url"
+        placeholder="https://example.com"
+        value={externalUrl}
+        onChange={(e) => setExternalUrl(e.target.value)}
       />
       <Button type="submit" disabled={isWorking}>
         {isWorking ? 'Adding…' : 'Add Sponsor'}

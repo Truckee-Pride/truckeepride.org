@@ -20,6 +20,7 @@ type EditableTextProps = {
   onSaveAction: (nextValue: string) => Promise<SaveResult>
   ariaLabel: string
   emptyErrorMessage?: string
+  placeholder?: string
   className?: string
   textClassName?: string
   suffix?: ReactNode
@@ -33,6 +34,7 @@ export function EditableText({
   onSaveAction,
   ariaLabel,
   emptyErrorMessage = 'Value is required',
+  placeholder,
   className,
   textClassName,
   suffix,
@@ -70,7 +72,7 @@ export function EditableText({
   function handleSave() {
     const trimmedValue = draftValue.trim()
 
-    if (!trimmedValue) {
+    if (!trimmedValue && emptyErrorMessage) {
       setError(emptyErrorMessage)
       return
     }
@@ -97,8 +99,11 @@ export function EditableText({
     if (isPending) return
 
     const trimmedValue = draftValue.trim()
-    if (!trimmedValue || trimmedValue === value) {
-      if (trimmedValue === value) setIsEditing(false)
+    if (trimmedValue === value) {
+      setIsEditing(false)
+      return
+    }
+    if (!trimmedValue && emptyErrorMessage) {
       return
     }
 
@@ -134,6 +139,7 @@ export function EditableText({
           onBlur={handleBlur}
           className="h-9 w-full rounded-md border border-border bg-background px-3 py-2 text-base text-foreground focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
           aria-label={ariaLabel}
+          placeholder={placeholder}
           disabled={isPending}
         />
         {error && <p className="text-sm text-error">{error}</p>}
@@ -154,9 +160,10 @@ export function EditableText({
           className={cn(
             'min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left',
             textClassName,
+            !value && placeholder && 'italic text-muted',
           )}
         >
-          {value}
+          {value || placeholder}
         </span>
         {suffix ? (
           <span className="min-w-0 shrink overflow-hidden text-ellipsis whitespace-nowrap">
