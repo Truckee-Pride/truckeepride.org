@@ -18,6 +18,7 @@ import {
 
 export type ImageUploadHandle = {
   needsUpload: boolean
+  uploading: boolean
   upload: () => Promise<string | null>
   clear: () => void
 }
@@ -27,6 +28,7 @@ type Props = {
   label: string
   existingUrl?: string | null
   errors?: string[]
+  onUploadingChangeAction?: (uploading: boolean) => void
 }
 
 type FileState = {
@@ -37,7 +39,7 @@ type FileState = {
 
 export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
   function ImageUpload(
-    { name, label, existingUrl, errors: externalErrors },
+    { name, label, existingUrl, errors: externalErrors, onUploadingChangeAction },
     ref,
   ) {
     const [fileState, setFileState] = useState<FileState | null>(null)
@@ -112,6 +114,27 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
         if (prev) URL.revokeObjectURL(prev.previewUrl)
         return { file, previewUrl, dimensionWarning }
       })
+
+      // Start upload immediately
+      setUploading(true)
+      setUploadProgress(0)
+      onUploadingChangeAction?.(true)
+      try {
+        const blob = await upload(file.name, file, {
+          access: 'public',
+          handleUploadUrl: '/api/upload',
+          onUploadProgress: ({ percentage }) => {
+            setUploadProgress(percentage)
+          },
+        })
+        setBlobUrl(blob.url)
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Upload failed'
+        setError(message)
+      } finally {
+        setUploading(false)
+        onUploadingChangeAction?.(false)
+      }
     }
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -137,7 +160,8 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
     }
 
     useImperativeHandle(ref, () => ({
-      needsUpload: fileState != null && !blobUrl,
+      needsUpload: false,
+      uploading,
       clear: () => {
         setFileState(null)
         setBlobUrl(null)
@@ -145,31 +169,10 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
         setError(null)
       },
       upload: async () => {
-        // Nothing selected — use existing or empty
+        // Upload happens instantly on selection now — just return the result
         if (!fileState) return showExisting && existingUrl ? existingUrl : null
-
-        // Already uploaded (e.g. retry after form error)
         if (blobUrl) return blobUrl
-
-        setUploading(true)
-        setUploadProgress(0)
-        try {
-          const blob = await upload(fileState.file.name, fileState.file, {
-            access: 'public',
-            handleUploadUrl: '/api/upload',
-            onUploadProgress: ({ percentage }) => {
-              setUploadProgress(percentage)
-            },
-          })
-          setBlobUrl(blob.url)
-          return blob.url
-        } catch (err) {
-          const message = err instanceof Error ? err.message : 'Upload failed'
-          setError(message)
-          throw new Error(message)
-        } finally {
-          setUploading(false)
-        }
+        return null
       },
     }))
 
@@ -231,48 +234,78 @@ export const ImageUpload = forwardRef<ImageUploadHandle, Props>(
               </div>
             )}
 
-            {/* New file preview */}
-            {fileState && !uploading && (
+            {/* New file preview (with upload overlay when uploading) */}
+            {fileState && (
               <div className="flex items-start gap-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={fileState.previewUrl}
-                  alt="Preview"
-                  className="h-32 w-32 rounded-md border border-border object-cover"
-                />
+                <div className="relative h-32 w-32 shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={fileState.previewUrl}
+                    alt="Preview"
+                    className="h-32 w-32 rounded-md border border-border object-cover"
+                  />
+                  {uploading && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-md bg-white/60">
+                      <svg
+                        className="h-12 w-12 -rotate-90"
+                        viewBox="0 0 48 48"
+                        aria-label={`Uploading: ${Math.round(uploadProgress)}%`}
+                        role="progressbar"
+                        aria-valuenow={Math.round(uploadProgress)}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                      >
+                        {/* Track */}
+                        <circle
+                          cx="24"
+                          cy="24"
+                          r="20"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.8)"
+                          strokeWidth="4"
+                        />
+                        {/* Progress */}
+                        <circle
+                          cx="24"
+                          cy="24"
+                          r="20"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          strokeDasharray={2 * Math.PI * 20}
+                          strokeDashoffset={
+                            2 * Math.PI * 20 * (1 - uploadProgress / 100)
+                          }
+                          className="drop-shadow-md transition-[stroke-dashoffset] duration-200"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </div>
                 <div className="space-y-1 pt-1">
                   <p className="text-sm font-medium text-foreground">
                     {fileState.file.name}
                   </p>
                   <p className="text-sm text-muted">
                     {formatFileSize(fileState.file.size)}
+                    {uploading && ' — Uploading…'}
                   </p>
                   {fileState.dimensionWarning && (
                     <p className="text-sm text-warning">
                       {fileState.dimensionWarning}
                     </p>
                   )}
-                  <TextButton
-                    type="button"
-                    intent="danger"
-                    onClick={clearFile}
-                    className="text-sm"
-                  >
-                    Remove
-                  </TextButton>
-                </div>
-              </div>
-            )}
-
-            {/* Upload progress bar */}
-            {uploading && (
-              <div className="space-y-2">
-                <p className="text-sm text-muted">Uploading...</p>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-border">
-                  <div
-                    className="h-full rounded-full bg-brand transition-all duration-200"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
+                  {!uploading && (
+                    <TextButton
+                      type="button"
+                      intent="danger"
+                      onClick={clearFile}
+                      className="text-sm"
+                    >
+                      Remove
+                    </TextButton>
+                  )}
                 </div>
               </div>
             )}

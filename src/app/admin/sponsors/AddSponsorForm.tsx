@@ -36,19 +36,6 @@ export function AddSponsorForm() {
         }
       }
 
-      if (imageUploadRef.current?.needsUpload) {
-        setIsUploading(true)
-        try {
-          const url = await imageUploadRef.current.upload()
-          if (url) formData.set('imageUrl', url)
-        } catch (err) {
-          const message = err instanceof Error ? err.message : 'Upload failed'
-          return { success: false, fieldErrors: { image: [message] } }
-        } finally {
-          setIsUploading(false)
-        }
-      }
-
       return addSponsor(formData)
     },
     [],
@@ -75,6 +62,7 @@ export function AddSponsorForm() {
         name="imageUrl"
         label="Sponsor logo"
         errors={state.fieldErrors?.image}
+        onUploadingChangeAction={setIsUploading}
       />
       <Input
         label="Sponsor name"

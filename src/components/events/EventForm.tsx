@@ -82,7 +82,6 @@ type EventDraft = {
 export function EventForm({ event, action = createEvent }: Props) {
   const imageUploadRef = useRef<ImageUploadHandle>(null)
   const [isUploading, setIsUploading] = useState(false)
-  const [uploadError, setUploadError] = useState<string | null>(null)
 
   const { draft, updateDraft, clearDraft } = useDraft<EventDraft>(
     'event-draft',
@@ -128,8 +127,6 @@ export function EventForm({ event, action = createEvent }: Props) {
   // flow so Next.js properly handles redirects.
   const wrappedAction: FormAction = useCallback(
     async (prev, formData) => {
-      setUploadError(null)
-
       // Client-side validation
       const raw = {
         title: formData.get('title') as string,
@@ -156,20 +153,6 @@ export function EventForm({ event, action = createEvent }: Props) {
           fieldErrors: result.error.flatten().fieldErrors as Partial<
             Record<keyof CreateEventInput, string[]>
           >,
-        }
-      }
-
-      // Upload image if one was selected
-      if (imageUploadRef.current?.needsUpload) {
-        setIsUploading(true)
-        try {
-          const url = await imageUploadRef.current.upload()
-          formData.set('flyerUrl', url ?? '')
-        } catch {
-          setUploadError('Image upload failed. Please try again.')
-          return prev
-        } finally {
-          setIsUploading(false)
         }
       }
 
@@ -276,7 +259,7 @@ export function EventForm({ event, action = createEvent }: Props) {
 
   return (
     <Form action={formAction} className="mt-8 max-w-2xl space-y-6">
-      <FormError message={state.error ?? uploadError ?? undefined} />
+      <FormError message={state.error} />
 
       <Input
         label="Event Title"
@@ -409,6 +392,7 @@ export function EventForm({ event, action = createEvent }: Props) {
         label="Flyer Image"
         existingUrl={event?.flyerUrl}
         errors={errors.flyerUrl}
+        onUploadingChangeAction={setIsUploading}
       />
 
       <Select
@@ -455,13 +439,11 @@ export function EventForm({ event, action = createEvent }: Props) {
 
       <div className="pt-2">
         <Button type="submit" disabled={isPending || isUploading}>
-          {isUploading
-            ? 'Uploading Image...'
-            : isPending
-              ? 'Submitting...'
-              : event
-                ? 'Save Changes'
-                : 'Preview & Submit'}
+          {isPending
+            ? 'Submitting...'
+            : event
+              ? 'Save Changes'
+              : 'Preview & Submit'}
         </Button>
       </div>
     </Form>
