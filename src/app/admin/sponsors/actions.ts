@@ -7,6 +7,7 @@ import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
 import { sponsors } from '@/db/schema'
 import { isBlobUrl } from '@/lib/upload'
+import { normalizeUrl } from '@/lib/url'
 
 export async function addSponsor(formData: FormData) {
   const user = await requireUser()
@@ -14,8 +15,8 @@ export async function addSponsor(formData: FormData) {
 
   const imageUrl = formData.get('imageUrl')?.toString().trim() ?? ''
   const name = formData.get('name')?.toString().trim() ?? ''
-  const externalUrlField = formData.get('externalUrl')?.toString().trim()
-  const externalUrl = externalUrlField?.length ? externalUrlField : null
+  const externalUrlRaw = formData.get('externalUrl')?.toString().trim()
+  const externalUrl = externalUrlRaw ? normalizeUrl(externalUrlRaw) : null
 
   if (!imageUrl)
     return { success: false, fieldErrors: { image: ['Image is required'] } }
@@ -116,7 +117,7 @@ export async function updateSponsorUrl(id: number, url: string) {
   const user = await requireUser()
   if (user.role !== 'admin') return { success: false, error: 'Unauthorized' }
 
-  const externalUrl = url.trim() || null
+  const externalUrl = normalizeUrl(url) || null
 
   await db.update(sponsors).set({ externalUrl }).where(eq(sponsors.id, id))
 

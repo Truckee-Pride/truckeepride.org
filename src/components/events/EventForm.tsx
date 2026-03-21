@@ -14,6 +14,7 @@ import { useDraft } from '@/hooks/useDraft'
 import type { Event } from '@/db/schema/events'
 import { createEvent } from '@/app/events/new/actions'
 import { Input } from '@/components/forms/Input'
+import { UrlInput } from '@/components/forms/UrlInput'
 import { DateInput } from '@/components/forms/DateInput'
 import { MarkdownEditor } from '@/components/forms/MarkdownEditor'
 import { Select } from '@/components/forms/Select'
@@ -239,19 +240,6 @@ export function EventForm({ event, action = createEvent }: Props) {
     onFieldChange('ticketUrl', e.target.value)
     updateDraft('ticketUrl', e.target.value)
   }
-  function handleTicketUrlBlur() {
-    if (!ticketUrl) return
-    let normalized = ticketUrl
-    if (normalized.startsWith('http://')) {
-      normalized = normalized.replace('http://', 'https://')
-    } else if (!/^https:\/\//.test(normalized)) {
-      normalized = `https://${normalized}`
-    }
-    if (normalized !== ticketUrl) {
-      setTicketUrl(normalized)
-      updateDraft('ticketUrl', normalized)
-    }
-  }
   function handleEmojiChange(v: string) {
     onFieldChange('emoji', v)
     updateDraft('emoji', v)
@@ -440,16 +428,13 @@ export function EventForm({ event, action = createEvent }: Props) {
       />
 
       {requiresTicket && (
-        <Input
+        <UrlInput
           label="Ticket URL"
           name="ticketUrl"
-          type="text"
           value={ticketUrl}
-          placeholder="e.g. eventbrite.com/your-event"
           description="Link where attendees can buy tickets or RSVP."
           errors={errors.ticketUrl}
           onChange={handleTicketUrlChange}
-          onBlur={handleTicketUrlBlur}
         />
       )}
 

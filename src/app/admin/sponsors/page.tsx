@@ -47,6 +47,8 @@ export default async function AdminSponsorsPage() {
                     onSaveAction={updateSponsorName.bind(null, sponsor.id)}
                     ariaLabel={`Edit sponsor name for ${sponsor.name}`}
                     emptyErrorMessage="Sponsor name is required"
+                    emptyStateText="Sponsor name"
+                    placeholder="Sponsor name"
                     textClassName="m-0 font-medium"
                     suffix={
                       !sponsor.enabled ? (
@@ -61,9 +63,11 @@ export default async function AdminSponsorsPage() {
                     onSaveAction={updateSponsorUrl.bind(null, sponsor.id)}
                     ariaLabel={`Edit website URL for ${sponsor.name}`}
                     emptyErrorMessage=""
-                    placeholder="Add website URL"
+                    emptyStateText="Add URL"
+                    placeholder="https://example.com"
                     textClassName="m-0 text-sm text-muted"
                     className="mt-0.5"
+                    type="url"
                   />
                 </div>
                 <ToggleSponsorButton
