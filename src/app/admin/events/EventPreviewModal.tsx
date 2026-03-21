@@ -17,6 +17,9 @@ export function EventPreviewModal({ event, onCloseAction }: Props) {
     if (!open) onCloseAction()
   }
 
+  const hasExternalLinks =
+    event.ticketUrl ?? /\[.+?\]\([a-z]+:/.test(event.description ?? '')
+
   return (
     <Modal
       title={event.title}
@@ -24,24 +27,12 @@ export function EventPreviewModal({ event, onCloseAction }: Props) {
       onOpenChangeAction={handleOpenChange}
       header={<EventPreviewHeader event={event} owner={event.owner} />}
     >
-      <header className="mt-0">
-        {event.emoji && (
-          <div className="text-5xl leading-none mb-2">{event.emoji}</div>
-        )}
-        <h2 className="mt-0 mb-0 text-2xl font-bold">{event.title}</h2>
-        {event.shortDescription && (
-          <p className="text-muted mt-1 mb-0">{event.shortDescription}</p>
-        )}
-      </header>
-
-      {event.status === 'pending' &&
-        (event.ticketUrl ??
-          /\[.+?\]\([a-z]+:/.test(event.description ?? '')) && (
-          <Notice intent="warning">
-            <strong>Before approving:</strong> verify any links in the
-            description and ticket URL lead to legitimate, safe sites.
-          </Notice>
-        )}
+      {event.status === 'pending' && hasExternalLinks && (
+        <Notice intent="warning">
+          <strong>Before approving:</strong> verify any links in the description
+          and ticket URL lead to legitimate, safe sites.
+        </Notice>
+      )}
       <EventDetails event={event} />
     </Modal>
   )
