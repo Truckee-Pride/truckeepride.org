@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { EditEventButton } from './EditEventButton'
 import { formatPhoneNumber } from '@/lib/models/user'
 
-const actionsRowStyles = cn('flex shrink-0 flex-wrap gap-x-4 gap-y-2', 'px-4')
+const actionsRowStyles = cn('flex shrink-0 flex-wrap gap-x-4 gap-y-2')
 
 export function EventPreviewHeader({
   event,

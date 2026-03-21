@@ -8,7 +8,6 @@ import { Notice } from '@/components/Notice'
 import { EventPreviewHeader } from './EventPreviewHeader'
 import type { Event } from '@/db/schema/events'
 import type { User } from '@/db/schema/users'
-import { LayoutWidth } from '@/lib/constants'
 
 type Props = {
   event: Event & { owner: User }
@@ -35,8 +34,7 @@ export function EventLightbox({ event, onCloseAction }: Props) {
   )
 
   const panelStyles = cn(
-    'relative w-full',
-    LayoutWidth.wide,
+    'relative w-full max-w-2xl mx-auto',
     'max-h-[calc(100dvh-2rem)]',
     'flex flex-col',
     'rounded-xl bg-surface shadow-xl',
@@ -44,11 +42,15 @@ export function EventLightbox({ event, onCloseAction }: Props) {
 
   const panelInnerStyles = cn('flex flex-col flex-1 min-h-0')
 
-  const headerRowStyles = cn('flex shrink-0 w-full items-start py-4')
+  const headerRowStyles = cn(
+    'flex shrink-0 w-full items-start',
+    'rounded-t-xl bg-neutral-200/50',
+    'px-5 py-4',
+  )
 
   const scrollAreaStyles = cn(
     'overflow-y-auto flex-1 min-h-0',
-    'p-4',
+    'px-5 py-4',
     '[&::-webkit-scrollbar]:w-1.5',
     '[&::-webkit-scrollbar-track]:bg-transparent',
     '[&::-webkit-scrollbar-thumb]:rounded-full',
