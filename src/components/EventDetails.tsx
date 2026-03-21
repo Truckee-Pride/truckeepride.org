@@ -1,5 +1,5 @@
 import ReactMarkdown from 'react-markdown'
-import { MARKDOWN_ALLOWED_ELEMENTS, SAFE_LINK_PROTOCOL } from '@/lib/constants'
+import { MARKDOWN_ALLOWED_ELEMENTS, SAFE_LINK_PROTOCOLS } from '@/lib/constants'
 import Image from 'next/image'
 import {
   Baby,
@@ -120,7 +120,7 @@ export function EventDetails({ event, headingLevel = 'h2' }: Props) {
           allowedElements={[...MARKDOWN_ALLOWED_ELEMENTS]}
           components={{
             a: ({ href, children }) => {
-              const safe = href && SAFE_LINK_PROTOCOL.test(href)
+              const safe = href && SAFE_LINK_PROTOCOLS.test(href)
               if (!safe) return <>{children}</>
               return (
                 <a href={href} target="_blank" rel="noopener noreferrer">

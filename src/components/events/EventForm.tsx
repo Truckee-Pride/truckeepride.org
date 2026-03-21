@@ -101,6 +101,9 @@ export function EventForm({ event, action = createEvent }: Props) {
   const [locationAddress, setLocationAddress] = useState(
     draft.locationAddress ?? event?.locationAddress ?? '',
   )
+  const [date, setDate] = useState(
+    draft.date ?? formatDate(event?.startTime),
+  )
   const [startTime, setStartTime] = useState(
     draft.startTime ?? formatTime(event?.startTime),
   )
@@ -213,6 +216,7 @@ export function EventForm({ event, action = createEvent }: Props) {
     updateDraft('locationAddress', e.target.value)
   }
   function handleDateChange(v: string) {
+    setDate(v)
     onFieldChange('date', v)
     updateDraft('date', v)
   }
@@ -234,6 +238,19 @@ export function EventForm({ event, action = createEvent }: Props) {
     setTicketUrl(e.target.value)
     onFieldChange('ticketUrl', e.target.value)
     updateDraft('ticketUrl', e.target.value)
+  }
+  function handleTicketUrlBlur() {
+    if (!ticketUrl) return
+    let normalized = ticketUrl
+    if (normalized.startsWith('http://')) {
+      normalized = normalized.replace('http://', 'https://')
+    } else if (!/^https:\/\//.test(normalized)) {
+      normalized = `https://${normalized}`
+    }
+    if (normalized !== ticketUrl) {
+      setTicketUrl(normalized)
+      updateDraft('ticketUrl', normalized)
+    }
   }
   function handleEmojiChange(v: string) {
     onFieldChange('emoji', v)
@@ -363,7 +380,7 @@ export function EventForm({ event, action = createEvent }: Props) {
           label="Date"
           name="date"
           required
-          defaultValue={draft.date ?? formatDate(event?.startTime)}
+          value={date}
           errors={errors.date}
           onChangeAction={handleDateChange}
         />
@@ -426,12 +443,13 @@ export function EventForm({ event, action = createEvent }: Props) {
         <Input
           label="Ticket URL"
           name="ticketUrl"
-          type="url"
+          type="text"
           value={ticketUrl}
-          placeholder="e.g. https://eventbrite.com/your-event"
+          placeholder="e.g. eventbrite.com/your-event"
           description="Link where attendees can buy tickets or RSVP."
           errors={errors.ticketUrl}
           onChange={handleTicketUrlChange}
+          onBlur={handleTicketUrlBlur}
         />
       )}
 

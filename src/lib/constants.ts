@@ -17,8 +17,11 @@ export const LayoutWidth = {
 
 export type LayoutWidth = keyof typeof LayoutWidth
 
-/** Allowed link protocols for user-submitted content. */
-export const SAFE_LINK_PROTOCOL = /^(https:\/\/|mailto:)/
+/** Allowed protocols for inline links in user-submitted markdown. */
+export const SAFE_LINK_PROTOCOLS = /^(https:\/\/|mailto:|tel:)/
+
+/** Ticket URLs must use HTTPS. */
+export const HTTPS_PROTOCOL = /^https:\/\//
 
 /** HTML elements the markdown editor can produce — used to restrict rendering. */
 export const MARKDOWN_ALLOWED_ELEMENTS = [

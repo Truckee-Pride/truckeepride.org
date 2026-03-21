@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { SAFE_LINK_PROTOCOL } from '@/lib/constants'
+import { SAFE_LINK_PROTOCOLS, HTTPS_PROTOCOL } from '@/lib/constants'
 
 export const VIBE_TAGS = [
   'Sporty',
@@ -25,12 +25,19 @@ export const createEventBaseSchema = z.object({
     .string()
     .min(1, 'Description is required')
     .max(5000, 'Description is too long')
+    .transform((val) =>
+      val.replace(/\[(.+?)\]\(([^)]+)\)/g, (match, text, url) => {
+        if (url.startsWith('http://')) return `[${text}](${url.replace('http://', 'https://')})`
+        if (!SAFE_LINK_PROTOCOLS.test(url)) return `[${text}](https://${url})`
+        return match
+      }),
+    )
     .refine(
       (val) =>
         [...val.matchAll(/\[.+?\]\(([^)]+)\)/g)].every(([, url]) =>
-          SAFE_LINK_PROTOCOL.test(url),
+          SAFE_LINK_PROTOCOLS.test(url),
         ),
-      'Links must use https:// or mailto:',
+      'Links must use https://, mailto:, or tel:',
     ),
   locationName: z.string().min(1, 'Location name is required').max(200),
   locationAddress: z.string().max(400).optional(),
@@ -40,10 +47,16 @@ export const createEventBaseSchema = z.object({
   flyerUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   ticketUrl: z
     .string()
-    .url('Must be a valid URL')
+    .transform((val) => {
+      if (!val) return val
+      if (val.startsWith('http://')) return val.replace('http://', 'https://')
+      if (!/^https:\/\//.test(val)) return `https://${val}`
+      return val
+    })
+    .pipe(z.string().url('Must be a valid URL'))
     .refine(
-      (val) => !val || SAFE_LINK_PROTOCOL.test(val),
-      'Ticket URL must use https:// or mailto:',
+      (val) => !val || HTTPS_PROTOCOL.test(val),
+      'Ticket URL must use https://',
     )
     .optional()
     .or(z.literal('')),

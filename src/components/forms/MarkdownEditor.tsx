@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useCallback, useRef } from 'react'
+import type { MDXEditorMethods } from '@mdxeditor/editor'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
+import { SAFE_LINK_PROTOCOLS } from '@/lib/constants'
 import { FormField } from './FormField'
 
 const Editor = dynamic(
@@ -12,6 +14,15 @@ const Editor = dynamic(
     })),
   { ssr: false },
 )
+
+function normalizeMarkdownLinks(md: string): string {
+  return md.replace(/\[(.+?)\]\(([^)]+)\)/g, (match, text, url) => {
+    if (url.startsWith('http://'))
+      return `[${text}](${url.replace('http://', 'https://')})`
+    if (!SAFE_LINK_PROTOCOLS.test(url)) return `[${text}](https://${url})`
+    return match
+  })
+}
 
 type Props = {
   label: string
@@ -54,6 +65,7 @@ export function MarkdownEditor({
 }: Props) {
   const [markdown, setMarkdown] = useState(defaultValue)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const editorRef = useRef<MDXEditorMethods>(null)
 
   function handleFocus(e: React.FocusEvent<HTMLDivElement>) {
     // If focus landed on the wrapper itself (via tab), forward it to the
@@ -86,8 +98,12 @@ export function MarkdownEditor({
 
   const handleChange = useCallback(
     (value: string) => {
-      setMarkdown(value)
-      onChangeAction?.(value)
+      const normalized = normalizeMarkdownLinks(value)
+      if (normalized !== value) {
+        editorRef.current?.setMarkdown(normalized)
+      }
+      setMarkdown(normalized)
+      onChangeAction?.(normalized)
     },
     [onChangeAction],
   )
@@ -115,7 +131,7 @@ export function MarkdownEditor({
             hasError && 'border-error',
           )}
         >
-          <Editor markdown={defaultValue} onChange={handleChange} />
+          <Editor ref={editorRef} markdown={defaultValue} onChange={handleChange} />
           <input type="hidden" name={name} value={markdown} />
         </div>
       )}

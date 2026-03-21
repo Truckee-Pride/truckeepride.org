@@ -34,7 +34,8 @@ type Props = {
   required?: boolean
   errors?: string[]
   description?: string
-  defaultValue?: string // YYYY-MM-DD
+  value?: string // YYYY-MM-DD (controlled)
+  defaultValue?: string // YYYY-MM-DD (uncontrolled, avoid with SSR drafts)
   onChangeAction?: (value: string) => void
 }
 
@@ -47,16 +48,20 @@ export function DateInput({
   required,
   errors,
   description,
+  value,
   defaultValue,
   onChangeAction,
 }: Props) {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(() =>
+  const controlled = value !== undefined
+  const [internalDate, setInternalDate] = useState<Date | undefined>(() =>
     parseDefaultValue(defaultValue),
   )
+  const selectedDate = controlled ? parseDefaultValue(value) : internalDate
   const [open, setOpen] = useState(false)
   const [displayedMonth, setDisplayedMonth] = useState<Date>(() => {
-    if (defaultValue) {
-      const parsed = parseDefaultValue(defaultValue)
+    const initial = value ?? defaultValue
+    if (initial) {
+      const parsed = parseDefaultValue(initial)
       if (parsed) return new Date(parsed.getFullYear(), parsed.getMonth())
     }
     return DEFAULT_CALENDAR_MONTH
@@ -92,18 +97,11 @@ export function DateInput({
 
   const hiddenValue = toHiddenValue(selectedDate)
 
-  const isMountedRef = useRef(false)
-  useEffect(() => {
-    if (!isMountedRef.current) {
-      isMountedRef.current = true
-      return
-    }
-    onChangeAction?.(hiddenValue)
-  }, [hiddenValue]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleDaySelect(selected: Date | undefined) {
     if (!selected) return
-    setSelectedDate(selected)
+    if (!controlled) setInternalDate(selected)
+    onChangeAction?.(toHiddenValue(selected))
     setOpen(false)
   }
 
