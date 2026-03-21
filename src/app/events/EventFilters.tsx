@@ -83,7 +83,7 @@ export function EventFilters({ time, tags, age, dogs }: Props) {
         pressed={dogs}
         onChangeAction={handleDogsChange}
       >
-        🐕
+        🐶
       </ToggleChip>
     </div>
   )
