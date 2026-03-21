@@ -27,6 +27,7 @@
     "@emoji-mart/react": "^1.1.1",
     "@mdxeditor/editor": "^3.52.4",
     "@neondatabase/serverless": "^1.0.2",
+    "@radix-ui/react-dialog": "^1.1.15",
     "@react-email/components": "^1.0.9",
     "@vercel/blob": "^2.3.1",
     "class-variance-authority": "^0.7.1",
