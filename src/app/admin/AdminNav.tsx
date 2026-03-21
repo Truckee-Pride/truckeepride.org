@@ -3,6 +3,7 @@ import type { NavItem } from '@/components/NavBar'
 
 const tabs: NavItem[] = [
   { href: '/admin/events', label: 'Events' },
+  { href: '/admin/carousel', label: 'Carousel' },
   { href: '/admin/sponsors', label: 'Sponsors' },
   { href: '/admin/users', label: 'Users' },
 ]
