@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 import type { CreateEmailOptions } from 'resend'
 import { EventApprovedEmail } from '@/emails/event-approved'
 import { EventRejectedEmail } from '@/emails/event-rejected'
+import { MagicLinkEmail } from '@/emails/magic-link'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -13,7 +14,7 @@ export const EMAIL_FROM = process.env.EMAIL_FROM ?? 'onboarding@resend.dev'
  * continue silently. Critical emails (e.g. magic link) re-throw so the
  * caller can surface the failure.
  */
-export async function sendEmail({
+async function sendEmail({
   critical = false,
   ...params
 }: { critical?: boolean } & CreateEmailOptions) {
@@ -23,6 +24,22 @@ export async function sendEmail({
     console.error('Email send failed:', err)
     if (critical) throw err
   }
+}
+
+export async function sendMagicLinkEmail({
+  to,
+  url,
+}: {
+  to: string
+  url: string
+}) {
+  await sendEmail({
+    critical: true,
+    from: EMAIL_FROM,
+    to,
+    subject: 'Sign in to Truckee Pride',
+    html: await render(<MagicLinkEmail url={url} />),
+  })
 }
 
 export async function sendEventApprovedEmail({

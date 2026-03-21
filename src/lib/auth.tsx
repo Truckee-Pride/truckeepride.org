@@ -1,9 +1,7 @@
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import NextAuth from 'next-auth'
 import ResendProvider from 'next-auth/providers/resend'
-import { render } from '@react-email/components'
-import { MagicLinkEmail } from '@/emails/magic-link'
-import { sendEmail, EMAIL_FROM } from './email'
+import { sendMagicLinkEmail, EMAIL_FROM } from './email'
 import { db } from './db'
 import { users, accounts, sessions, verificationTokens } from '@/db/schema'
 
@@ -19,13 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ResendProvider({
       from: EMAIL_FROM,
       sendVerificationRequest: async ({ identifier, url }) => {
-        await sendEmail({
-          critical: true,
-          from: EMAIL_FROM,
-          to: identifier,
-          subject: 'Sign in to Truckee Pride',
-          html: await render(<MagicLinkEmail url={url} />),
-        })
+        await sendMagicLinkEmail({ to: identifier, url })
       },
     }),
   ],
