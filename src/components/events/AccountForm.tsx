@@ -13,6 +13,7 @@ import {
   type AccountActionState,
 } from '@/app/events/new/actions'
 import { accountFieldsSchema } from '@/lib/schemas/account'
+import { Notice } from '@/components/Notice'
 import { useFormErrors } from '@/hooks/useFormErrors'
 
 const initialState: AccountActionState = { success: false }
@@ -21,6 +22,7 @@ const toggleSignInModeTextStyles = 'text-muted text-sm'
 
 type Props = {
   redirectTo: string
+  signupsEnabled?: boolean
 }
 
 function formatPhone(digits: string): string {
@@ -29,8 +31,10 @@ function formatPhone(digits: string): string {
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`
 }
 
-export function AccountForm({ redirectTo }: Props) {
-  const [mode, setMode] = useState<'create' | 'signin'>('create')
+export function AccountForm({ redirectTo, signupsEnabled = true }: Props) {
+  const [mode, setMode] = useState<'create' | 'signin'>(
+    signupsEnabled ? 'create' : 'signin',
+  )
   const [sentEmail, setSentEmail] = useState<string | null>(null)
   const [verifyOriginMode, setVerifyOriginMode] = useState<'create' | 'signin'>(
     'create',
@@ -176,12 +180,37 @@ export function AccountForm({ redirectTo }: Props) {
   if (mode === 'signin') {
     return (
       <div className="mt-8 max-w-sm">
-        <p className={toggleSignInModeTextStyles}>
-          New here?{' '}
-          <TextButton type="button" onClick={handleToggleMode}>
-            Create Account
-          </TextButton>
-        </p>
+        {!signupsEnabled && (
+          <Notice intent="warning" className="mb-4">
+            New account creation is temporarily closed. If you already have an
+            account, sign in below.
+          </Notice>
+        )}
+        {signupsEnabled && (
+          <p className={toggleSignInModeTextStyles}>
+            New here?{' '}
+            <TextButton type="button" onClick={handleToggleMode}>
+              Create Account
+            </TextButton>
+          </p>
+        )}
+        <SignInForm
+          redirectTo={redirectTo}
+          className="space-y-4"
+          onEmailSentAction={handleSignInEmailSent}
+          defaultEmail={sentEmail ?? undefined}
+        />
+      </div>
+    )
+  }
+
+  if (!signupsEnabled) {
+    return (
+      <div className="mt-8 max-w-sm">
+        <Notice intent="warning" className="mb-4">
+          New account creation is temporarily closed. If you already have an
+          account, sign in below.
+        </Notice>
         <SignInForm
           redirectTo={redirectTo}
           className="space-y-4"

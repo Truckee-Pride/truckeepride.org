@@ -2,8 +2,10 @@ import { asc, desc, isNotNull, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { users } from '@/db/schema'
 import { PageHeader } from '@/components/PageHeader'
+import { getSignupsEnabled } from '@/lib/site-settings'
 import { AdminUsersNav } from './AdminUsersNav'
 import { AdminUsersTable } from './AdminUsersTable'
+import { SignupToggle } from './SignupToggle'
 
 const SORT_FIELDS = ['name', 'email', 'phone', 'createdAt'] as const
 type SortField = (typeof SORT_FIELDS)[number]
@@ -47,10 +49,13 @@ export default async function AdminUsersPage({
 
   const where = getFilter(filter)
 
-  const filteredUsers = await db.query.users.findMany({
-    orderBy: getOrderBy(sort, dir),
-    where,
-  })
+  const [filteredUsers, signupsEnabled] = await Promise.all([
+    db.query.users.findMany({
+      orderBy: getOrderBy(sort, dir),
+      where,
+    }),
+    getSignupsEnabled(),
+  ])
 
   return (
     <>
@@ -58,6 +63,7 @@ export default async function AdminUsersPage({
         title={`Users (${filteredUsers.length})`}
         accessory={<AdminUsersNav />}
       />
+      <SignupToggle enabled={signupsEnabled} />
       <div className="mt-6">
         <AdminUsersTable users={filteredUsers} sortField={sort} sortDir={dir} />
       </div>

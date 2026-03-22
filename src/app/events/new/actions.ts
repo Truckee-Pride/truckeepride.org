@@ -8,6 +8,7 @@ import { signIn } from '@/lib/auth'
 import { requireUser } from '@/lib/auth-stub'
 import { db } from '@/lib/db'
 import { events, users, auditLog } from '@/db/schema'
+import { getSignupsEnabled } from '@/lib/site-settings'
 import { computeName } from '@/lib/models/user'
 import { createEventSchema, type CreateEventInput } from '@/lib/schemas/events'
 import { accountFieldsSchema } from '@/lib/schemas/account'
@@ -181,6 +182,15 @@ export async function createAccountAndSignIn(
     return {
       success: false,
       error: 'Too many requests. Please try again later.',
+    }
+  }
+
+  const signupsEnabled = await getSignupsEnabled()
+  if (!signupsEnabled) {
+    return {
+      success: false,
+      error:
+        'New sign-ups are temporarily closed. If you already have an account, please sign in instead.',
     }
   }
 
