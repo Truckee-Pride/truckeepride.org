@@ -85,6 +85,7 @@ export default async function EventPage({
       '@type': 'Place',
       name: event.locationName,
       address: event.locationAddress ?? event.locationName,
+      ...(event.googleMapsUrl && { url: event.googleMapsUrl }),
     },
     image: event.flyerUrl ?? undefined,
     url: `https://truckeepride.org/events/${event.slug}`,

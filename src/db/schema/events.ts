@@ -35,6 +35,7 @@ export const events = pgTable('events', {
   locationAddress: text('location_address'),
   locationLat: real('location_lat'),
   locationLng: real('location_lng'),
+  googleMapsUrl: text('google_maps_url'),
   startTime: timestamp('start_time', { mode: 'date' }).notNull(),
   endTime: timestamp('end_time', { mode: 'date' }),
   flyerUrl: text('flyer_url'),

@@ -35,7 +35,6 @@
 
 ## Deferred to Post-MVP
 
-- [ ] Google Maps links and autocomplete in events form
 - [ ] "My Events" tab/filter on `/events` page: show user's own events with status badges
 - [ ] Audit Log
 - [ ] Admin event owners page (`src/app/admin/events/[id]/owners/page.tsx`) — use Drizzle Studio until then

@@ -1,6 +1,6 @@
 {
-  "id": "b7face5b-8e8a-4965-bfa6-60a0d5d2bcd4",
-  "prevId": "d34a7ec7-8a66-4ffe-82d8-0088893107d7",
+  "id": "c0ebca57-2ef4-481b-af2b-f9f7c6de20a0",
+  "prevId": "b7face5b-8e8a-4965-bfa6-60a0d5d2bcd4",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -220,6 +220,12 @@
         "location_lng": {
           "name": "location_lng",
           "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "google_maps_url": {
+          "name": "google_maps_url",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
