@@ -3,6 +3,7 @@
 import { useTransition } from 'react'
 import { Button } from '@/components/Button'
 import { Notice } from '@/components/Notice'
+import { TextButton } from '@/components/TextButton'
 import { toggleSignups } from './settings-actions'
 
 export function SignupToggle({ enabled }: { enabled: boolean }) {
@@ -32,17 +33,15 @@ export function SignupToggle({ enabled }: { enabled: boolean }) {
   }
 
   return (
-    <Notice intent="warning">
-      <div className="flex items-center justify-between gap-4">
-        <p className="m-0">New user sign-ups are currently enabled.</p>
-        <Button
-          intent="secondary"
-          onClick={handleToggle}
-          disabled={isPending}
-        >
-          {isPending ? 'Disabling...' : 'Disable Sign-ups'}
-        </Button>
-      </div>
-    </Notice>
+    <p className="mt-4 text-sm text-muted">
+      New user sign-ups are enabled.{' '}
+      <TextButton
+        intent="danger"
+        onClick={handleToggle}
+        disabled={isPending}
+      >
+        {isPending ? 'Disabling...' : 'Disable Sign-ups'}
+      </TextButton>
+    </p>
   )
 }
